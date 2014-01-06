@@ -212,43 +212,79 @@
 {
     
     NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
-    NSMutableURLRequest *afRequest = [self multipartFormRequestWithMethod:@"PATCH" path:path parameters:nil constructingBodyWithBlock:^(id <AFMultipartFormData>formData)
-                                      {
-                                          [formData appendPartWithFileData:chunk name:@"Video" fileName:fileName mimeType:@"video/mp4"];
-                                      }];
-    
+    NSMutableURLRequest* afRequest = [self requestWithMethod:@"PATCH" path:path parameters:nil];
     [afRequest setValue: chunkSize  forHTTPHeaderField:@"Content-Length"];
     [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [afRequest setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
     [afRequest setValue: offset  forHTTPHeaderField:@"Offset"];
+    [afRequest setHTTPBody:chunk];
     
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:afRequest];
+    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:afRequest success:
+                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                  {
+                                      NSLog(@"LOG : check - 2.4");
+                                     // [MBProgressHUD tl_fadeOutHUDInView:view withSuccessText:@"Image saved !"];
+                                      success(@"");
+                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                  {
+                                    //  [MBProgressHUD tl_fadeOutHUDInView:view withFailureText:@"Saving image failed !"];
+                                      failure(error);
+                                  }];
     
-    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,long long totalBytesWritten,long long totalBytesExpectedToWrite)
-     {
-         
-         NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
-         success(@"");
-         //NSLog(@"uploaded percent %f", (float)totalBytesWritten/totalBytesExpectedToWrite);
-         //uploadProgress((float)(100.0*totalBytesWritten/totalBytesExpectedToWrite));
-         
-     }];
-    [operation  setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id response)
-     {
-         NSLog(@"AFN REST response %@", operation.responseString);
-         //NSError *error;
-         //NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:response options:NSJSONReadingAllowFragments error:&error];
-         //complete(responseData);
-         
-     }
-                                      failure:^(AFHTTPRequestOperation *operation, NSError *error)
-     {
-         //NSDictionary *nsDError = [NSDictionary dictionaryWithObjectsAndKeys:error.description, @"error",  [operation.response statusCode], @"statuscode", nil];
-         NSLog(@"Upload file error %@", error.description);
-         //failure(nsDError);
-     }];
+    [op setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
+        
+//        if( totalBytesExpectedToWrite == totalBytesWritten )
+//            success(@"");
+    }];
     
-    [self enqueueHTTPRequestOperation:operation];
+    
+    [op start];
+    
+    
+    
+    
+    
+//    NSMutableURLRequest *afRequest = [self multipartFormRequestWithMethod:@"PATCH" path:path parameters:nil constructingBodyWithBlock:^(id <AFMultipartFormData>formData)
+//                                      {
+//                                          [formData appendPartWithFileData:chunk name:@"Video" fileName:fileName mimeType:@"video/mp4"];
+//                                      }];
+//    
+//    [afRequest setValue: chunkSize  forHTTPHeaderField:@"Content-Length"];
+//    [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+//    [afRequest setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
+//    [afRequest setValue: offset  forHTTPHeaderField:@"Offset"];
+//
+//    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:afRequest];
+//    
+//    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,long long totalBytesWritten,long long totalBytesExpectedToWrite)
+//     {
+//         
+//         NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
+//         //success(@"");
+//         //NSLog(@"uploaded percent %f", (float)totalBytesWritten/totalBytesExpectedToWrite);
+//         //uploadProgress((float)(100.0*totalBytesWritten/totalBytesExpectedToWrite));
+//         
+//     }];
+//    [operation  setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id response)
+//     {
+//         NSLog(@"AFN REST response %@", operation.responseString);
+//         
+//         success(@"");
+//         //NSError *error;
+//         //NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:response options:NSJSONReadingAllowFragments error:&error];
+//         //complete(responseData);
+//         
+//     }
+//                                      failure:^(AFHTTPRequestOperation *operation, NSError *error)
+//     {
+//         //NSDictionary *nsDError = [NSDictionary dictionaryWithObjectsAndKeys:error.description, @"error",  [operation.response statusCode], @"statuscode", nil];
+//         NSLog(@"Upload file error %@", error.description);
+//         failure(error);
+//         //failure(nsDError);
+//     }];
+//    
+//    [self enqueueHTTPRequestOperation:operation];
 }
 
 

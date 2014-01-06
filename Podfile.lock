@@ -1,0 +1,13 @@
+PODS:
+  - AFNetworking (1.0)
+  - Facebook-iOS-SDK (3.11.0)
+
+DEPENDENCIES:
+  - AFNetworking (= 1.0)
+  - Facebook-iOS-SDK
+
+SPEC CHECKSUMS:
+  AFNetworking: 204f4b3d3a3ea7b38737c3fbf2646ba8c9719eea
+  Facebook-iOS-SDK: 2eb12f9ed04f3d3956f0a4fb0e4e60c824dcd101
+
+COCOAPODS: 0.28.0

@@ -21,7 +21,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    
+    //[self otherServices];
     //  [self videoFromNSData];
     i = 0; offset = 0;
     self.chunks = [[NSMutableArray array]mutableCopy];
@@ -78,8 +78,8 @@
      {
          self.asset = (ALAsset*)filteredVideos[filteredVideos.count - 1];
          NSLog(@"LOG : FilteredVideos are - %lld",self.asset.defaultRepresentation.size);
-//         [self otherServices];
-          [self getOffsetFromTheHeadService];
+         [self otherServices];
+//          [self getOffsetFromTheHeadService];
 //         [self videoFromNSData];
 //         [self startNewFileUpload];
 //
@@ -133,8 +133,9 @@
 {
     NSLog(@"LOG : The asset details are - %@",self.asset);
     
-    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(NSString *msg)
+    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(User *user)
      {
+         NSLog(@"LOG : Modal user object obtained is - %@",user);
          
      }failure:^(NSError *error)
      {

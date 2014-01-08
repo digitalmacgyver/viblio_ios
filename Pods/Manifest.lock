@@ -1,13 +1,31 @@
 PODS:
   - AFNetworking (1.0)
   - Facebook-iOS-SDK (3.11.0)
+  - RestKit (0.20.0):
+    - RestKit/Core
+  - RestKit/Core (0.20.0):
+    - RestKit/CoreData
+    - RestKit/Network
+    - RestKit/ObjectMapping
+  - RestKit/CoreData (0.20.0)
+  - RestKit/Network (0.20.0):
+    - AFNetworking (= 1.1.0)
+    - RestKit/ObjectMapping
+    - RestKit/Support
+    - SOCKit
+  - RestKit/ObjectMapping (0.20.0)
+  - RestKit/Support (0.20.0)
+  - SOCKit (1.1)
 
 DEPENDENCIES:
   - AFNetworking (= 1.0)
   - Facebook-iOS-SDK
+  - RestKit (= 0.20)
 
 SPEC CHECKSUMS:
   AFNetworking: 204f4b3d3a3ea7b38737c3fbf2646ba8c9719eea
   Facebook-iOS-SDK: 2eb12f9ed04f3d3956f0a4fb0e4e60c824dcd101
+  RestKit: 580771664a14eaaa40bf53cf83584f12fc141930
+  SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581
 
 COCOAPODS: 0.28.0

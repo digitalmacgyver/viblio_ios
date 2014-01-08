@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "User.h"
 
 #define APPCLIENT [ViblioClient sharedClient]
 
@@ -17,7 +18,7 @@
 - (void)authenticateUserWithEmail : (NSString*)emailID
                          password : (NSString*)password
                              type : (NSString*)loginType
-                           success:(void (^)(NSString *user))success
+                           success:(void (^)(User *user))success
                            failure:(void(^)(NSError *error))failure;
 
 

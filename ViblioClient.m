@@ -42,6 +42,84 @@
     return self;
 }
 
+
+- (void)setupRestKit
+{
+    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelWarning);
+    
+    //let AFNetworking manage the activity indicator
+    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
+    
+    // Initialize HTTPClient
+    NSURL *baseURL = [NSURL URLWithString:API_LOGIN_SERVER_URL];
+    AFHTTPClient* client = [[AFHTTPClient alloc] initWithBaseURL:baseURL];
+    
+    //we want to work with JSON-Data
+    [client setDefaultHeader:@"Accept" value:RKMIMETypeJSON];
+    
+    // Initialize RestKit
+    RKObjectManager *objectManager = [[RKObjectManager alloc] initWithHTTPClient:client];
+    
+    // Setting up object mappings
+    
+    
+    // Contents API descriptor
+    RKObjectMapping *contentsMapping = [RKObjectMapping mappingForClass:[User class]];
+    [contentsMapping addAttributeMappingsFromDictionary:[User mapping]];
+    
+    RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:contentsMapping
+                                                                                               pathPattern:@"/services/na/authenticate"
+                                                                                                   keyPath:@"user.uuid"
+                                                                                               statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:userResponseDescriptor];
+    
+    
+//    // Categories API descriptor
+//    RKObjectMapping *categoriesMapping = [RKObjectMapping mappingForClass:[TLCategory class]];
+//    [categoriesMapping addAttributeMappingsFromDictionary:[TLCategory mapping]];
+//    
+//    [categoriesMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"contents" toKeyPath:@"contentsRated" withMapping:contentsMapping]];
+//    
+//    RKResponseDescriptor *categoriesResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:categoriesMapping
+//                                                                                                 pathPattern:@"/categories"
+//                                                                                                     keyPath:@"payload.categories"
+//                                                                                                 statusCodes:[NSIndexSet indexSetWithIndex:200]];
+//    [objectManager addResponseDescriptor:categoriesResponseDescriptor];
+//    
+//    // Matches API descriptor
+//    RKObjectMapping *matchesMapping = [RKObjectMapping mappingForClass:[TLMatch class]];
+//    [matchesMapping addAttributeMappingsFromDictionary:[TLMatch mapping]];
+//    
+//    RKResponseDescriptor *matchesResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:matchesMapping
+//                                                                                              pathPattern:@"/matches"
+//                                                                                                  keyPath:@"payload.matches"
+//                                                                                              statusCodes:[NSIndexSet indexSetWithIndex:200]];
+//    [objectManager addResponseDescriptor:matchesResponseDescriptor];
+//    
+//    // User API descriptor
+//    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[TLUser class]];
+//    [userMapping addAttributeMappingsFromDictionary:[TLUser mapping]];
+//    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"categories" toKeyPath:@"categoriesRated" withMapping:categoriesMapping]];
+//    
+//    RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping
+//                                                                                           pathPattern:@"/users/:userID"
+//                                                                                               keyPath:@"payload.user"
+//                                                                                           statusCodes:[NSIndexSet indexSetWithIndex:200]];
+//    [objectManager addResponseDescriptor:userResponseDescriptor];
+//    
+//    // Inbox API descriptor
+//    RKObjectMapping *inboxMapping = [RKObjectMapping mappingForClass:[TLInboxMessage class]];
+//    [inboxMapping addAttributeMappingsFromDictionary:[TLInboxMessage mapping]];
+//    
+//    RKResponseDescriptor *inboxResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:inboxMapping
+//                                                                                            pathPattern:@"/inbox"
+//                                                                                                keyPath:@"payload.users"
+//                                                                                            statusCodes:[NSIndexSet indexSetWithIndex:200]];
+//    [objectManager addResponseDescriptor:inboxResponseDescriptor];
+}
+
+
 #pragma User Management Services
 
 // To login the user onto the server
@@ -49,7 +127,7 @@
 - (void)authenticateUserWithEmail : (NSString*)emailID
                          password : (NSString*)password
                              type : (NSString*)loginType
-                    success:(void (^)(NSString *user))success
+                    success:(void (^)(User *user))success
                     failure:(void(^)(NSError *error))failure
 {
     NSDictionary *queryParams = @{ @"email": emailID,
@@ -60,15 +138,48 @@
     NSString *path = [NSString stringWithFormat:@"/services/na/authenticate?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
     NSURLRequest *req = [self requestWithMethod:@"GET" path:path parameters:nil];
     
-   __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
-                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
-                                  {
-                                      NSLog(@"LOG : The response is - %@ - body - %@",response, [op responseString]);
-                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
-                                  {
-                                      failure(error);
-                                  }];
+    
+    
+    RKObjectManager *rom = [RKObjectManager sharedManager];
+    NSLog(@"LOG : Nor equest being sent");
+//    [objectManager getObjectsAtPath:path parameters:nil
+//                            success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+//                                
+//                                NSLog(@"LOg : Succes");
+//                                User *user = [mappingResult firstObject];
+//                                success(user);
+//                            }
+//                            failure:^(RKObjectRequestOperation *operation, NSError *error) {
+//                                
+//                              //  [MBProgressHUD tl_fadeOutHUDInView:view withFailureText:kMsgServerNotResponding];
+//                                failure(error);
+//                            }];
+    
+    
+    RKObjectRequestOperation *op = [rom appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodPOST path:path parameters:nil];
+    [op setWillMapDeserializedResponseBlock:^id(id res) {
+        
+        NSLog(@"LOG : The res is - %@",res);
+        return res;
+    }];
+    
+    [op setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        
+        User *user = [mappingResult firstObject];
+        success(user);
+        
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        failure(error);
+    }];
     [op start];
+    
+    
+//    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:req responseDescriptors:@[responseDescriptor]];
+//    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
+//        NSLog(@"data result is %@", [result valueForKeyPath:@"data.status"]);
+//    } failure:nil];
+    
+    
 }
 
 

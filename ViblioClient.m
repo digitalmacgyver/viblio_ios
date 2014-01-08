@@ -137,49 +137,37 @@
     
     NSString *path = [NSString stringWithFormat:@"/services/na/authenticate?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
     NSURLRequest *req = [self requestWithMethod:@"GET" path:path parameters:nil];
-    
-    
-    
-    RKObjectManager *rom = [RKObjectManager sharedManager];
-    NSLog(@"LOG : Nor equest being sent");
-//    [objectManager getObjectsAtPath:path parameters:nil
-//                            success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-//                                
-//                                NSLog(@"LOg : Succes");
-//                                User *user = [mappingResult firstObject];
-//                                success(user);
-//                            }
-//                            failure:^(RKObjectRequestOperation *operation, NSError *error) {
-//                                
-//                              //  [MBProgressHUD tl_fadeOutHUDInView:view withFailureText:kMsgServerNotResponding];
-//                                failure(error);
-//                            }];
-    
-    
-    RKObjectRequestOperation *op = [rom appropriateObjectRequestOperationWithObject:nil method:RKRequestMethodPOST path:path parameters:nil];
-    [op setWillMapDeserializedResponseBlock:^id(id res) {
-        
-        NSLog(@"LOG : The res is - %@",res);
-        return res;
-    }];
-    
-    [op setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        
-        User *user = [mappingResult firstObject];
-        success(user);
-        
-    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        failure(error);
-    }];
-    [op start];
-    
-    
-//    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:req responseDescriptors:@[responseDescriptor]];
-//    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
-//        NSLog(@"data result is %@", [result valueForKeyPath:@"data.status"]);
-//    } failure:nil];
-    
-    
+    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
+                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                  {
+                                      NSLog(@"LOG : result - %@",JSON);
+                                      NSLog(@"LOG : response - %@", response);
+                                      
+                                      User *user = [[User alloc]init];
+                                      user.userID = [JSON valueForKeyPath:@"user.uuid"];
+
+                                      if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
+                                      {
+                                          NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
+                                          for ( NSString *str in parsedSession )
+                                          {
+                                              if( [str rangeOfString:@"va_session"].location != NSNotFound )
+                                              {
+                                                  NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
+                                                  user.sessionCookie = sessionParsed[1];
+                                                  break;
+                                              }
+                                          }
+                                      }
+                                    
+                                      
+                                      NSLog(@"LOG : User object is - %@",user);
+                                      
+                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                  {
+                                      failure(error);
+                                  }];
+    [op start];   
 }
 
 

@@ -28,6 +28,7 @@
 		2A715845187D4E7900163201 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715844187D4E7900163201 /* Security.framework */; };
 		2A715847187D4E8300163201 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715846187D4E8300163201 /* CFNetwork.framework */; };
 		2A715849187D4E9100163201 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715848187D4E9100163201 /* SystemConfiguration.framework */; };
+		2A71584D187D75A400163201 /* NSString+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A71584C187D75A400163201 /* NSString+Additions.m */; };
 		4F469F010F6742979F21F117 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9B1AD470C747F8B704F802 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -72,6 +73,8 @@
 		2A715844187D4E7900163201 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2A715846187D4E8300163201 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		2A715848187D4E9100163201 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		2A71584B187D75A400163201 /* NSString+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Additions.h"; sourceTree = "<group>"; };
+		2A71584C187D75A400163201 /* NSString+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Additions.m"; sourceTree = "<group>"; };
 		4C9B1AD470C747F8B704F802 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		519C6E49E6BB4DD89001E212 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -108,6 +111,7 @@
 		2A22F3D6187AAD8E002F71F8 = {
 			isa = PBXGroup;
 			children = (
+				2A71584A187D758700163201 /* ViblioAdditions */,
 				2A71583E187D352C00163201 /* Model */,
 				2A22F420187AAF1B002F71F8 /* ViblioServices */,
 				2A22F41C187AAEC4002F71F8 /* Utilities */,
@@ -213,6 +217,15 @@
 				2A715840187D355B00163201 /* User.m */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		2A71584A187D758700163201 /* ViblioAdditions */ = {
+			isa = PBXGroup;
+			children = (
+				2A71584B187D75A400163201 /* NSString+Additions.h */,
+				2A71584C187D75A400163201 /* NSString+Additions.m */,
+			);
+			name = ViblioAdditions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -347,6 +360,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A71584D187D75A400163201 /* NSString+Additions.m in Sources */,
 				2A22F3FC187AAD8E002F71F8 /* ViewController.m in Sources */,
 				2A22F3F3187AAD8E002F71F8 /* AppDelegate.m in Sources */,
 				2A715841187D355B00163201 /* User.m in Sources */,

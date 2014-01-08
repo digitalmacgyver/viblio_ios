@@ -54,4 +54,7 @@
 //Utilities
 #import "ViblioHelper.h"
 
+//Modals
+#import "User.h"
+
 #endif

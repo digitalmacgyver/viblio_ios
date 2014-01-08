@@ -13,6 +13,7 @@
 @interface ViewController : UIViewController
 {
     __block int i ;
+    int offset;
 }
 @property(nonatomic,retain)NSMutableArray *filteredVideoList;
 

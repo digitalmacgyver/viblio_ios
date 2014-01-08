@@ -42,6 +42,84 @@
     return self;
 }
 
+
+- (void)setupRestKit
+{
+    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelWarning);
+    
+    //let AFNetworking manage the activity indicator
+    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
+    
+    // Initialize HTTPClient
+    NSURL *baseURL = [NSURL URLWithString:API_LOGIN_SERVER_URL];
+    AFHTTPClient* client = [[AFHTTPClient alloc] initWithBaseURL:baseURL];
+    
+    //we want to work with JSON-Data
+    [client setDefaultHeader:@"Accept" value:RKMIMETypeJSON];
+    
+    // Initialize RestKit
+    RKObjectManager *objectManager = [[RKObjectManager alloc] initWithHTTPClient:client];
+    
+    // Setting up object mappings
+    
+    
+    // Contents API descriptor
+    RKObjectMapping *contentsMapping = [RKObjectMapping mappingForClass:[User class]];
+    [contentsMapping addAttributeMappingsFromDictionary:[User mapping]];
+    
+    RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:contentsMapping
+                                                                                               pathPattern:@"/services/na/authenticate"
+                                                                                                   keyPath:@"user.uuid"
+                                                                                               statusCodes:[NSIndexSet indexSetWithIndex:200]];
+    [objectManager addResponseDescriptor:userResponseDescriptor];
+    
+    
+//    // Categories API descriptor
+//    RKObjectMapping *categoriesMapping = [RKObjectMapping mappingForClass:[TLCategory class]];
+//    [categoriesMapping addAttributeMappingsFromDictionary:[TLCategory mapping]];
+//    
+//    [categoriesMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"contents" toKeyPath:@"contentsRated" withMapping:contentsMapping]];
+//    
+//    RKResponseDescriptor *categoriesResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:categoriesMapping
+//                                                                                                 pathPattern:@"/categories"
+//                                                                                                     keyPath:@"payload.categories"
+//                                                                                                 statusCodes:[NSIndexSet indexSetWithIndex:200]];
+//    [objectManager addResponseDescriptor:categoriesResponseDescriptor];
+//    
+//    // Matches API descriptor
+//    RKObjectMapping *matchesMapping = [RKObjectMapping mappingForClass:[TLMatch class]];
+//    [matchesMapping addAttributeMappingsFromDictionary:[TLMatch mapping]];
+//    
+//    RKResponseDescriptor *matchesResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:matchesMapping
+//                                                                                              pathPattern:@"/matches"
+//                                                                                                  keyPath:@"payload.matches"
+//                                                                                              statusCodes:[NSIndexSet indexSetWithIndex:200]];
+//    [objectManager addResponseDescriptor:matchesResponseDescriptor];
+//    
+//    // User API descriptor
+//    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[TLUser class]];
+//    [userMapping addAttributeMappingsFromDictionary:[TLUser mapping]];
+//    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"categories" toKeyPath:@"categoriesRated" withMapping:categoriesMapping]];
+//    
+//    RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping
+//                                                                                           pathPattern:@"/users/:userID"
+//                                                                                               keyPath:@"payload.user"
+//                                                                                           statusCodes:[NSIndexSet indexSetWithIndex:200]];
+//    [objectManager addResponseDescriptor:userResponseDescriptor];
+//    
+//    // Inbox API descriptor
+//    RKObjectMapping *inboxMapping = [RKObjectMapping mappingForClass:[TLInboxMessage class]];
+//    [inboxMapping addAttributeMappingsFromDictionary:[TLInboxMessage mapping]];
+//    
+//    RKResponseDescriptor *inboxResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:inboxMapping
+//                                                                                            pathPattern:@"/inbox"
+//                                                                                                keyPath:@"payload.users"
+//                                                                                            statusCodes:[NSIndexSet indexSetWithIndex:200]];
+//    [objectManager addResponseDescriptor:inboxResponseDescriptor];
+}
+
+
 #pragma User Management Services
 
 // To login the user onto the server
@@ -49,7 +127,7 @@
 - (void)authenticateUserWithEmail : (NSString*)emailID
                          password : (NSString*)password
                              type : (NSString*)loginType
-                    success:(void (^)(NSString *user))success
+                    success:(void (^)(User *user))success
                     failure:(void(^)(NSError *error))failure
 {
     NSDictionary *queryParams = @{ @"email": emailID,
@@ -59,16 +137,37 @@
     
     NSString *path = [NSString stringWithFormat:@"/services/na/authenticate?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
     NSURLRequest *req = [self requestWithMethod:@"GET" path:path parameters:nil];
-    
-   __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
+    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
-                                      NSLog(@"LOG : The response is - %@ - body - %@",response, [op responseString]);
+                                      NSLog(@"LOG : result - %@",JSON);
+                                      NSLog(@"LOG : response - %@", response);
+                                      
+                                      User *user = [[User alloc]init];
+                                      user.userID = [JSON valueForKeyPath:@"user.uuid"];
+
+                                      if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
+                                      {
+                                          NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
+                                          for ( NSString *str in parsedSession )
+                                          {
+                                              if( [str rangeOfString:@"va_session"].location != NSNotFound )
+                                              {
+                                                  NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
+                                                  user.sessionCookie = sessionParsed[1];
+                                                  break;
+                                              }
+                                          }
+                                      }
+                                    
+                                      
+                                      NSLog(@"LOG : User object is - %@",user);
+                                      
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
                                   }];
-    [op start];
+    [op start];   
 }
 
 
@@ -140,7 +239,7 @@
     NSDictionary *params = @{
                              @"uuid": userUUId,
                              @"file": @{
-                                     @"PATH": fileLocalPath
+                                     @"Path": @"Sample Video.MOV"
                                      },
                              @"user-agent": @"your-client-name: your-client-version"
                              };
@@ -149,10 +248,10 @@
     
     NSData * data = [NSPropertyListSerialization dataFromPropertyList:params
                                                                format:NSPropertyListBinaryFormat_v1_0 errorDescription:NULL];
-    NSLog(@"size: %d --- fileSize - %@", [data length], fileSize);
+    NSLog(@"size: %lu --- fileSize - %@", (unsigned long)[data length], fileSize);
     
     [request setValue: fileSize  forHTTPHeaderField:@"Final-Length"];
-    [request setValue: [NSString stringWithFormat:@"%d", data.length]  forHTTPHeaderField:@"Content-Length"];
+    [request setValue: [NSString stringWithFormat:@"%lu", (unsigned long)data.length]  forHTTPHeaderField:@"Content-Length"];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     
     
@@ -212,43 +311,79 @@
 {
     
     NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
-    NSMutableURLRequest *afRequest = [self multipartFormRequestWithMethod:@"PATCH" path:path parameters:nil constructingBodyWithBlock:^(id <AFMultipartFormData>formData)
-                                      {
-                                          [formData appendPartWithFileData:chunk name:@"Video" fileName:fileName mimeType:@"video/mp4"];
-                                      }];
-    
+    NSMutableURLRequest* afRequest = [self requestWithMethod:@"PATCH" path:path parameters:nil];
     [afRequest setValue: chunkSize  forHTTPHeaderField:@"Content-Length"];
     [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [afRequest setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
     [afRequest setValue: offset  forHTTPHeaderField:@"Offset"];
+    [afRequest setHTTPBody:chunk];
     
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:afRequest];
+    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:afRequest success:
+                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                  {
+                                      NSLog(@"LOG : check - 2.4");
+                                     // [MBProgressHUD tl_fadeOutHUDInView:view withSuccessText:@"Image saved !"];
+                                      success(@"");
+                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                  {
+                                    //  [MBProgressHUD tl_fadeOutHUDInView:view withFailureText:@"Saving image failed !"];
+                                      failure(error);
+                                  }];
     
-    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,long long totalBytesWritten,long long totalBytesExpectedToWrite)
-     {
-         
-         NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
-         success(@"");
-         //NSLog(@"uploaded percent %f", (float)totalBytesWritten/totalBytesExpectedToWrite);
-         //uploadProgress((float)(100.0*totalBytesWritten/totalBytesExpectedToWrite));
-         
-     }];
-    [operation  setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id response)
-     {
-         NSLog(@"AFN REST response %@", operation.responseString);
-         //NSError *error;
-         //NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:response options:NSJSONReadingAllowFragments error:&error];
-         //complete(responseData);
-         
-     }
-                                      failure:^(AFHTTPRequestOperation *operation, NSError *error)
-     {
-         //NSDictionary *nsDError = [NSDictionary dictionaryWithObjectsAndKeys:error.description, @"error",  [operation.response statusCode], @"statuscode", nil];
-         NSLog(@"Upload file error %@", error.description);
-         //failure(nsDError);
-     }];
+    [op setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
+        
+//        if( totalBytesExpectedToWrite == totalBytesWritten )
+//            success(@"");
+    }];
     
-    [self enqueueHTTPRequestOperation:operation];
+    
+    [op start];
+    
+    
+    
+    
+    
+//    NSMutableURLRequest *afRequest = [self multipartFormRequestWithMethod:@"PATCH" path:path parameters:nil constructingBodyWithBlock:^(id <AFMultipartFormData>formData)
+//                                      {
+//                                          [formData appendPartWithFileData:chunk name:@"Video" fileName:fileName mimeType:@"video/mp4"];
+//                                      }];
+//    
+//    [afRequest setValue: chunkSize  forHTTPHeaderField:@"Content-Length"];
+//    [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+//    [afRequest setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
+//    [afRequest setValue: offset  forHTTPHeaderField:@"Offset"];
+//
+//    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:afRequest];
+//    
+//    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,long long totalBytesWritten,long long totalBytesExpectedToWrite)
+//     {
+//         
+//         NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
+//         //success(@"");
+//         //NSLog(@"uploaded percent %f", (float)totalBytesWritten/totalBytesExpectedToWrite);
+//         //uploadProgress((float)(100.0*totalBytesWritten/totalBytesExpectedToWrite));
+//         
+//     }];
+//    [operation  setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id response)
+//     {
+//         NSLog(@"AFN REST response %@", operation.responseString);
+//         
+//         success(@"");
+//         //NSError *error;
+//         //NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:response options:NSJSONReadingAllowFragments error:&error];
+//         //complete(responseData);
+//         
+//     }
+//                                      failure:^(AFHTTPRequestOperation *operation, NSError *error)
+//     {
+//         //NSDictionary *nsDError = [NSDictionary dictionaryWithObjectsAndKeys:error.description, @"error",  [operation.response statusCode], @"statuscode", nil];
+//         NSLog(@"Upload file error %@", error.description);
+//         failure(error);
+//         //failure(nsDError);
+//     }];
+//    
+//    [self enqueueHTTPRequestOperation:operation];
 }
 
 

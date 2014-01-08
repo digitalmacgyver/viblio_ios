@@ -140,7 +140,7 @@
     NSDictionary *params = @{
                              @"uuid": userUUId,
                              @"file": @{
-                                     @"PATH": fileLocalPath
+                                     @"Path": @"Sample Video.MOV"
                                      },
                              @"user-agent": @"your-client-name: your-client-version"
                              };
@@ -149,10 +149,10 @@
     
     NSData * data = [NSPropertyListSerialization dataFromPropertyList:params
                                                                format:NSPropertyListBinaryFormat_v1_0 errorDescription:NULL];
-    NSLog(@"size: %d --- fileSize - %@", [data length], fileSize);
+    NSLog(@"size: %lu --- fileSize - %@", (unsigned long)[data length], fileSize);
     
     [request setValue: fileSize  forHTTPHeaderField:@"Final-Length"];
-    [request setValue: [NSString stringWithFormat:@"%d", data.length]  forHTTPHeaderField:@"Content-Length"];
+    [request setValue: [NSString stringWithFormat:@"%lu", (unsigned long)data.length]  forHTTPHeaderField:@"Content-Length"];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     
     

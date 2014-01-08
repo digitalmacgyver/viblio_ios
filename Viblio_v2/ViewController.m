@@ -76,12 +76,9 @@
     
     [self fetchUniqueVideosFromCameraRoll:[df dateFromString: str] success:^(NSArray *filteredVideos)
      {
-         
-         
-         
          self.asset = (ALAsset*)filteredVideos[filteredVideos.count - 1];
          NSLog(@"LOG : FilteredVideos are - %lld",self.asset.defaultRepresentation.size);
-       //  [self otherServices];
+//         [self otherServices];
           [self getOffsetFromTheHeadService];
 //         [self videoFromNSData];
 //         [self startNewFileUpload];
@@ -136,19 +133,20 @@
 {
     NSLog(@"LOG : The asset details are - %@",self.asset);
     
-    [APPCLIENT startUploadingFileForUserId:@"FD5C4166-67AC-11E3-B0E6-7B6FF9A9DC35" fileLocalPath:self.asset.defaultRepresentation.url.absoluteString fileSize:[NSString stringWithFormat:@"%lld",self.asset.defaultRepresentation.size] success:^(NSString *msg)
+    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(NSString *msg)
      {
          
      }failure:^(NSError *error)
      {
-         NSLog(@"LOG : The error is - %@",error);
+         
      }];
+
 
 }
 
 -(int)getOffsetFromTheHeadService
 {
-    [APPCLIENT getOffsetOfTheFileAtLocationID:@"b4f76e40-76cb-11e3-9ee5-2bc59fa2be56" sessionCookie:nil success:^(NSString *msg)
+    [APPCLIENT getOffsetOfTheFileAtLocationID:@"12554130-776b-11e3-9ee5-2bc59fa2be56" sessionCookie:nil success:^(NSString *msg)
      {
          
      }failure:^(NSError *error)
@@ -190,7 +188,7 @@
             else
             {
                 // do your stuff here
-                [APPCLIENT resumeUploadOfFileLocationID:@"b4f76e40-76cb-11e3-9ee5-2bc59fa2be56" localFileName:@"movieTrial" chunkSize:[NSString stringWithFormat:@"%d",chunkData.length]  offset:[NSString stringWithFormat:@"%d",offset] chunk:chunkData sessionCookie:nil success:^(NSString *msg)
+                [APPCLIENT resumeUploadOfFileLocationID:@"12554130-776b-11e3-9ee5-2bc59fa2be56" localFileName:@"movieTrial" chunkSize:[NSString stringWithFormat:@"%d",chunkData.length]  offset:[NSString stringWithFormat:@"%d",offset] chunk:chunkData sessionCookie:nil success:^(NSString *msg)
                  {
 //                     i++;
                      

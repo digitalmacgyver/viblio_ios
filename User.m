@@ -17,6 +17,9 @@
              };
 }
 
+
+
+
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"id: %@, session_cookie: %@", self.userID, self.sessionCookie];

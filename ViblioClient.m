@@ -159,15 +159,12 @@
                                               }
                                           }
                                       }
-                                    
-                                      
-                                      NSLog(@"LOG : User object is - %@",user);
-                                      
+ 
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
                                   }];
-    [op start];   
+    [op start];
 }
 
 

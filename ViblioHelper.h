@@ -11,6 +11,9 @@
 @interface ViblioHelper : NSObject
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
-+(void)displayAlert:(NSString*)titleString :(NSString*)body :(UIViewController*)controller :(NSString*)cancelBtnTitle;
++(void)displayAlertWithTitle:(NSString*)titleString
+                 messageBody:(NSString*)body
+              viewController:(UIViewController*)controller
+              cancelBtnTitle:(NSString*)cancelBtnTitle;
 
 @end

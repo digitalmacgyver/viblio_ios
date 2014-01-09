@@ -7,8 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "User.h"
 
 #define APPCLIENT [ViblioClient sharedClient]
+#define APPAUTH [AuthControllers sharedInstance]
 
 @interface ViblioClient : AFHTTPClient
 
@@ -17,7 +19,13 @@
 - (void)authenticateUserWithEmail : (NSString*)emailID
                          password : (NSString*)password
                              type : (NSString*)loginType
-                           success:(void (^)(NSString *user))success
+                           success:(void (^)(User *user))success
+                           failure:(void(^)(NSError *error))failure;
+
+
+- (void)authenticateUserWithFacebook : (NSString*)accessToken
+                             type : (NSString*)loginType
+                           success:(void (^)(User *user))success
                            failure:(void(^)(NSError *error))failure;
 
 

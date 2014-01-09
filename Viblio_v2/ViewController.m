@@ -119,7 +119,8 @@
          switch ([error code]) {
              case ALAssetsLibraryAccessUserDeniedError:
              case ALAssetsLibraryAccessGloballyDeniedError:
-                 [ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
+                 [ViblioHelper displayAlertWithTitle:@"Access Denied" messageBody:@"Please enable access to Camera Roll" viewController:nil cancelBtnTitle:@"OK"];
+                 //[ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
                  break;
              default:
                  NSLog(@"Reason unknown.");

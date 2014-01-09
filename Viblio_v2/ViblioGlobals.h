@@ -47,6 +47,7 @@
 #define IS_RETINA ([[UIScreen mainScreen] scale] == 2.0f)
 
 #import "AppDelegate.h"
+#import "AuthControllers.h"
 
 //Services
 #import "ViblioClient.h"

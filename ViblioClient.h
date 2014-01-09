@@ -10,6 +10,7 @@
 #import "User.h"
 
 #define APPCLIENT [ViblioClient sharedClient]
+#define APPAUTH [AuthControllers sharedInstance]
 
 @interface ViblioClient : AFHTTPClient
 

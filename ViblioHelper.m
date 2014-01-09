@@ -16,7 +16,10 @@
     return [FBUtility stringBySerializingQueryParameters:queryParameters];
 }
 
-+(void)displayAlert:(NSString*)titleString :(NSString*)body :(UIViewController*)controller :(NSString*)cancelBtnTitle
++(void)displayAlertWithTitle:(NSString*)titleString
+                 messageBody:(NSString*)body
+              viewController:(UIViewController*)controller
+              cancelBtnTitle:(NSString*)cancelBtnTitle
 {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:titleString
                                                     message:body

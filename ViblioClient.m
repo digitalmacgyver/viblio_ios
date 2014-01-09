@@ -136,7 +136,7 @@
                                  };
     
     NSString *path = [NSString stringWithFormat:@"/services/na/authenticate?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
-    NSURLRequest *req = [self requestWithMethod:@"GET" path:path parameters:nil];
+    NSURLRequest *req = [self requestWithMethod:@"POST" path:path parameters:nil];
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
@@ -168,6 +168,47 @@
 }
 
 
+- (void)authenticateUserWithFacebook : (NSString*)accessToken
+                                type : (NSString*)loginType
+                              success:(void (^)(User *user))success
+                              failure:(void(^)(NSError *error))failure
+{
+    NSDictionary *queryParams = @{ @"access_token": accessToken,
+                                   @"realm" : loginType
+                                 };
+    
+    NSString *path = [NSString stringWithFormat:@"/services/na/authenticate?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
+    NSURLRequest *req = [self requestWithMethod:@"POST" path:path parameters:nil];
+    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
+                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                  {
+                                      NSLog(@"LOG : result - %@",JSON);
+                                      NSLog(@"LOG : response - %@", response);
+                                      
+                                      User *user = [[User alloc]init];
+                                      user.userID = [JSON valueForKeyPath:@"user.uuid"];
+                                      
+                                      if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
+                                      {
+                                          NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
+                                          for ( NSString *str in parsedSession )
+                                          {
+                                              if( [str rangeOfString:@"va_session"].location != NSNotFound )
+                                              {
+                                                  NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
+                                                  user.sessionCookie = sessionParsed[1];
+                                                  break;
+                                              }
+                                          }
+                                      }
+                                      
+                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                  {
+                                      failure(error);
+                                  }];
+    [op start];
+}
+
 // To create a new user account
 
 - (void)createNewUserAccountWithEmail : (NSString *)emailID
@@ -192,6 +233,31 @@
                                   {
 //                                      NSString *msg = [JSON valueForKeyPath:@"payload.sys_message"];
 //                                      success(msg);
+                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                  {
+                                      failure(error);
+                                  }];
+    [op start];
+}
+
+
+- (void)createNewUserAccountWithFB : (NSString *)accessToken
+                              type : (NSString*)loginType
+                            success:(void (^)(NSString *user))success
+                            failure:(void(^)(NSError *error))failure
+{
+    NSDictionary *queryParams = @{ @"access_token": accessToken,
+                                   @"realm" : loginType
+                                 };
+    
+    NSString *path = [NSString stringWithFormat:@"/services/na/new_user?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
+    NSURLRequest *req = [self requestWithMethod:@"GET" path:path parameters:nil];
+    
+    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
+                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                  {
+                                      //                                      NSString *msg = [JSON valueForKeyPath:@"payload.sys_message"];
+                                      //                                      success(msg);
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);

@@ -40,6 +40,10 @@
     
 //    [FBSession.activeSession closeAndClearTokenInformation];
 //    [FBSession setActiveSession:nil];
+    
+    [FBSession.activeSession closeAndClearTokenInformation];
+    [FBSession setActiveSession:nil];
+    
     [APPAUTH authorizeToGetInfoAboutMeWithCompleteBlock:^(NSError *err) {
         
         NSLog(@"LOG : Block entered after validation");

@@ -36,8 +36,6 @@
 }
 
 
-
-
 - (NSData *)getDataPartAtOffset:(NSInteger)offset  {
     __block NSData *chunkData = nil;
     if (self.asset){

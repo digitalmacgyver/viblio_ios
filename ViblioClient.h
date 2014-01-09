@@ -23,6 +23,12 @@
                            failure:(void(^)(NSError *error))failure;
 
 
+- (void)authenticateUserWithFacebook : (NSString*)accessToken
+                             type : (NSString*)loginType
+                           success:(void (^)(User *user))success
+                           failure:(void(^)(NSError *error))failure;
+
+
 - (void)createNewUserAccountWithEmail : (NSString *)emailID
                              password : (NSString*)password
                           displayName : (NSString*)displayName

@@ -12,8 +12,6 @@
 	<string>com.cognitiveclouds.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>FacebookAppID</key>
 	<string>543892705706494</string>
-	<key>FacebookDisplayName</key>
-	<string>Viblio</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

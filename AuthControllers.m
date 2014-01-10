@@ -28,7 +28,7 @@
 {
     NSLog(@"LOG : In here");
     
-    NSArray *permissions = @[ @"email", @"user_birthday", @"user_photos", @"user_location", @"user_status", @"user_likes" ];
+    NSArray *permissions = @[ @"email" ];
     
     
     if ([[FBSession activeSession] isOpen])

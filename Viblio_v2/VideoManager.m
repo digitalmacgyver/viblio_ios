@@ -96,7 +96,7 @@
 //             
 //             video.fileURL = [asset.defaultRepresentation.url absoluteString];
 //             video.sync_status = [NSNumber numberWithInt:0];
-//             
+//
 //             NSError *error;
 //             if (![context save:&error]) {
 //                 NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);

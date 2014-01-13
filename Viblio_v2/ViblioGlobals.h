@@ -60,5 +60,6 @@
 
 //Modals
 #import "User.h"
+#import "Info.h"
 
 #endif

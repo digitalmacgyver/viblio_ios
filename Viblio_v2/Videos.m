@@ -14,4 +14,9 @@
 @dynamic fileURL;
 @dynamic sync_status;
 
+-(NSString*)description
+{
+    return [NSString stringWithFormat:@"fileURL - %@, syncStatus - %@", self.fileURL, self.sync_status];
+}
+
 @end

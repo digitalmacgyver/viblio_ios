@@ -28,14 +28,112 @@
 
 -(void)updateDB
 {
+    //[self updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=B431EADC-C4AC-48E2-B256-923F8B292056&ext=MOV" syncStatus:2];
     DLog(@"Log : Performing an update on the DB");
     [VCLIENT loadAssetsFromCameraRoll:^(NSArray *filteredVideoList)
     {
-        NSLog(@"LOG : The video list obtained is - %@",filteredVideoList);
+        DLog(@"Log : The contents of the array is - %@",filteredVideoList);
+        
+        for( ALAsset *asset in filteredVideoList )
+        {
+            if( asset != nil )
+            {
+                NSDate* date = [asset valueForProperty:ALAssetPropertyDate];
+                NSComparisonResult result = [date compare:[self getDateOfLastSync]];
+                switch (result)
+                {
+                    case NSOrderedDescending:
+                    case NSOrderedSame:
+                    {
+                        DLog(@"LOG : New video found... Adding it to the DB");
+                        Videos *video = [NSEntityDescription
+                                         insertNewObjectForEntityForName:@"Videos"
+                                         inManagedObjectContext:[self managedObjectContext]];
+                        
+                        video.fileURL = [asset.defaultRepresentation.url absoluteString];
+                        video.sync_status = [NSNumber numberWithInt:0];
+                        
+                        NSError *error;
+                        if (![[self managedObjectContext] save:&error]) {
+                            DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+                        }
+                        video = nil;
+                        break;
+                    }
+                    default: DLog(@"erorr dates "); break;
+                }
+                date = nil;
+            }
+        }
+        [self updateLastSyncDate];
+        
     }failure:^(NSError *error) {
     }];
 }
 
+-(NSDate*)getDateOfLastSync
+{
+    NSManagedObjectContext *context = self.managedObjectContext;
+    NSError *error;
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Info"
+                                              inManagedObjectContext:context];
+    [fetchRequest setEntity:entity];
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    
+    Info *info = [fetchedObjects firstObject];
+    return info.sync_time;
+}
+
+
+-(void)updateLastSyncDate
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Info" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    DLog(@"Log : The earlier time stamp is - %@", results);
+    
+    if( [results firstObject] )
+    {
+        DLog(@"LOG : Sync happening for the first time -----");
+        
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        [request setEntity:[NSEntityDescription entityForName:@"Info" inManagedObjectContext:self.managedObjectContext]];
+        
+        NSError *error = nil;
+        NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+        DLog(@"LOG : The updated time stamp is - %@",results);
+        
+        Info *info = [results firstObject];
+        [info setValue:[NSDate date] forKey:@"sync_time"];
+        
+        if (![self.managedObjectContext save:&error]) {
+            NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        }
+        
+        request = nil;
+        info = nil;
+        
+    }
+    else
+    {
+        DLog(@"LOg : Sync already has data ------");
+        
+        Info *info = [NSEntityDescription
+                         insertNewObjectForEntityForName:@"Info"
+                         inManagedObjectContext:[self managedObjectContext]];
+        
+        info.sync_time = [NSDate date];
+        NSError *error;
+        if (![[self managedObjectContext] save:&error]) {
+            DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        }
+        info = nil;
+    }
+}
 
 // Getting the count of records in DB
 
@@ -50,6 +148,22 @@
     [fetchRequest setEntity:entity];
     NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
     return fetchedObjects.count;
+}
+
+-(int)getTheCountOfRecordsInDBWithFileURL : (NSString*)fileURL
+{
+    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
+    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", fileURL];
+    [videos setPredicate:predicate];
+    
+    NSError * error = nil;
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
+    videos = nil;
+    
+    return videoList.count;
 }
 
 /*------------------------------------------------------------------------------------------*/
@@ -160,12 +274,12 @@
     
     Videos *video = [results firstObject];
     [video setValue:[NSNumber numberWithInt:status] forKey:@"sync_status"];
-    
-   // video.sync_status = [NSNumber numberWithInt:status];
-    
+
     if (![self.managedObjectContext save:&error]) {
         NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
+    
+    request = nil;
 }
 
 

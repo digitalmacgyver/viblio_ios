@@ -22,6 +22,9 @@
 - (NSURL *)applicationDocumentsDirectory;
 -(void)updateSynStatusOfFile:(NSString*)fileUrl
                  syncStatus : (NSUInteger) status;
-
+-(void)listAllEntitiesinTheDB;
+-(void)deleteOperationOnDB:(NSString*)fileURL;
+-(void)deleteOperationOnDB;
+-(int)getTheCountOfRecordsInDB;
 
 @end

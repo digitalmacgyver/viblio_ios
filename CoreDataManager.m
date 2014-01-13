@@ -24,6 +24,114 @@
     return _sharedClient;
 }
 
+// Getting the count of records in DB
+
+-(int)getTheCountOfRecordsInDB
+{
+    NSManagedObjectContext *context = self.managedObjectContext;
+    NSError *error;
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Videos"
+                                              inManagedObjectContext:context];
+    [fetchRequest setEntity:entity];
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    return fetchedObjects.count;
+}
+
+/*------------------------------------------------------------------------------------------*/
+
+// List all the entities in the DB
+
+-(void)listAllEntitiesinTheDB
+{
+    NSManagedObjectContext *context = self.managedObjectContext;
+    NSError *error;
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Videos"
+                                              inManagedObjectContext:context];
+    [fetchRequest setEntity:entity];
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    for (Videos *info in fetchedObjects) {
+        NSLog(@"LOG : The info object details are - %@", info);
+    }
+}
+
+-(void)listTheDetailsOfObjectWithURL:(NSString*)fileURL
+{
+    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
+    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", fileURL];
+    [videos setPredicate:predicate];
+    
+    NSError * error = nil;
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
+    videos = nil;
+    
+    NSLog(@"LOG : The list obtained is as follows - %@",videoList);
+    //more error handling here
+}
+
+// Delete operation on the DB
+
+// Delete a single file
+
+-(void)deleteOperationOnDB:(NSString*)fileURL
+{
+    NSFetchRequest * allVideos = [[NSFetchRequest alloc] init];
+    [allVideos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [allVideos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError * error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", fileURL];
+    [allVideos setPredicate:predicate];
+    
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:allVideos error:&error];
+    allVideos = nil;
+    
+    if([videoList firstObject])
+        [self.managedObjectContext deleteObject:[videoList firstObject]];
+    
+    //error handling goes here
+//    for (Videos * video in videoList) {
+//        [self.managedObjectContext deleteObject:video];
+//    }
+    NSError *saveError = nil;
+    [self.managedObjectContext save:&saveError];
+    //more error handling here
+}
+
+
+// Delete all the objects of the entity
+
+-(void)deleteOperationOnDB
+{
+    NSFetchRequest * allVideos = [[NSFetchRequest alloc] init];
+    [allVideos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [allVideos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError * error = nil;
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:allVideos error:&error];
+    allVideos = nil;
+    
+    //error handling goes here
+    for (Videos * video in videoList) {
+        [self.managedObjectContext deleteObject:video];
+    }
+
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    //more error handling here
+}
+
+
+
+// Update operation on the DB
+
 -(void)updateSynStatusOfFile:(NSString*)fileUrl
                  syncStatus : (NSUInteger) status
 {

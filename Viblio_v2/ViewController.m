@@ -72,71 +72,36 @@
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyy-MM-dd hh:mm:ss a"];
     
-    NSManagedObjectContext *context = [DBCLIENT managedObjectContext];
-    NSError *error;
-    
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Videos"
-                                              inManagedObjectContext:context];
-    [fetchRequest setEntity:entity];
-    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
-    for (Videos *info in fetchedObjects) {
-        NSLog(@"Name: %@", info.fileURL);
-        NSLog(@"Zip: %@", info.sync_status);
-    }
-    
-    [DBCLIENT updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=DB0BE1A2-5B24-4099-9D42-AB49BE017925&ext=MOV" syncStatus:2];
-    
-//    [self fetchUniqueVideosFromCameraRoll:[df dateFromString: str] success:^(NSArray *filteredVideos)
-//     {
-//         for ( ALAsset *asset in filteredVideos )
-//         {
-//             
-//             NSManagedObjectContext *context = [DBCLIENT managedObjectContext];
-//             Videos *video = [NSEntityDescription
-//                              insertNewObjectForEntityForName:@"Videos"
-//                              inManagedObjectContext:context];
-//             
-//             NSLog(@"LOG : The string is - %@", asset.defaultRepresentation.UTI);
-//             video.fileURL = [asset.defaultRepresentation.url absoluteString];
-//             video.sync_status = [NSNumber numberWithInt:0];
-//             
-//             NSError *error;
-//             if (![context save:&error]) {
-//                 NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-//             }
-//
-//             // Test listing all FailedBankInfos from the store
-////             NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-////             NSEntityDescription *entity = [NSEntityDescription entityForName:@"Videos"
-////                                                       inManagedObjectContext:context];
-////             [fetchRequest setEntity:entity];
-////             NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
-////             for (Videos *info in fetchedObjects) {
-////                 NSLog(@"Name: %@", video.fileURL);
-////                 NSLog(@"Zip: %@", video.sync_status);
-////             }
-//
-//             
-//         }
-////
-////         
-//////         self.asset = (ALAsset*)filteredVideos[filteredVideos.count - 1];
-//////         NSLog(@"LOG : FilteredVideos are - %lld",self.asset.defaultRepresentation.size);
-//////         [self otherServices];
-//     }failure:^(NSError *error)
-//     {
-//         switch ([error code]) {
-//             case ALAssetsLibraryAccessUserDeniedError:
-//             case ALAssetsLibraryAccessGloballyDeniedError:
-//                 [ViblioHelper displayAlertWithTitle:@"Access Denied" messageBody:@"Please enable access to Camera Roll" viewController:nil cancelBtnTitle:@"OK"];
-//                 //[ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
-//                 break;
-//             default:
-//                 NSLog(@"Reason unknown.");
-//                 break;
-//         }
-//     }];
+    [self fetchUniqueVideosFromCameraRoll:[df dateFromString: str] success:^(NSArray *filteredVideos)
+     {
+         for ( ALAsset *asset in filteredVideos )
+         {
+             NSManagedObjectContext *context = [DBCLIENT managedObjectContext];
+             Videos *video = [NSEntityDescription
+                              insertNewObjectForEntityForName:@"Videos"
+                              inManagedObjectContext:context];
+             
+             video.fileURL = [asset.defaultRepresentation.url absoluteString];
+             video.sync_status = [NSNumber numberWithInt:0];
+             
+             NSError *error;
+             if (![context save:&error]) {
+                 NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+             }
+         }
+     }failure:^(NSError *error)
+     {
+         switch ([error code]) {
+             case ALAssetsLibraryAccessUserDeniedError:
+             case ALAssetsLibraryAccessGloballyDeniedError:
+                 [ViblioHelper displayAlertWithTitle:@"Access Denied" messageBody:@"Please enable access to Camera Roll" viewController:nil cancelBtnTitle:@"OK"];
+                 //[ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
+                 break;
+             default:
+                 NSLog(@"Reason unknown.");
+                 break;
+         }
+     }];
     df = nil; str = nil;
 }
 

@@ -28,6 +28,7 @@
 		2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2A63158B187FDF2800D864FC /* Videos.xcdatamodeld */; };
 		2A631590187FE3B900D864FC /* Videos.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A63158F187FE3B900D864FC /* Videos.m */; };
 		2A63159318801BC300D864FC /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A63159218801BC300D864FC /* CoreDataManager.m */; };
+		2A6315961883D69700D864FC /* Videos.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A6315951883D69700D864FC /* Videos.m */; };
 		2A715841187D355B00163201 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A715840187D355B00163201 /* User.m */; };
 		2A715843187D4E7000163201 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715842187D4E7000163201 /* MobileCoreServices.framework */; };
 		2A715845187D4E7900163201 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715844187D4E7900163201 /* Security.framework */; };
@@ -81,6 +82,8 @@
 		2A63158F187FE3B900D864FC /* Videos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Videos.m; sourceTree = "<group>"; };
 		2A63159118801BC300D864FC /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		2A63159218801BC300D864FC /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
+		2A6315941883D69700D864FC /* Videos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Videos.h; sourceTree = "<group>"; };
+		2A6315951883D69700D864FC /* Videos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Videos.m; sourceTree = "<group>"; };
 		2A71583F187D355B00163201 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		2A715840187D355B00163201 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		2A715842187D4E7000163201 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -126,6 +129,8 @@
 			isa = PBXGroup;
 			children = (
 				2A63158B187FDF2800D864FC /* Videos.xcdatamodeld */,
+				2A6315941883D69700D864FC /* Videos.h */,
+				2A6315951883D69700D864FC /* Videos.m */,
 				2A631478187E711700D864FC /* AuthHandlers */,
 				2A71584A187D758700163201 /* ViblioAdditions */,
 				2A71583E187D352C00163201 /* Model */,
@@ -408,6 +413,7 @@
 				2A715841187D355B00163201 /* User.m in Sources */,
 				2A63159318801BC300D864FC /* CoreDataManager.m in Sources */,
 				2A22F423187AAF36002F71F8 /* ViblioClient.m in Sources */,
+				2A6315961883D69700D864FC /* Videos.m in Sources */,
 				2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */,
 				2A22F41F187AAED6002F71F8 /* ViblioHelper.m in Sources */,
 				2A631590187FE3B900D864FC /* Videos.m in Sources */,

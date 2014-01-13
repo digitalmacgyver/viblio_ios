@@ -65,7 +65,6 @@
              cblock(error);
          }];
     }
-    
 }
 
 -(void)fbSessionEsteblish:(NSArray*)permissions :(UIView*)view :(void(^)(NSError* error))success

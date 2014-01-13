@@ -14,6 +14,5 @@
 
 @property (nonatomic, retain) NSString * fileURL;
 @property (nonatomic, retain) NSNumber * sync_status;
-@property (nonatomic, retain) NSString * localName;
 
 @end

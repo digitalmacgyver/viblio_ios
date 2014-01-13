@@ -27,4 +27,6 @@
 -(void)deleteOperationOnDB;
 -(int)getTheCountOfRecordsInDB;
 
+-(void)updateDB;
+
 @end

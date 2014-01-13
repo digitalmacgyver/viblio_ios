@@ -24,6 +24,19 @@
     return _sharedClient;
 }
 
+/* Check for DB Updates */
+
+-(void)updateDB
+{
+    DLog(@"Log : Performing an update on the DB");
+    [VCLIENT loadAssetsFromCameraRoll:^(NSArray *filteredVideoList)
+    {
+        NSLog(@"LOG : The video list obtained is - %@",filteredVideoList);
+    }failure:^(NSError *error) {
+    }];
+}
+
+
 // Getting the count of records in DB
 
 -(int)getTheCountOfRecordsInDB

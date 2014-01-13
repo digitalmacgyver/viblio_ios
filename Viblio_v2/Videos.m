@@ -13,6 +13,5 @@
 
 @dynamic fileURL;
 @dynamic sync_status;
-@dynamic localName;
 
 @end

@@ -72,59 +72,71 @@
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyy-MM-dd hh:mm:ss a"];
     
-    [self fetchUniqueVideosFromCameraRoll:[df dateFromString: str] success:^(NSArray *filteredVideos)
-     {
-         self.asset = (ALAsset*)filteredVideos[filteredVideos.count - 1];
-         NSLog(@"LOG : FilteredVideos are - %lld",self.asset.defaultRepresentation.size);
-         [self otherServices];
-//          [self getOffsetFromTheHeadService];
-//         [self videoFromNSData];
-//         [self startNewFileUpload];
-//
-//         
-//         
-//         int offset = 0; // offset that keep tracks of chunk data
-//         
-//         do {
-//             @autoreleasepool {
-//                 NSData *chunkData = [self getDataPartAtOffset:offset];;
-//                 
-//                 if (!chunkData || ![chunkData length]) { // finished reading data
-//                     break;
-//                 }
-//                 
-//                 // do your stuff here
-//                 [APPCLIENT resumeUploadOfFileLocationID:@"348b8770-73ae-11e3-a38c-65b033b76087" localFileName:@"movieTrial" chunkSize:[NSString stringWithFormat:@"%d",((NSData*)self.chunks[i]).length]  offset:@"0" chunk:self.chunks[i] sessionCookie:nil success:^(NSString *msg)
-//                  {
-//                      i++;
-//                      
-//                      if ( i < self.chunks.count )
-//                      {
-//                          [self videoFromNSData];
-//                      }
-//                      
-//                  }failure:^(NSError *error)
-//                  {
-//                      
-//                  }];
-//                 
-//                 offset +=[chunkData length];
+    NSManagedObjectContext *context = [DBCLIENT managedObjectContext];
+    NSError *error;
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Videos"
+                                              inManagedObjectContext:context];
+    [fetchRequest setEntity:entity];
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    for (Videos *info in fetchedObjects) {
+        NSLog(@"Name: %@", info.fileURL);
+        NSLog(@"Zip: %@", info.sync_status);
+    }
+    
+    [DBCLIENT updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=DB0BE1A2-5B24-4099-9D42-AB49BE017925&ext=MOV" syncStatus:2];
+    
+//    [self fetchUniqueVideosFromCameraRoll:[df dateFromString: str] success:^(NSArray *filteredVideos)
+//     {
+//         for ( ALAsset *asset in filteredVideos )
+//         {
+//             
+//             NSManagedObjectContext *context = [DBCLIENT managedObjectContext];
+//             Videos *video = [NSEntityDescription
+//                              insertNewObjectForEntityForName:@"Videos"
+//                              inManagedObjectContext:context];
+//             
+//             NSLog(@"LOG : The string is - %@", asset.defaultRepresentation.UTI);
+//             video.fileURL = [asset.defaultRepresentation.url absoluteString];
+//             video.sync_status = [NSNumber numberWithInt:0];
+//             
+//             NSError *error;
+//             if (![context save:&error]) {
+//                 NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
 //             }
-//         } while (1);
-         
-     }failure:^(NSError *error)
-     {
-         switch ([error code]) {
-             case ALAssetsLibraryAccessUserDeniedError:
-             case ALAssetsLibraryAccessGloballyDeniedError:
-                 [ViblioHelper displayAlertWithTitle:@"Access Denied" messageBody:@"Please enable access to Camera Roll" viewController:nil cancelBtnTitle:@"OK"];
-                 //[ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
-                 break;
-             default:
-                 NSLog(@"Reason unknown.");
-                 break;
-         }
-     }];
+//
+//             // Test listing all FailedBankInfos from the store
+////             NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+////             NSEntityDescription *entity = [NSEntityDescription entityForName:@"Videos"
+////                                                       inManagedObjectContext:context];
+////             [fetchRequest setEntity:entity];
+////             NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+////             for (Videos *info in fetchedObjects) {
+////                 NSLog(@"Name: %@", video.fileURL);
+////                 NSLog(@"Zip: %@", video.sync_status);
+////             }
+//
+//             
+//         }
+////
+////         
+//////         self.asset = (ALAsset*)filteredVideos[filteredVideos.count - 1];
+//////         NSLog(@"LOG : FilteredVideos are - %lld",self.asset.defaultRepresentation.size);
+//////         [self otherServices];
+//     }failure:^(NSError *error)
+//     {
+//         switch ([error code]) {
+//             case ALAssetsLibraryAccessUserDeniedError:
+//             case ALAssetsLibraryAccessGloballyDeniedError:
+//                 [ViblioHelper displayAlertWithTitle:@"Access Denied" messageBody:@"Please enable access to Camera Roll" viewController:nil cancelBtnTitle:@"OK"];
+//                 //[ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
+//                 break;
+//             default:
+//                 NSLog(@"Reason unknown.");
+//                 break;
+//         }
+//     }];
     df = nil; str = nil;
 }
 
@@ -207,102 +219,6 @@
                     offset +=[chunkData length];
              }
             }
-            
-
-//    } while (1);
-    
-    
-    
-    
-    
-    
-    
-//    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(NSString *msg)
-//     {
-//         
-//     }failure:^(NSError *error)
-//     {
-//         
-//     }];
-    //
-    //    /* Hard coded values -- "FD5C4166-67AC-11E3-B0E6-7B6FF9A9DC35" UUID */
-    //
-    //
-    //    [APPCLIENT getUserSessionDetails:^(NSString *user)
-    //     {
-    //
-    //     }failure:^(NSError *error)
-    //    {
-    //
-    //    }];
-    
-//        ALAssetRepresentation *rep = [self.asset defaultRepresentation];
-//    
-//        NSLog(@"LOG : The asset details are - %@",self.asset);
-//        [APPCLIENT startUploadingFileForUserId:@"FD5C4166-67AC-11E3-B0E6-7B6FF9A9DC35" fileLocalPath:self.asset.defaultRepresentation.url.absoluteString fileSize:[NSString stringWithFormat:@"%lld",rep.size] success:^(NSString *msg)
-//        {
-//    
-//        }failure:^(NSError *error)
-//        {
-//            NSLog(@"LOG : The error is - %@",error);
-//        }];
-    
-    
-    
-//        [APPCLIENT resumeUploadOfFileLocationID:@"348b8770-73ae-11e3-a38c-65b033b76087" localFileName:@"movieTrial" chunkSize:[NSString stringWithFormat:@"%d",((NSData*)self.chunks[i]).length]  offset:@"0" chunk:self.chunks[i] sessionCookie:nil success:^(NSString *msg)
-//        {
-//            i++;
-//    
-//            if ( i < self.chunks.count )
-//            {
-//                [self videoFromNSData];
-//            }
-//    
-//        }failure:^(NSError *error)
-//        {
-//    
-//        }];
-    
-    
-//        [APPCLIENT getOffsetOfTheFileAtLocationID:@"cc79c800-76b8-11e3-9ee5-2bc59fa2be56" sessionCookie:nil success:^(NSString *msg)
-//         {
-//    
-//         }failure:^(NSError *error)
-//         {
-//             NSLog(@"LOG : %@", error);
-//         }];
-    
-    
-    //        //get the documents directory:
-    //        NSArray *paths = NSSearchPathForDirectoriesInDomains
-    //        (NSDocumentDirectory, NSUserDomainMask, YES);
-    //        NSString *documentsDirectory = [paths objectAtIndex:0];
-    //
-    //        //make a file name to write the data to using the documents directory:
-    //        NSString *fileName = [NSString stringWithFormat:@"%@/trial.mp4",
-    //                              documentsDirectory];
-    //
-    //    NSLog(@"LOG : The file path is - %@",fileName);
-    //    NSMutableData *fileData = [[NSData data]mutableCopy];
-    //
-    //    for( int i=0; i<self.chunks.count; i++ )
-    //        {
-    //            NSLog(@"LOG : Appending data chunks - %@",self.chunks[i]);
-    //            [fileData appendData:self.chunks[i]];
-    //        }
-    //
-    //        //save content to the documents directory
-    //        [fileData writeToFile:fileName
-    //                  atomically:NO];
-    //
-    //
-    ////    NSData *mediaData; //your data
-    ////    NSString *movePath=[[NSBundle mainBundle] pathForResource:@"myMove" ofType:@"mp4"];
-    ////    [mediaData writeToFile:movePath atomically:YES];
-    //    NSURL *moveUrl= [NSURL fileURLWithPath:fileName];
-    //    MPMoviePlayerController *movePlayer=[[MPMoviePlayerController alloc]init];
-    //    [movePlayer setContentURL:moveUrl];
-    //    [movePlayer play];
 }
 
 -(void)fetchUniqueVideosFromCameraRoll:(NSDate*)syncDate
@@ -323,6 +239,7 @@
             switch (result)
             {
                 case NSOrderedDescending:
+                case NSOrderedAscending :
                 case NSOrderedSame: [filteredUniqueVideos addObject:asset]; break;
                 default: NSLog(@"erorr dates "); break;
             }

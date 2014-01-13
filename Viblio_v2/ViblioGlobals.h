@@ -45,6 +45,7 @@
 #define IS_IPHONE_5 (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 568.0f)
 #define IS_IPHONE_4 (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 480.0f)
 #define IS_RETINA ([[UIScreen mainScreen] scale] == 2.0f)
+#define AppDlegate (AppDelegate*)[[UIApplication sharedApplication]delegate]
 
 #import "AppDelegate.h"
 #import "AuthControllers.h"
@@ -54,6 +55,7 @@
 
 //Utilities
 #import "ViblioHelper.h"
+#import "CoreDataManager.h"
 
 //Modals
 #import "User.h"

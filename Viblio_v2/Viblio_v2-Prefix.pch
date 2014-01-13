@@ -17,4 +17,5 @@
     #import <MobileCoreServices/MobileCoreServices.h>
     #import <RestKit/RestKit.h>
     #import "ViblioGlobals.h"
+    #import "AppDelegate.h"
 #endif

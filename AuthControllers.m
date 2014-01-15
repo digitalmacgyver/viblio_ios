@@ -24,6 +24,10 @@
     return _sharedInstance;
 }
 
+#pragma fb authentication functions
+
+/*-------------------------------------------- FB Auth functions ---------------------------------------------------------------------------*/
+
 - (void)authorizeToGetInfoAboutMeWithCompleteBlock:(void(^)(NSError*))cblock inView:(UIView *)view
 {
     NSLog(@"LOG : In here");
@@ -94,5 +98,10 @@
                                       }
                                   }];
 }
+
+/*------------------------------------------------------------- Email Auth Functions -------------------------------------------------------------*/
+
+
+
 
 @end

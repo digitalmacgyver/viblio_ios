@@ -7,6 +7,7 @@
 //
 
 #import "CoreDataManager.h"
+#define BLOCK_REQ_SIZE 3
 
 @implementation CoreDataManager
 
@@ -27,36 +28,91 @@
 
 /* Function to return the list of videos that are to be uploaded */
 
-//-(NSArray*)fetchVideoListToBeUploaded
-//{
-//    /* We check whether there are any files for which the upload has already been started. We take such files for uploading on priority. If no
-//       such files are found we do take up newer files for uploading. Older files are given priority over the newer files meaning, older files will
-//       be synced first on priority. Blocks of 3 files will be taken for upload which means we will be making upload request for 3 files together */
-//    
-//    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
-//    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
-//    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
-//    
-//    
-//    // Sync_Status of 1 indicates that the file has already been considered for uploading
-//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"sync_status == %d", 1];
-//    [videos setPredicate:predicate];
-//    
-//    
-//    // Only sort by name if the destination entity actually has a "name" field
-//    if ([[[[videos entity] propertiesByName] allKeys] containsObject:@"sync_time"]) {
-//        NSSortDescriptor *sortByName = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
-////        [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sortByName]];
-////        [sortByName release];
-//    }
-//    
-//    NSError * error = nil;
-//    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
-//    videos = nil;
-//    
-//    NSLog(@"LOG : The list obtained is as follows - %@",videoList);
-//    
-//}
+-(NSArray*)fetchVideoListToBeUploaded
+{
+    /* We check whether there are any files for which the upload has already been started. We take such files for uploading on priority. If no
+       such files are found we do take up newer files for uploading. Older files are given priority over the newer files meaning, older files will
+       be synced first on priority. Blocks of 3 files will be taken for upload which means we will be making upload request for 3 files together */
+    
+    NSMutableArray *filteredDBSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:0];
+    
+    if( filteredDBSet != nil && filteredDBSet.count == BLOCK_REQ_SIZE )
+        return filteredDBSet;
+    else
+    {
+        // If sufficient videos are not found then next priority is given for syncing and failed videos
+        
+        DLog(@"LOG : Querying DB for sync initialised failed videos to fill up the Block size");
+        
+        NSMutableArray *failedSyncingSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:1];
+        if( failedSyncingSet != nil && failedSyncingSet.count > 0 )
+        {
+            for( Videos *video in failedSyncingSet )
+            {
+                if( filteredDBSet.count < BLOCK_REQ_SIZE )
+                    [filteredDBSet addObject:video];
+                else
+                    break;
+            }
+        }
+        [failedSyncingSet removeAllObjects];
+        failedSyncingSet = nil;
+        
+        
+        /*------------------------------------------------------------------------------------------------*/
+        
+        // If sufficient videos are not found then next priority is given for non sync initialized videos
+        
+        if( filteredDBSet.count < BLOCK_REQ_SIZE )
+        {
+            DLog(@"LOG : Querying DB for non sync initialised videos to fill up the Block size");
+            
+            NSMutableArray *filteredNewSet = [self getFilteredDBEntriesBasedOnSyncStatus:0 andHasFailed:0];
+            if( filteredNewSet != nil && filteredNewSet.count > 0 )
+            {
+                for( Videos *video in filteredNewSet )
+                {
+                    if( filteredDBSet.count < BLOCK_REQ_SIZE )
+                        [filteredDBSet addObject:video];
+                    else
+                        break;
+                }
+            }
+            [filteredNewSet removeAllObjects];
+            filteredNewSet = nil;
+        }
+    }
+    return filteredDBSet;
+}
+
+
+/* Function returning the filtered DB entries based on failure, sync in progress and not initiated sync */
+
+-(NSMutableArray*)getFilteredDBEntriesBasedOnSyncStatus : (NSUInteger)sync_status andHasFailed : (NSUInteger)hasFailed
+{
+    NSFetchRequest * videosResultSet = [[NSFetchRequest alloc] init];
+    [videosResultSet setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [videosResultSet setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    // Setting the limit of the query
+    videosResultSet.fetchLimit = BLOCK_REQ_SIZE;
+    
+    // Sync_Status of 1 indicates that the file has already been considered for uploading
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"sync_status == %d AND hasFailed = %d", sync_status, hasFailed];
+    [videosResultSet setPredicate:predicate];
+    
+    // Only sort by name if the destination entity actually has a "name" field
+    if ([[[[videosResultSet entity] propertiesByName] allKeys] containsObject:@"sync_time"]) {
+        NSSortDescriptor *sortByTime = [[NSSortDescriptor alloc] initWithKey:@"sync_time" ascending:YES];
+        [videosResultSet setSortDescriptors:[NSArray arrayWithObject:sortByTime]];
+        sortByTime = nil;
+    }
+    
+    NSError * error = nil;
+    NSMutableArray * videoList = [[self.managedObjectContext executeFetchRequest:videosResultSet error:&error] mutableCopy];
+    videosResultSet = nil;
+    return videoList;
+}
 
 
 /* Check for DB Updates */
@@ -217,7 +273,7 @@
     [fetchRequest setEntity:entity];
     NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
     for (Videos *info in fetchedObjects) {
-        NSLog(@"LOG : The info object details are - %@", info);
+        DLog(@"LOG : %@", info);
     }
 }
 

@@ -83,39 +83,6 @@
         self.assetsLibrary = [[ALAssetsLibrary alloc] init];
     
     [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:listGroupBlock failureBlock:failureBlock];
-
-    
-//    [self fetchVideosFromCameraRoll:[df dateFromString: str] success:^(NSArray *filteredVideos)
-//     {
-//         for ( ALAsset *asset in filteredVideos )
-//         {
-//             NSManagedObjectContext *context = [DBCLIENT managedObjectContext];
-//             Videos *video = [NSEntityDescription
-//                              insertNewObjectForEntityForName:@"Videos"
-//                              inManagedObjectContext:context];
-//             
-//             video.fileURL = [asset.defaultRepresentation.url absoluteString];
-//             video.sync_status = [NSNumber numberWithInt:0];
-//
-//             NSError *error;
-//             if (![context save:&error]) {
-//                 NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-//             }
-//         }
-//     }failure:^(NSError *error)
-//     {
-//         switch ([error code]) {
-//             case ALAssetsLibraryAccessUserDeniedError:
-//             case ALAssetsLibraryAccessGloballyDeniedError:
-//                 [ViblioHelper displayAlertWithTitle:@"Access Denied" messageBody:@"Please enable access to Camera Roll" viewController:nil cancelBtnTitle:@"OK"];
-//                 //[ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
-//                 break;
-//             default:
-//                 NSLog(@"Reason unknown.");
-//                 break;
-//         }
-//     }];
-//    df = nil; str = nil;
 }
 
 -(void)otherServices

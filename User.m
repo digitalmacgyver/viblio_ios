@@ -17,10 +17,9 @@
              };
 }
 
-
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"id: %@, session_cookie: %@", self.userID, self.sessionCookie];
+    return [NSString stringWithFormat:@"id: %@, session_cookie: %@, email : %@, isfbuser : %d", self.userID, self.sessionCookie, self.emailId, self.isFBUser];
 }
 
 @end

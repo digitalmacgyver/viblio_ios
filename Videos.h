@@ -15,5 +15,6 @@
 @property (nonatomic, retain) NSString * fileURL;
 @property (nonatomic, retain) NSNumber * sync_status;
 @property (nonatomic, retain) NSNumber * sync_time;
+@property (nonatomic, retain) NSNumber * hasFailed;
 
 @end

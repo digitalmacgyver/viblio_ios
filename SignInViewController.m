@@ -36,6 +36,29 @@
 }
 
 
+- (IBAction)LoginClick:(id)sender {
+}
+
+- (IBAction)FBAccountClick:(id)sender {
+}
+
+- (IBAction)EmailAccountClick:(id)sender {
+}
+
+- (IBAction)EmailLogin:(id)sender {
+    
+//    DLog(@"User Login through email authentication");
+//    [APPCLIENT authenticateUserWithEmail:self.email.text password:self.password.text type:@"db" success:^(User *user)
+//    {
+//        DLog(@"LOG : User session created successfully ---");
+//        DLog(@"LOg : The user details obtained are as follows - %@",user);
+//        
+//    }failure:^(NSError *error)
+//    {
+//        
+//    }];
+}
+
 - (IBAction)FBLogin:(id)sender {
     
 //    [FBSession.activeSession closeAndClearTokenInformation];

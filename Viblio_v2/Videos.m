@@ -2,7 +2,7 @@
 //  Videos.m
 //  Viblio_v2
 //
-//  Created by Dunty Vinay Raj on 1/13/14.
+//  Created by Dunty Vinay Raj on 1/15/14.
 //  Copyright (c) 2014 Dunty Vinay Raj. All rights reserved.
 //
 
@@ -13,10 +13,11 @@
 
 @dynamic fileURL;
 @dynamic sync_status;
+@dynamic sync_time;
 
--(NSString*)description
+- (NSString *)description
 {
-    return [NSString stringWithFormat:@"fileURL - %@, syncStatus - %@", self.fileURL, self.sync_status];
+    return [NSString stringWithFormat:@"fileURL: %@, sync_status : %@, sync_time : %@", self.fileURL, self.sync_status, self.sync_time];
 }
 
 @end

@@ -24,6 +24,41 @@
     return _sharedClient;
 }
 
+
+/* Function to return the list of videos that are to be uploaded */
+
+//-(NSArray*)fetchVideoListToBeUploaded
+//{
+//    /* We check whether there are any files for which the upload has already been started. We take such files for uploading on priority. If no
+//       such files are found we do take up newer files for uploading. Older files are given priority over the newer files meaning, older files will
+//       be synced first on priority. Blocks of 3 files will be taken for upload which means we will be making upload request for 3 files together */
+//    
+//    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
+//    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+//    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+//    
+//    
+//    // Sync_Status of 1 indicates that the file has already been considered for uploading
+//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"sync_status == %d", 1];
+//    [videos setPredicate:predicate];
+//    
+//    
+//    // Only sort by name if the destination entity actually has a "name" field
+//    if ([[[[videos entity] propertiesByName] allKeys] containsObject:@"sync_time"]) {
+//        NSSortDescriptor *sortByName = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+////        [fetchRequest setSortDescriptors:[NSArray arrayWithObject:sortByName]];
+////        [sortByName release];
+//    }
+//    
+//    NSError * error = nil;
+//    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
+//    videos = nil;
+//    
+//    NSLog(@"LOG : The list obtained is as follows - %@",videoList);
+//    
+//}
+
+
 /* Check for DB Updates */
 
 -(void)updateDB
@@ -32,8 +67,7 @@
     DLog(@"Log : Performing an update on the DB");
     [VCLIENT loadAssetsFromCameraRoll:^(NSArray *filteredVideoList)
     {
-        DLog(@"Log : The contents of the array is - %@",filteredVideoList);
-        
+        VCLIENT.filteredVideoList = [filteredVideoList mutableCopy];
         for( ALAsset *asset in filteredVideoList )
         {
             if( asset != nil )
@@ -52,6 +86,7 @@
                         
                         video.fileURL = [asset.defaultRepresentation.url absoluteString];
                         video.sync_status = [NSNumber numberWithInt:0];
+                        video.sync_time = @([date timeIntervalSince1970]);
                         
                         NSError *error;
                         if (![[self managedObjectContext] save:&error]) {
@@ -60,6 +95,8 @@
                         video = nil;
                         break;
                     }
+                    case NSOrderedAscending:
+                        break;
                     default: DLog(@"erorr dates "); break;
                 }
                 date = nil;
@@ -83,7 +120,7 @@
     NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
     
     Info *info = [fetchedObjects firstObject];
-    return info.sync_time;
+    return [NSDate dateWithTimeIntervalSince1970:[info.sync_time floatValue]];
 }
 
 
@@ -98,17 +135,16 @@
     
     if( [results firstObject] )
     {
-        DLog(@"LOG : Sync happening for the first time -----");
+        DLog(@"LOg : Sync already has data ------");
         
         NSFetchRequest *request = [[NSFetchRequest alloc] init];
         [request setEntity:[NSEntityDescription entityForName:@"Info" inManagedObjectContext:self.managedObjectContext]];
         
         NSError *error = nil;
         NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-        DLog(@"LOG : The updated time stamp is - %@",results);
         
         Info *info = [results firstObject];
-        [info setValue:[NSDate date] forKey:@"sync_time"];
+        [info setValue:[NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970]] forKey:@"sync_time"];
         
         if (![self.managedObjectContext save:&error]) {
             NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
@@ -120,13 +156,13 @@
     }
     else
     {
-        DLog(@"LOg : Sync already has data ------");
+        DLog(@"LOG : Sync happening for the first time -----");
         
         Info *info = [NSEntityDescription
                          insertNewObjectForEntityForName:@"Info"
                          inManagedObjectContext:[self managedObjectContext]];
         
-        info.sync_time = [NSDate date];
+        info.sync_time = [NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970]];
         NSError *error;
         if (![[self managedObjectContext] save:&error]) {
             DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
@@ -336,8 +372,6 @@
     if (__persistentStoreCoordinator != nil) {
         return __persistentStoreCoordinator;
     }
-    
-    NSLog(@"LOG : The app URL is - %@",[self applicationDocumentsDirectory]);
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Videos.sqlite"];
     
     NSError *error = nil;

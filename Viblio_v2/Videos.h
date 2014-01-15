@@ -2,7 +2,7 @@
 //  Videos.h
 //  Viblio_v2
 //
-//  Created by Dunty Vinay Raj on 1/13/14.
+//  Created by Dunty Vinay Raj on 1/15/14.
 //  Copyright (c) 2014 Dunty Vinay Raj. All rights reserved.
 //
 
@@ -14,5 +14,6 @@
 
 @property (nonatomic, retain) NSString * fileURL;
 @property (nonatomic, retain) NSNumber * sync_status;
+@property (nonatomic, retain) NSNumber * sync_time;
 
 @end

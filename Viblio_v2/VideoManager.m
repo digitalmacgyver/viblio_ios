@@ -55,7 +55,7 @@
 }
 
 
--(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success
+-(void)loadAssetsFromCameraRoll:(void (^)(NSArray *assetList))success
                         failure:(void (^)(NSError *error))failure
 {
 

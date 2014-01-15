@@ -11,6 +11,7 @@
 @interface ViblioHelper : NSObject
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
+
 +(void)displayAlertWithTitle:(NSString*)titleString
                  messageBody:(NSString*)body
               viewController:(UIViewController*)controller

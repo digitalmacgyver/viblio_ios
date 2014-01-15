@@ -30,4 +30,12 @@
     alert = nil;
 }
 
+-(void)clearSessionVariables
+{
+    // Assets will be loaded on subsequent logins again
+    
+    [VCLIENT.filteredVideoList  removeAllObjects];
+    VCLIENT.filteredVideoList = nil;
+}
+
 @end

@@ -2,7 +2,7 @@
 //  Info.h
 //  Viblio_v2
 //
-//  Created by Dunty Vinay Raj on 1/13/14.
+//  Created by Dunty Vinay Raj on 1/15/14.
 //  Copyright (c) 2014 Dunty Vinay Raj. All rights reserved.
 //
 
@@ -12,7 +12,6 @@
 
 @interface Info : NSManagedObject
 
-@property (nonatomic, retain) NSDate * sync_time;
-@property (nonatomic, retain) NSNumber * gmt;
+@property (nonatomic, retain) NSString * sync_time;
 
 @end

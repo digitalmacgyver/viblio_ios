@@ -2,7 +2,7 @@
 //  Info.m
 //  Viblio_v2
 //
-//  Created by Dunty Vinay Raj on 1/13/14.
+//  Created by Dunty Vinay Raj on 1/15/14.
 //  Copyright (c) 2014 Dunty Vinay Raj. All rights reserved.
 //
 
@@ -12,6 +12,5 @@
 @implementation Info
 
 @dynamic sync_time;
-@dynamic gmt;
 
 @end

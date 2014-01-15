@@ -61,5 +61,6 @@
 //Modals
 #import "User.h"
 #import "Info.h"
+#import "Videos.h"
 
 #endif

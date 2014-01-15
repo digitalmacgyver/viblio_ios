@@ -28,8 +28,6 @@
 		2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2A63158B187FDF2800D864FC /* Videos.xcdatamodeld */; };
 		2A63159318801BC300D864FC /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A63159218801BC300D864FC /* CoreDataManager.m */; };
 		2A63159B1883F88D00D864FC /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A63159A1883F88D00D864FC /* AssetsLibrary.framework */; };
-		2A63159E1884023800D864FC /* Videos.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A63159D1884023800D864FC /* Videos.m */; };
-		2A6315A118843E7300D864FC /* Info.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A6315A018843E7300D864FC /* Info.m */; };
 		2A6315A4188444BF00D864FC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A6315A3188444BF00D864FC /* ViewController.m */; };
 		2A715841187D355B00163201 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A715840187D355B00163201 /* User.m */; };
 		2A715843187D4E7000163201 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715842187D4E7000163201 /* MobileCoreServices.framework */; };
@@ -37,6 +35,8 @@
 		2A715847187D4E8300163201 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715846187D4E8300163201 /* CFNetwork.framework */; };
 		2A715849187D4E9100163201 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715848187D4E9100163201 /* SystemConfiguration.framework */; };
 		2A71584D187D75A400163201 /* NSString+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A71584C187D75A400163201 /* NSString+Additions.m */; };
+		2AD637D11886566A00012A86 /* Info.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637D01886566A00012A86 /* Info.m */; };
+		2AD637DA188673C700012A86 /* Videos.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637D9188673C700012A86 /* Videos.m */; };
 		4F469F010F6742979F21F117 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9B1AD470C747F8B704F802 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -83,10 +83,6 @@
 		2A63159118801BC300D864FC /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		2A63159218801BC300D864FC /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
 		2A63159A1883F88D00D864FC /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
-		2A63159C1884023800D864FC /* Videos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Videos.h; path = Viblio_v2/Videos.h; sourceTree = "<group>"; };
-		2A63159D1884023800D864FC /* Videos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Videos.m; path = Viblio_v2/Videos.m; sourceTree = "<group>"; };
-		2A63159F18843E7300D864FC /* Info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Info.h; sourceTree = "<group>"; };
-		2A6315A018843E7300D864FC /* Info.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Info.m; sourceTree = "<group>"; };
 		2A6315A2188444BF00D864FC /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		2A6315A3188444BF00D864FC /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2A71583F187D355B00163201 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
@@ -97,6 +93,10 @@
 		2A715848187D4E9100163201 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2A71584B187D75A400163201 /* NSString+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Additions.h"; sourceTree = "<group>"; };
 		2A71584C187D75A400163201 /* NSString+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Additions.m"; sourceTree = "<group>"; };
+		2AD637CF1886566A00012A86 /* Info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Info.h; path = Viblio_v2/Info.h; sourceTree = "<group>"; };
+		2AD637D01886566A00012A86 /* Info.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Info.m; path = Viblio_v2/Info.m; sourceTree = "<group>"; };
+		2AD637D8188673C700012A86 /* Videos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Videos.h; path = Viblio_v2/Videos.h; sourceTree = "<group>"; };
+		2AD637D9188673C700012A86 /* Videos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Videos.m; path = Viblio_v2/Videos.m; sourceTree = "<group>"; };
 		4C9B1AD470C747F8B704F802 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		519C6E49E6BB4DD89001E212 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -263,12 +263,12 @@
 		2A71583E187D352C00163201 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				2A63159F18843E7300D864FC /* Info.h */,
-				2A6315A018843E7300D864FC /* Info.m */,
-				2A63159C1884023800D864FC /* Videos.h */,
-				2A63159D1884023800D864FC /* Videos.m */,
 				2A71583F187D355B00163201 /* User.h */,
 				2A715840187D355B00163201 /* User.m */,
+				2AD637CF1886566A00012A86 /* Info.h */,
+				2AD637D01886566A00012A86 /* Info.m */,
+				2AD637D8188673C700012A86 /* Videos.h */,
+				2AD637D9188673C700012A86 /* Videos.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -415,7 +415,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A6315A4188444BF00D864FC /* ViewController.m in Sources */,
-				2A6315A118843E7300D864FC /* Info.m in Sources */,
 				2A63147B187E712E00D864FC /* AuthControllers.m in Sources */,
 				2A631476187E701600D864FC /* SignInViewController.m in Sources */,
 				2A71584D187D75A400163201 /* NSString+Additions.m in Sources */,
@@ -424,7 +423,8 @@
 				2A715841187D355B00163201 /* User.m in Sources */,
 				2A63159318801BC300D864FC /* CoreDataManager.m in Sources */,
 				2A22F423187AAF36002F71F8 /* ViblioClient.m in Sources */,
-				2A63159E1884023800D864FC /* Videos.m in Sources */,
+				2AD637DA188673C700012A86 /* Videos.m in Sources */,
+				2AD637D11886566A00012A86 /* Info.m in Sources */,
 				2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */,
 				2A22F41F187AAED6002F71F8 /* ViblioHelper.m in Sources */,
 				2A22F3EF187AAD8E002F71F8 /* main.m in Sources */,

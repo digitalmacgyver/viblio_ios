@@ -49,6 +49,9 @@
 		85DCB505188859740068E738 /* ECSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB501188859740068E738 /* ECSlidingViewController.m */; };
 		85DCB506188859740068E738 /* UIImage+ImageWithUIView.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB503188859740068E738 /* UIImage+ImageWithUIView.m */; };
 		85DCB507188859740068E738 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 85DCB504188859740068E738 /* README.md */; };
+		85DCB50A188861BC0068E738 /* DashBoardNavController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB509188861BC0068E738 /* DashBoardNavController.m */; };
+		85DCB50D1888646C0068E738 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB50C1888646C0068E738 /* HomeViewController.m */; };
+		85DCB510188865F60068E738 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB50F188865F60068E738 /* MenuViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,6 +134,12 @@
 		85DCB502188859740068E738 /* UIImage+ImageWithUIView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageWithUIView.h"; sourceTree = "<group>"; };
 		85DCB503188859740068E738 /* UIImage+ImageWithUIView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageWithUIView.m"; sourceTree = "<group>"; };
 		85DCB504188859740068E738 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		85DCB508188861BC0068E738 /* DashBoardNavController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DashBoardNavController.h; sourceTree = "<group>"; };
+		85DCB509188861BC0068E738 /* DashBoardNavController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DashBoardNavController.m; sourceTree = "<group>"; };
+		85DCB50B1888646C0068E738 /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
+		85DCB50C1888646C0068E738 /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		85DCB50E188865F60068E738 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
+		85DCB50F188865F60068E738 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -284,6 +293,8 @@
 				2A6315A3188444BF00D864FC /* ViewController.m */,
 				2AD637E71886A49900012A86 /* LandingViewController.h */,
 				2AD637E81886A49900012A86 /* LandingViewController.m */,
+				85DCB50E188865F60068E738 /* MenuViewController.h */,
+				85DCB50F188865F60068E738 /* MenuViewController.m */,
 			);
 			name = Controllers;
 			path = ..;
@@ -407,6 +418,10 @@
 		85DCB4F918882ACF0068E738 /* DashBoardControllers */ = {
 			isa = PBXGroup;
 			children = (
+				85DCB508188861BC0068E738 /* DashBoardNavController.h */,
+				85DCB509188861BC0068E738 /* DashBoardNavController.m */,
+				85DCB50B1888646C0068E738 /* HomeViewController.h */,
+				85DCB50C1888646C0068E738 /* HomeViewController.m */,
 			);
 			name = DashBoardControllers;
 			sourceTree = "<group>";
@@ -591,6 +606,7 @@
 				2A6315A4188444BF00D864FC /* ViewController.m in Sources */,
 				2AD637E91886A49900012A86 /* LandingViewController.m in Sources */,
 				2A63147B187E712E00D864FC /* AuthControllers.m in Sources */,
+				85DCB50D1888646C0068E738 /* HomeViewController.m in Sources */,
 				2A631476187E701600D864FC /* SignInViewController.m in Sources */,
 				2AD637F21886BC5400012A86 /* SignUpViewController.m in Sources */,
 				2A71584D187D75A400163201 /* NSString+Additions.m in Sources */,
@@ -600,9 +616,11 @@
 				2AD638001886CFF400012A86 /* UITextField+Additions.m in Sources */,
 				2AD637EF1886B81B00012A86 /* LoginViewController.m in Sources */,
 				85DCB506188859740068E738 /* UIImage+ImageWithUIView.m in Sources */,
+				85DCB50A188861BC0068E738 /* DashBoardNavController.m in Sources */,
 				2A63159318801BC300D864FC /* CoreDataManager.m in Sources */,
 				85DCB4EF1887F5F60068E738 /* TutSecondViewController.m in Sources */,
 				85DCB505188859740068E738 /* ECSlidingViewController.m in Sources */,
+				85DCB510188865F60068E738 /* MenuViewController.m in Sources */,
 				2A22F423187AAF36002F71F8 /* ViblioClient.m in Sources */,
 				2AD637E618868AE800012A86 /* Videos.m in Sources */,
 				85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */,
@@ -663,7 +681,7 @@
 		2A22F412187AAD8E002F71F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -704,7 +722,7 @@
 		2A22F413187AAD8E002F71F8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";

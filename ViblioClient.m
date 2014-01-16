@@ -426,10 +426,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 	});
     
     self.uploadTask = nil;
-    }];
-    
-    
-    [op start];
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {

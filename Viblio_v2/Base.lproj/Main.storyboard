@@ -611,9 +611,6 @@
     </scenes>
     <resources>
         <image name="back.jpeg" width="50" height="45"/>
-        <image name="back.jpeg" width="50" height="45"/>
-        <image name="back.jpeg" width="50" height="45"/>
-        <image name="back.jpeg" width="50" height="45"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

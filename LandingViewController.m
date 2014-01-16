@@ -31,12 +31,12 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    [self performSelector:@selector(navigateToSignIn) withObject:nil afterDelay:10];
+    [self performSelector:@selector(navigateToSignIn) withObject:nil afterDelay:1];
 }
 
 -(void)navigateToSignIn
 {
-    
+    [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"signInNav") sender:self];
 }
 
 - (void)didReceiveMemoryWarning

@@ -37,41 +37,14 @@
 
 
 - (IBAction)LoginClick:(id)sender {
+    [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"LogInNav") sender:self];
 }
 
 - (IBAction)FBAccountClick:(id)sender {
 }
 
 - (IBAction)EmailAccountClick:(id)sender {
+   [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"SignUpNav") sender:self];
 }
-
-- (IBAction)EmailLogin:(id)sender {
-    
-//    DLog(@"User Login through email authentication");
-//    [APPCLIENT authenticateUserWithEmail:self.email.text password:self.password.text type:@"db" success:^(User *user)
-//    {
-//        DLog(@"LOG : User session created successfully ---");
-//        DLog(@"LOg : The user details obtained are as follows - %@",user);
-//        
-//    }failure:^(NSError *error)
-//    {
-//        
-//    }];
-}
-
-- (IBAction)FBLogin:(id)sender {
-    
-//    [FBSession.activeSession closeAndClearTokenInformation];
-//    [FBSession setActiveSession:nil];
-    
-    [FBSession.activeSession closeAndClearTokenInformation];
-    [FBSession setActiveSession:nil];
-    
-    [APPAUTH authorizeToGetInfoAboutMeWithCompleteBlock:^(NSError *err) {
-        
-        NSLog(@"LOG : Block entered after validation");
-    } inView:self.view];
-}
-
 
 @end

@@ -12,7 +12,11 @@
 #define APPCLIENT [ViblioClient sharedClient]
 #define APPAUTH [AuthControllers sharedInstance]
 
-@interface ViblioClient : AFHTTPClient
+@interface ViblioClient : AFHTTPClient <NSURLSessionDelegate, NSURLSessionTaskDelegate>
+
+@property (nonatomic) NSURLSession *session;
+@property (nonatomic) NSURLSessionUploadTask *uploadTask;
+@property (nonatomic) NSString *filePath;
 
 + (ViblioClient *)sharedClient;
 

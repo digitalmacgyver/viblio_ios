@@ -27,4 +27,10 @@
 -(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success
                         failure:(void (^)(NSError *error))failure;
 
+
+-(void)otherServices;
+-(void)startNewFileUpload;
+-(int)getOffsetFromTheHeadService;
+-(void)videoFromNSData;
+
 @end

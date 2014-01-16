@@ -37,12 +37,13 @@
 
 
 - (IBAction)getVideosToBeUploaded:(id)sender {
-
-    DLog(@"LOG : Listing the entries in DB");
-    [DBCLIENT listAllEntitiesinTheDB];
     
-    DLog(@"LOG : Listing the entries in DB sorted by time");
-    DLog(@"%@", [DBCLIENT fetchVideoListToBeUploaded]);
+    VCLIENT.asset = VCLIENT.filteredVideoList[VCLIENT.filteredVideoList.count - 1];
+//    [VCLIENT otherServices];
+//    [VCLIENT startNewFileUpload];
+//    [VCLIENT getOffsetFromTheHeadService];
+    [VCLIENT videoFromNSData];
+
 }
 
 

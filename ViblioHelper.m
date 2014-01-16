@@ -30,6 +30,14 @@
     alert = nil;
 }
 
+NSString* Viblio_wideNonWideSegue(NSString *segueName)
+{
+    NSString *segueName_ = segueName;
+    if(IS_IPHONE_5)
+        segueName_ = [segueName_ stringByAppendingFormat:@"Wide"];
+    return segueName_;
+}
+
 -(void)clearSessionVariables
 {
     // Assets will be loaded on subsequent logins again

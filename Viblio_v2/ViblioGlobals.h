@@ -42,10 +42,13 @@
 //
 // Macros for hardware detection
 //
+#define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
 #define IS_IPHONE_5 (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 568.0f)
 #define IS_IPHONE_4 (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 480.0f)
 #define IS_RETINA ([[UIScreen mainScreen] scale] == 2.0f)
 #define AppDlegate (AppDelegate*)[[UIApplication sharedApplication]delegate]
+#define KeyBoardShiftSize 200
 
 #import "AppDelegate.h"
 #import "AuthControllers.h"
@@ -62,5 +65,8 @@
 #import "User.h"
 #import "Info.h"
 #import "Videos.h"
+
+//Addtions
+#import "UITextField+Additions.h"
 
 #endif

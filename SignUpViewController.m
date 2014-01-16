@@ -29,10 +29,44 @@
 	// Do any additional setup after loading the view.
 }
 
+- (IBAction)SignUpClick:(id)sender {
+}
+
+- (IBAction)BackClick:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+
+#pragma text field delegates
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    // Shift the editable frame upwards
+    
+    CGRect viewFrame = self.view.frame;
+    viewFrame.origin.y = self.view.frame.origin.y - KeyBoardShiftSize;
+    self.view.frame = viewFrame;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField
+{
+    // Shift the editable frame downwards
+    
+    CGRect viewFrame = self.view.frame;
+    viewFrame.origin.y = self.view.frame.origin.y + KeyBoardShiftSize;
+    self.view.frame = viewFrame;
 }
 
 @end

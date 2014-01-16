@@ -52,8 +52,16 @@
              DLog(@"Success response with user details --- ");
              DLog(@"%@",user);
              
-             [self performSegueWithIdentifier:@"" sender:self];
+           //  [DBCLIENT updateDB];
              
+             DLog(@"LOG : the class that has the control is - %@", NSStringFromClass([self.presentingViewController class]));
+             LandingViewController *lvc = (LandingViewController*)self.navigationController.presentingViewController;
+             
+             [self.navigationController dismissViewControllerAnimated:YES completion:^(void)
+             {
+                 DLog(@"LOG : the class that has the control is - %@", NSStringFromClass([self.presentingViewController class]));
+                 [lvc performSegueWithIdentifier:Viblio_wideNonWideSegue(@"tutorialNav") sender:self];
+             }];
          }failure:^(NSError *error)
          {
              DLog(@"Error : Could not Login the user");

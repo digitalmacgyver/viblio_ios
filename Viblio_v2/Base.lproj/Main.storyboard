@@ -32,7 +32,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1287" y="-546"/>
+            <point key="canvasLocation" x="1251" y="-1766"/>
         </scene>
         <!--Landing View Controller-->
         <scene sceneID="4K2-I3-os1">
@@ -50,6 +50,8 @@
                     <connections>
                         <segue destination="cht-l0-GE2" kind="modal" identifier="signInNavWide" modalTransitionStyle="coverVertical" id="5yd-xP-fkl"/>
                         <segue destination="tUM-re-BsI" kind="modal" identifier="signInNav" modalTransitionStyle="coverVertical" id="XZs-zb-djN"/>
+                        <segue destination="MuT-ZJ-lzR" kind="modal" identifier="tutorialNavWide" id="1kC-og-AJa"/>
+                        <segue destination="CFe-YX-ssb" kind="modal" identifier="tutorialNav" id="47H-cc-cpY"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WlZ-SZ-WQj" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -70,7 +72,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CZQ-bM-M0e" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-566" y="-938"/>
+            <point key="canvasLocation" x="-446" y="-1542"/>
         </scene>
         <!--Sign In View Controller-->
         <scene sceneID="EPs-hj-3cn">
@@ -138,7 +140,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vvx-1l-SfB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12" y="-938"/>
+            <point key="canvasLocation" x="132" y="-1542"/>
         </scene>
         <!--Sign Up View Controller-->
         <scene sceneID="hn8-LE-cyz">
@@ -247,7 +249,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="567" y="-1424"/>
+            <point key="canvasLocation" x="687" y="-2028"/>
         </scene>
         <!--Login View Controller-->
         <scene sceneID="fpZ-PB-055">
@@ -328,7 +330,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="567" y="-659"/>
+            <point key="canvasLocation" x="687" y="-1263"/>
         </scene>
         <!--Sign In View Controller-->
         <scene sceneID="aVW-EN-IP7">
@@ -397,7 +399,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cmf-Th-Tol" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12" y="1030"/>
+            <point key="canvasLocation" x="144" y="1634"/>
         </scene>
         <!--Login View Controller-->
         <scene sceneID="ZAf-7J-1t4">
@@ -479,7 +481,152 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="567" y="1409"/>
+            <point key="canvasLocation" x="699" y="2013"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="WvK-Tj-S0e">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="MuT-ZJ-lzR" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="lM8-uL-3Cr">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="eXn-91-7Ys" kind="relationship" relationship="rootViewController" id="P2e-65-w6T"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fBO-sX-xpD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-118" y="-431"/>
+        </scene>
+        <!--Tut First View Controller-->
+        <scene sceneID="cZJ-Fb-dEA">
+            <objects>
+                <viewController storyboardIdentifier="tutfirstWide" id="eXn-91-7Ys" customClass="TutFirstViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="fRM-u4-8hf"/>
+                        <viewControllerLayoutGuide type="bottom" id="fd2-1N-F1t"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="oAB-T7-Ltn">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="First Tutorial" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iPa-lo-QE1">
+                                <rect key="frame" x="113" y="273" width="94" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="pOL-gj-868" appends="YES" id="FIX-l5-5ZK"/>
+                        </connections>
+                    </view>
+                    <navigationItem key="navigationItem" id="gdI-gf-lwm">
+                        <barButtonItem key="rightBarButtonItem" title="Skip" id="Iw2-Qe-22Q"/>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vFg-5g-PUk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="left" id="pOL-gj-868">
+                    <connections>
+                        <action selector="showSecondTutorial:" destination="eXn-91-7Ys" id="XAa-Iw-FiF"/>
+                        <outlet property="delegate" destination="eXn-91-7Ys" id="0ys-x8-sxp"/>
+                        <segue destination="PsT-xz-PtL" kind="push" id="rL8-qQ-HmB"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="481" y="-431"/>
+        </scene>
+        <!--Tut Second View Controller-->
+        <scene sceneID="FVP-pL-Pe7">
+            <objects>
+                <viewController storyboardIdentifier="tutsecWide" id="PsT-xz-PtL" customClass="TutSecondViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="qUZ-NC-OjI"/>
+                        <viewControllerLayoutGuide type="bottom" id="Rk9-gU-A1a"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Oxq-At-D7L">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Second Tutorial" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="00d-R5-dhc">
+                                <rect key="frame" x="100" y="273" width="120" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="fvG-V7-Oka" appends="YES" id="KhF-6y-Zgt"/>
+                            <outletCollection property="gestureRecognizers" destination="cW5-to-ogU" appends="YES" id="LHC-6V-E1F"/>
+                        </connections>
+                    </view>
+                    <navigationItem key="navigationItem" id="LCF-w8-Onl">
+                        <barButtonItem key="rightBarButtonItem" title="Skip" id="zxB-Dw-Ljt"/>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="l6k-nx-fKg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="fvG-V7-Oka">
+                    <connections>
+                        <action selector="showFirstTutorial:" destination="PsT-xz-PtL" id="PuA-Fu-lIR"/>
+                        <outlet property="delegate" destination="PsT-xz-PtL" id="O86-ec-9jD"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="cW5-to-ogU">
+                    <connections>
+                        <outlet property="delegate" destination="PsT-xz-PtL" id="78J-xs-oiU"/>
+                        <segue destination="8hx-CY-VQS" kind="push" identifier="showsectutWide" id="0pY-Vi-ZYY"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="985" y="-431"/>
+        </scene>
+        <!--Tut Third View Controller-->
+        <scene sceneID="bFq-Lx-dkX">
+            <objects>
+                <viewController storyboardIdentifier="tutthirdWide" id="8hx-CY-VQS" customClass="TutThirdViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Lc5-dF-HNc"/>
+                        <viewControllerLayoutGuide type="bottom" id="2Yz-Ls-hKe"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="FMz-9g-S0m">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Third Tutorial" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z6T-N8-xi6">
+                                <rect key="frame" x="110" y="273" width="100" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="2k5-Lq-9fW" appends="YES" id="hOh-Vf-r0m"/>
+                        </connections>
+                    </view>
+                    <navigationItem key="navigationItem" id="uB8-J4-HKr">
+                        <barButtonItem key="rightBarButtonItem" title="Done" id="32N-KR-CUs"/>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="g2m-O1-fMO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="2k5-Lq-9fW">
+                    <connections>
+                        <action selector="showSecondTutorial:" destination="8hx-CY-VQS" id="TvW-9N-HY7"/>
+                        <outlet property="delegate" destination="8hx-CY-VQS" id="65Y-kQ-JdW"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="1495" y="-431"/>
         </scene>
         <!--Sign Up View Controller-->
         <scene sceneID="voz-bN-r8I">
@@ -589,7 +736,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="567" y="720"/>
+            <point key="canvasLocation" x="699" y="1324"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="d23-ln-dwD">
@@ -606,7 +753,154 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kPP-mB-mJu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-566" y="1030"/>
+            <point key="canvasLocation" x="-434" y="1634"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="9vs-pt-GOZ">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="CFe-YX-ssb" sceneMemberID="viewController">
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Rm1-lk-bkc">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="uKu-c0-ck6" kind="relationship" relationship="rootViewController" id="VZh-j3-0BX"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OOF-1M-vdy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-118" y="621"/>
+        </scene>
+        <!--Tut First View Controller-->
+        <scene sceneID="Nh7-nk-ZTS">
+            <objects>
+                <viewController storyboardIdentifier="tutfirstWide" id="uKu-c0-ck6" customClass="TutFirstViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="pgc-Vl-oIX"/>
+                        <viewControllerLayoutGuide type="bottom" id="hkV-nD-wPz"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Doz-40-iH0">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="First Tutorial" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rLt-Ug-PRE">
+                                <rect key="frame" x="113" y="273" width="94" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="5jw-Oi-Vjk" appends="YES" id="MJ3-CY-gXv"/>
+                        </connections>
+                    </view>
+                    <navigationItem key="navigationItem" id="CQk-Pq-FYq">
+                        <barButtonItem key="rightBarButtonItem" title="Skip" id="eGm-cH-mUc"/>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UfS-Hv-0wX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="left" id="5jw-Oi-Vjk">
+                    <connections>
+                        <outlet property="delegate" destination="uKu-c0-ck6" id="340-r6-CMm"/>
+                        <segue destination="bqy-6o-cVV" kind="push" id="Zpc-Xi-cys"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="481" y="621"/>
+        </scene>
+        <!--Tut Second View Controller-->
+        <scene sceneID="lVA-uB-FUe">
+            <objects>
+                <viewController storyboardIdentifier="tutsecWide" id="bqy-6o-cVV" customClass="TutSecondViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="rFS-fe-Zdu"/>
+                        <viewControllerLayoutGuide type="bottom" id="m4D-OW-4Vu"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="9hx-Wu-i7Q">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Second Tutorial" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nt6-Od-Xk4">
+                                <rect key="frame" x="100" y="273" width="120" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="uAr-OP-PKL" appends="YES" id="sKL-uk-22q"/>
+                            <outletCollection property="gestureRecognizers" destination="bP4-Tj-ZCe" appends="YES" id="wMf-bc-NtS"/>
+                        </connections>
+                    </view>
+                    <navigationItem key="navigationItem" id="Hwa-3a-M6x">
+                        <barButtonItem key="rightBarButtonItem" title="Skip" id="6Jz-HF-p8w"/>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8mJ-Sf-69u" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="uAr-OP-PKL">
+                    <connections>
+                        <action selector="showFirstTutorial:" destination="bqy-6o-cVV" id="9cT-CO-UYS"/>
+                        <outlet property="delegate" destination="bqy-6o-cVV" id="OGj-TX-TAi"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="bP4-Tj-ZCe">
+                    <connections>
+                        <outlet property="delegate" destination="bqy-6o-cVV" id="nYC-nX-7Bk"/>
+                        <segue destination="1J1-3g-a7J" kind="push" id="OMu-rb-OuV"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="985" y="621"/>
+        </scene>
+        <!--Tut Third View Controller-->
+        <scene sceneID="0hZ-Av-Yr8">
+            <objects>
+                <viewController storyboardIdentifier="tutthirdWide" id="1J1-3g-a7J" customClass="TutThirdViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="w0x-4q-TCK"/>
+                        <viewControllerLayoutGuide type="bottom" id="zBe-ZS-diT"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="seM-wE-5aa">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Third Tutorial" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2NM-Q7-4Z5">
+                                <rect key="frame" x="110" y="273" width="100" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="N2y-Ts-CFE" appends="YES" id="jkf-1l-Cp6"/>
+                        </connections>
+                    </view>
+                    <navigationItem key="navigationItem" id="PcY-lH-nbP">
+                        <barButtonItem key="rightBarButtonItem" title="Done" id="fPK-Cz-lzw"/>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aYi-PO-B8G" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="N2y-Ts-CFE">
+                    <connections>
+                        <action selector="showSecondTutorial:" destination="1J1-3g-a7J" id="qoy-x8-JJI"/>
+                        <outlet property="delegate" destination="1J1-3g-a7J" id="SE0-Y4-5nP"/>
+                    </connections>
+                </swipeGestureRecognizer>
+            </objects>
+            <point key="canvasLocation" x="1495" y="621"/>
         </scene>
     </scenes>
     <resources>

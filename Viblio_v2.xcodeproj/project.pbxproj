@@ -43,6 +43,9 @@
 		2AD637FD1886CBA600012A86 /* back.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 2AD637FC1886CBA600012A86 /* back.jpeg */; };
 		2AD638001886CFF400012A86 /* UITextField+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637FF1886CFF400012A86 /* UITextField+Additions.m */; };
 		4F469F010F6742979F21F117 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9B1AD470C747F8B704F802 /* libPods.a */; };
+		85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB4EB1887F5CC0068E738 /* TutFirstViewController.m */; };
+		85DCB4EF1887F5F60068E738 /* TutSecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB4EE1887F5F60068E738 /* TutSecondViewController.m */; };
+		85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB4F11887F60D0068E738 /* TutThirdViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +116,13 @@
 		2AD637FF1886CFF400012A86 /* UITextField+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+Additions.m"; sourceTree = "<group>"; };
 		4C9B1AD470C747F8B704F802 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		519C6E49E6BB4DD89001E212 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		85DCB4EA1887F5CC0068E738 /* TutFirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutFirstViewController.h; sourceTree = "<group>"; };
+		85DCB4EB1887F5CC0068E738 /* TutFirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutFirstViewController.m; sourceTree = "<group>"; };
+		85DCB4ED1887F5F60068E738 /* TutSecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutSecondViewController.h; sourceTree = "<group>"; };
+		85DCB4EE1887F5F60068E738 /* TutSecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutSecondViewController.m; sourceTree = "<group>"; };
+		85DCB4F01887F60D0068E738 /* TutThirdViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutThirdViewController.h; sourceTree = "<group>"; };
+		85DCB4F11887F60D0068E738 /* TutThirdViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutThirdViewController.m; sourceTree = "<group>"; };
+		85DCB4FA188831DE0068E738 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +184,7 @@
 		2A22F3E1187AAD8E002F71F8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				85DCB4FA188831DE0068E738 /* libz.dylib */,
 				2A63159A1883F88D00D864FC /* AssetsLibrary.framework */,
 				2A715848187D4E9100163201 /* SystemConfiguration.framework */,
 				2A715846187D4E8300163201 /* CFNetwork.framework */,
@@ -257,16 +268,13 @@
 		2A631477187E702000D864FC /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				2A631474187E701600D864FC /* SignInViewController.h */,
-				2A631475187E701600D864FC /* SignInViewController.m */,
+				85DCB4F918882ACF0068E738 /* DashBoardControllers */,
+				85DCB4F71888287D0068E738 /* SignInSignUpControllers */,
+				85DCB4F6188828180068E738 /* TutorialControllers */,
 				2A6315A2188444BF00D864FC /* ViewController.h */,
 				2A6315A3188444BF00D864FC /* ViewController.m */,
 				2AD637E71886A49900012A86 /* LandingViewController.h */,
 				2AD637E81886A49900012A86 /* LandingViewController.m */,
-				2AD637ED1886B81B00012A86 /* LoginViewController.h */,
-				2AD637EE1886B81B00012A86 /* LoginViewController.m */,
-				2AD637F01886BC5400012A86 /* SignUpViewController.h */,
-				2AD637F11886BC5400012A86 /* SignUpViewController.m */,
 			);
 			name = Controllers;
 			path = ..;
@@ -359,6 +367,39 @@
 			children = (
 			);
 			name = Retina;
+			sourceTree = "<group>";
+		};
+		85DCB4F6188828180068E738 /* TutorialControllers */ = {
+			isa = PBXGroup;
+			children = (
+				85DCB4F01887F60D0068E738 /* TutThirdViewController.h */,
+				85DCB4F11887F60D0068E738 /* TutThirdViewController.m */,
+				85DCB4ED1887F5F60068E738 /* TutSecondViewController.h */,
+				85DCB4EE1887F5F60068E738 /* TutSecondViewController.m */,
+				85DCB4EA1887F5CC0068E738 /* TutFirstViewController.h */,
+				85DCB4EB1887F5CC0068E738 /* TutFirstViewController.m */,
+			);
+			name = TutorialControllers;
+			sourceTree = "<group>";
+		};
+		85DCB4F71888287D0068E738 /* SignInSignUpControllers */ = {
+			isa = PBXGroup;
+			children = (
+				2AD637ED1886B81B00012A86 /* LoginViewController.h */,
+				2AD637EE1886B81B00012A86 /* LoginViewController.m */,
+				2AD637F01886BC5400012A86 /* SignUpViewController.h */,
+				2AD637F11886BC5400012A86 /* SignUpViewController.m */,
+				2A631474187E701600D864FC /* SignInViewController.h */,
+				2A631475187E701600D864FC /* SignInViewController.m */,
+			);
+			name = SignInSignUpControllers;
+			sourceTree = "<group>";
+		};
+		85DCB4F918882ACF0068E738 /* DashBoardControllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = DashBoardControllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -513,8 +554,11 @@
 				2AD638001886CFF400012A86 /* UITextField+Additions.m in Sources */,
 				2AD637EF1886B81B00012A86 /* LoginViewController.m in Sources */,
 				2A63159318801BC300D864FC /* CoreDataManager.m in Sources */,
+				85DCB4EF1887F5F60068E738 /* TutSecondViewController.m in Sources */,
 				2A22F423187AAF36002F71F8 /* ViblioClient.m in Sources */,
 				2AD637E618868AE800012A86 /* Videos.m in Sources */,
+				85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */,
+				85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */,
 				2AD637D11886566A00012A86 /* Info.m in Sources */,
 				2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */,
 				2A22F41F187AAED6002F71F8 /* ViblioHelper.m in Sources */,

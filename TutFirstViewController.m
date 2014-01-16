@@ -1,18 +1,18 @@
 //
-//  LandingViewController.m
+//  TutFirstViewController.m
 //  Viblio_v2
 //
-//  Created by Dunty Vinay Raj on 1/15/14.
+//  Created by Vinay on 1/16/14.
 //  Copyright (c) 2014 Dunty Vinay Raj. All rights reserved.
 //
 
-#import "LandingViewController.h"
+#import "TutFirstViewController.h"
 
-@interface LandingViewController ()
+@interface TutFirstViewController ()
 
 @end
 
-@implementation LandingViewController
+@implementation TutFirstViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -26,24 +26,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self performSelector:@selector(navigateToSignIn) withObject:nil afterDelay:1];
 	// Do any additional setup after loading the view.
-}
-
--(void)viewDidAppear:(BOOL)animated
-{
-    
-}
-
--(void)navigateToSignIn
-{
-    [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"signInNav") sender:self];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)showSecondTutorial:(id)sender {
+    DLog(@"LOG : Right swipe detected");
 }
 
 @end

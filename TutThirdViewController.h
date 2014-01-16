@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LandingViewController.h"
+#import "DashBoardNavController.h"
 
 @interface TutThirdViewController : UIViewController
 

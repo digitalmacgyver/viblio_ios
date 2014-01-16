@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "ECSlidingViewController.h"
 
-@interface HomeViewController : UIViewController
+@interface HomeViewController : ECSlidingViewController
 
 @end

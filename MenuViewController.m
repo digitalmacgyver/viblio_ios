@@ -29,6 +29,13 @@
 {
     [super viewDidLoad];
     
+//    self.menuList.dataSource = self;
+//    self.menuList.delegate = self;
+    
+    [self.slidingViewController setAnchorRightRevealAmount:240.0f];
+    self.slidingViewController.underLeftWidthLayout = ECFullWidth;
+    self.slidingViewController.shouldAllowUserInteractionsWhenAnchored = NO;
+    
     self.menuList.backgroundColor = [UIColor redColor];
     _menuSections = @[@"Settings", @"Help/FAQ", @"Tell A Friend", @"Give Feedback", @"Legal & Privacy", @"Rate Us In App Store"];
 	// Do any additional setup after loading the view.
@@ -51,7 +58,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellIdentifier = @"Cell";
+    NSString *cellIdentifier = @"MenuCell";
     
     tableView.separatorStyle= UITableViewCellSeparatorStyleNone;
     tableView.separatorColor = [UIColor clearColor];

@@ -29,7 +29,7 @@
 	// Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor blackColor];
-    
+    DLog(@"LOG : under view controller is being set now");
     if (![self.slidingViewController.underLeftViewController isKindOfClass:[MenuViewController class]])
         self.slidingViewController.underLeftViewController = [self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"menu")];
 }

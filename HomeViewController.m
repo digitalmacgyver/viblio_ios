@@ -26,7 +26,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.slidingViewController.underLeftViewController = [self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"menu")];
 	// Do any additional setup after loading the view.
+}
+
+
+- (IBAction)interactingWithTopViewController:(id)sender {
+    
+    DLog(@"LOG : Restting top view");
+    if( self.slidingViewController.underLeftShowing )
+       [self.slidingViewController resetTopView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -36,6 +45,8 @@
 }
 
 - (IBAction)showMenuList:(id)sender {
+    
+    DLog(@"Log : Reveal sliding menu");
     [self.slidingViewController anchorTopViewTo:ECRight];
 }
 

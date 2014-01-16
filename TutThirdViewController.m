@@ -36,6 +36,21 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+- (IBAction)navigateToHomeScreen:(id)sender {
+    
+    DLog(@"LOG : Done clicked on tutorials");
+    
+    LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
+    
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^(void)
+    {
+        lvc.topViewController = [self.storyboard instantiateViewControllerWithIdentifier: @"dashboard"];
+        
+        //[lvc performSegueWithIdentifier: @"home" sender:self];
+    }];
+}
+
 - (IBAction)showSecondTutorial:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }

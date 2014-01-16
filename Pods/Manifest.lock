@@ -1,5 +1,6 @@
 PODS:
   - AFNetworking (1.0)
+  - ECSlidingViewController (1.0.0)
   - Facebook-iOS-SDK (3.11.0)
   - RestKit (0.20.0):
     - RestKit/Core
@@ -19,11 +20,13 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (= 1.0)
+  - ECSlidingViewController (= 1.0)
   - Facebook-iOS-SDK
   - RestKit (= 0.20)
 
 SPEC CHECKSUMS:
   AFNetworking: 204f4b3d3a3ea7b38737c3fbf2646ba8c9719eea
+  ECSlidingViewController: 04474494a1d86616fc0d99783282c647e2334b94
   Facebook-iOS-SDK: 2eb12f9ed04f3d3956f0a4fb0e4e60c824dcd101
   RestKit: 580771664a14eaaa40bf53cf83584f12fc141930
   SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581

@@ -13,11 +13,11 @@
             buildForAnalyzing = "YES"
             buildForTesting = "YES">
             <BuildableReference
-               BlueprintIdentifier = "6153DD7F2363406D902789CA"
+               BlueprintIdentifier = "F9C0A9308A134B699990E25F"
                BuildableIdentifier = "primary"
-               BlueprintName = "Pods-SOCKit"
+               BlueprintName = "Pods-ECSlidingViewController"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "libPods-SOCKit.a">
+               BuildableName = "libPods-ECSlidingViewController.a">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

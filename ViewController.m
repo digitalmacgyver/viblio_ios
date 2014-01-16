@@ -37,9 +37,12 @@
 
 
 - (IBAction)getVideosToBeUploaded:(id)sender {
-
     
-
+    VCLIENT.asset = VCLIENT.filteredVideoList[VCLIENT.filteredVideoList.count - 1];
+//    [VCLIENT otherServices];
+//    [VCLIENT startNewFileUpload];
+//    [VCLIENT getOffsetFromTheHeadService];
+    [VCLIENT videoFromNSData];
 }
 
 

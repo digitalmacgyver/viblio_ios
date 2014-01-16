@@ -331,6 +331,13 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Dunty Vinay Raj";
 				TargetAttributes = {
+					2A22F3DE187AAD8E002F71F8 = {
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
+					};
 					2A22F402187AAD8E002F71F8 = {
 						TestTargetID = 2A22F3DE187AAD8E002F71F8;
 					};

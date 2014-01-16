@@ -83,39 +83,15 @@
         self.assetsLibrary = [[ALAssetsLibrary alloc] init];
     
     [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:listGroupBlock failureBlock:failureBlock];
+}
 
-    
-//    [self fetchVideosFromCameraRoll:[df dateFromString: str] success:^(NSArray *filteredVideos)
-//     {
-//         for ( ALAsset *asset in filteredVideos )
-//         {
-//             NSManagedObjectContext *context = [DBCLIENT managedObjectContext];
-//             Videos *video = [NSEntityDescription
-//                              insertNewObjectForEntityForName:@"Videos"
-//                              inManagedObjectContext:context];
-//             
-//             video.fileURL = [asset.defaultRepresentation.url absoluteString];
-//             video.sync_status = [NSNumber numberWithInt:0];
-//
-//             NSError *error;
-//             if (![context save:&error]) {
-//                 NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-//             }
-//         }
-//     }failure:^(NSError *error)
-//     {
-//         switch ([error code]) {
-//             case ALAssetsLibraryAccessUserDeniedError:
-//             case ALAssetsLibraryAccessGloballyDeniedError:
-//                 [ViblioHelper displayAlertWithTitle:@"Access Denied" messageBody:@"Please enable access to Camera Roll" viewController:nil cancelBtnTitle:@"OK"];
-//                 //[ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
-//                 break;
-//             default:
-//                 NSLog(@"Reason unknown.");
-//                 break;
-//         }
-//     }];
-//    df = nil; str = nil;
+// Function to find differece between two dates
+
+- (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2 {
+    NSUInteger unitFlags = NSDayCalendarUnit;
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *components = [calendar components:unitFlags fromDate:dt1 toDate:dt2 options:0];
+    return (int)([components day]);
 }
 
 -(void)otherServices
@@ -134,7 +110,7 @@
 
 -(int)getOffsetFromTheHeadService
 {
-    [APPCLIENT getOffsetOfTheFileAtLocationID:@"12554130-776b-11e3-9ee5-2bc59fa2be56" sessionCookie:nil success:^(NSString *msg)
+    [APPCLIENT getOffsetOfTheFileAtLocationID:@"f3c552f0-7e22-11e3-9ee5-2bc59fa2be56" sessionCookie:nil success:^(NSString *msg)
      {
          
      }failure:^(NSError *error)
@@ -153,135 +129,46 @@
      {
          NSLog(@"LOG : The error is - %@",error);
      }];
-
+    
 }
 
 -(void)videoFromNSData
 {
     // offset that keep tracks of chunk data
     
-//    do {
+    //    do {
     
-        @autoreleasepool {
-            NSData *chunkData = [self getDataPartAtOffset:offset];;
+    @autoreleasepool {
+        NSData *chunkData = [self getDataPartAtOffset:offset];;
+        
+        
+        if (!chunkData || ![chunkData length]) { // finished reading data
+            // break;
             
+            NSLog(@"LOG : Chunk data failure --- %d --- %@",chunkData.length,chunkData);
+            NSLog(@"LOG : File transmission done");
             
-            if (!chunkData || ![chunkData length]) { // finished reading data
-               // break;
-                
-                NSLog(@"LOG : Chunk data failure --- %d --- %@",chunkData.length,chunkData);
-                NSLog(@"LOG : File transmission done");
-                
-            }
-            else
-            {
-                // do your stuff here
-                [APPCLIENT resumeUploadOfFileLocationID:@"12554130-776b-11e3-9ee5-2bc59fa2be56" localFileName:@"movieTrial" chunkSize:[NSString stringWithFormat:@"%d",chunkData.length]  offset:[NSString stringWithFormat:@"%d",offset] chunk:chunkData sessionCookie:nil success:^(NSString *msg)
-                 {
-//                     i++;
-                     
-//                     if ( i < self.chunks.count )
-//                     {
-                     NSLog(@"LOG : Uploading next chunk---- completed upload till offset - %d",offset);
-                     
-                         [self videoFromNSData];
-//                     }
-                     
-                 }failure:^(NSError *error)
-                 {
-                     [self videoFromNSData];
-                 }];
-                
-                    offset +=[chunkData length];
-             }
-            }
-}
-
-//-(void)fetchVideosFromCameraRoll
-//                               success:(void (^)(NSArray *filteredVideoList))success
-//                               failure:(void (^)(NSError *error))failure
-//{
-//    NSMutableArray *filteredUniqueVideos = [NSMutableArray array];
-//    
-//    // Log Access Denial Errors
-//    ALAssetsLibraryAccessFailureBlock failureBlock = ^(NSError *error) { failure(error); };
-//    
-//    // Block for enumerating individual videos from groups
-//    ALAssetsGroupEnumerationResultsBlock enumerationBlock = ^(ALAsset *asset, NSUInteger index, BOOL *stop) {
-//        if( asset != nil )
-//        {
-//            NSDate* date = [asset valueForProperty:ALAssetPropertyDate];
-//            NSComparisonResult result = [date compare:syncDate];
-//            switch (result)
-//            {
-//                case NSOrderedDescending:
-//                case NSOrderedAscending :
-//                case NSOrderedSame: [filteredUniqueVideos addObject:asset]; break;
-//                default: NSLog(@"erorr dates "); break;
-//            }
-//            date = nil;
-//        }
-//        else
-//            success( filteredUniqueVideos );
-//    };
-//    
-//    // emumerate through our groups and only add groups that contain videos
-//    ALAssetsLibraryGroupsEnumerationResultsBlock listGroupBlock = ^(ALAssetsGroup *group, BOOL *stop) {
-//        [group setAssetsFilter:[ALAssetsFilter allVideos]];
-//        [group enumerateAssetsUsingBlock:enumerationBlock];
-//    };
-//    
-//    // Alloc if existing library is nil
-//    if (self.assetsLibrary == nil)
-//        self.assetsLibrary = [[ALAssetsLibrary alloc] init];
-//    
-//    [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:listGroupBlock failureBlock:failureBlock];
-//}
-
-
-//-(NSArray*)fetchCategorizedVideoList:(NSArray*)filteredVideoList
-//{
-//    //    NSDate *currentDate = [NSDate date];
-//    //    int datedifference = -1;
-//    
-//    //    VideosFilter *videoToday = [[VideosFilter alloc]init];
-//    //    VideosFilter *videoYesterday = [[VideosFilter alloc]init];
-//    //    VideosFilter *videoEarlier = [[VideosFilter alloc]init];
-//    //    VideosFilter *videoToday = [[VideosFilter alloc]init];
-//    //
-//    //    for( ALAsset *asset in filteredVideoList )
-//    //    {
-//    //        datedifference = [self daysBetween:[asset valueForProperty:ALAssetPropertyDate] and:currentDate];
-//    //        NSLog(@"LOG : The difference of days is - %d",datedifference);
-//    //
-//    //        switch (datedifference) {
-//    //            case 0:
-//    //                break;
-//    //            case 1:
-//    //                break;
-//    //            default:
-//    //                if( datedifference > 6 )
-//    //                {
-//    //
-//    //                }
-//    //                else
-//    //                {
-//    //
-//    //                }
-//    //                break;
-//    //        }
-//    //    }
-//    return nil;
-//}
-
-
-// Function to find differece between two dates
-
-- (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2 {
-    NSUInteger unitFlags = NSDayCalendarUnit;
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *components = [calendar components:unitFlags fromDate:dt1 toDate:dt2 options:0];
-    return (int)([components day]);
+        }
+        else
+        {
+            // do your stuff here
+            [APPCLIENT resumeUploadOfFileLocationID:@"790d57b0-7e5e-11e3-9ee5-2bc59fa2be56" localFileName:@"movieTrialPav" chunkSize:[NSString stringWithFormat:@"%d",chunkData.length]  offset:[NSString stringWithFormat:@"%d",offset] chunk:chunkData sessionCookie:nil success:^(NSString *msg)
+             {
+                 NSLog(@"LOG : Uploading next chunk---- completed upload till offset - %d",offset);
+                 
+                 NSLog(@"LOG : 1 / %lld th part uploading..... ", offset/self.asset.defaultRepresentation.size);
+                 
+                 [self videoFromNSData];
+                 
+             }failure:^(NSError *error)
+             {
+                 offset -=[chunkData length];
+                 [self videoFromNSData];
+             }];
+            
+            offset +=[chunkData length];
+        }
+    }
 }
 
 

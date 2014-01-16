@@ -10,12 +10,14 @@
 
 @implementation ViblioClient
 
+void(^_success)(NSString *user);
+void(^_failure)(NSError *error);
+
 + (ViblioClient *)sharedClient {
     static ViblioClient *_sharedClient = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedClient = [[self alloc] initWithBaseURL:[NSURL URLWithString:API_LOGIN_SERVER_URL]];
-        
         //let AFNetworking manage the activity indicator
         [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
         [_sharedClient setDefaultHeader:@"Accept" value:@"text/xml"];
@@ -36,6 +38,7 @@
         NSLog(@"LOG : Reachability of the base URL changed to - %d",status);
     }];
     
+    self.session = [self backgroundSession];
     [self registerHTTPOperationClass:[AFJSONRequestOperation class]];
     [self setParameterEncoding:AFJSONParameterEncoding];
     
@@ -379,75 +382,103 @@
     [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [afRequest setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
     [afRequest setValue: offset  forHTTPHeaderField:@"Offset"];
-    [afRequest setHTTPBody:chunk];
+//    [afRequest setHTTPBody:chunk];
     
-    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:afRequest success:
-                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
-                                  {
-                                      NSLog(@"LOG : check - 2.4");
-                                     // [MBProgressHUD tl_fadeOutHUDInView:view withSuccessText:@"Image saved !"];
-                                      success(@"");
-                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
-                                  {
-                                    //  [MBProgressHUD tl_fadeOutHUDInView:view withFailureText:@"Saving image failed !"];
-                                      failure(error);
-                                  }];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"/tempFile"];
+    [chunk writeToFile:dataPath atomically:YES];
     
-    [op setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-        NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
-        
-//        if( totalBytesExpectedToWrite == totalBytesWritten )
-//            success(@"");
-    }];
+    _success = success;
+    self.filePath = dataPath;
     
-    
-    [op start];
-    
-    
-    
-    
-    
-//    NSMutableURLRequest *afRequest = [self multipartFormRequestWithMethod:@"PATCH" path:path parameters:nil constructingBodyWithBlock:^(id <AFMultipartFormData>formData)
-//                                      {
-//                                          [formData appendPartWithFileData:chunk name:@"Video" fileName:fileName mimeType:@"video/mp4"];
-//                                      }];
+    self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromFile:[NSURL fileURLWithPath:dataPath]];
+    // self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromData:chunk];
+    [self.uploadTask resume];
+//    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:afRequest success:
+//                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+//                                  {
+//                                      NSLog(@"LOG : check - 2.4");
+//                                     // [MBProgressHUD tl_fadeOutHUDInView:view withSuccessText:@"Image saved !"];
+//                                      success(@"");
+//                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+//                                  {
+//                                    //  [MBProgressHUD tl_fadeOutHUDInView:view withFailureText:@"Saving image failed !"];
+//                                      failure(error);
+//                                  }];
 //    
-//    [afRequest setValue: chunkSize  forHTTPHeaderField:@"Content-Length"];
-//    [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
-//    [afRequest setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
-//    [afRequest setValue: offset  forHTTPHeaderField:@"Offset"];
-//
-//    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:afRequest];
-//    
-//    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,long long totalBytesWritten,long long totalBytesExpectedToWrite)
-//     {
-//         
-//         NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
-//         //success(@"");
-//         //NSLog(@"uploaded percent %f", (float)totalBytesWritten/totalBytesExpectedToWrite);
-//         //uploadProgress((float)(100.0*totalBytesWritten/totalBytesExpectedToWrite));
-//         
-//     }];
-//    [operation  setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id response)
-//     {
-//         NSLog(@"AFN REST response %@", operation.responseString);
-//         
-//         success(@"");
-//         //NSError *error;
-//         //NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:response options:NSJSONReadingAllowFragments error:&error];
-//         //complete(responseData);
-//         
-//     }
-//                                      failure:^(AFHTTPRequestOperation *operation, NSError *error)
-//     {
-//         //NSDictionary *nsDError = [NSDictionary dictionaryWithObjectsAndKeys:error.description, @"error",  [operation.response statusCode], @"statuscode", nil];
-//         NSLog(@"Upload file error %@", error.description);
-//         failure(error);
-//         //failure(nsDError);
-//     }];
-//    
-//    [self enqueueHTTPRequestOperation:operation];
+//    [op setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+//        NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
+//        
+////        if( totalBytesExpectedToWrite == totalBytesWritten )
+////            success(@"");
+//    }];
+//    [op start];
 }
 
+
+#pragma session delegates
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
+   didSendBodyData:(int64_t)bytesSent
+    totalBytesSent:(int64_t)totalBytesSent
+totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
+{
+    DLog(@"LOG : In call back handler - ");
+//    if (task == self.uploadTask) {
+    
+        DLog(@"LOG : The details are as follows - bytesSent - %lld, totalBytesSent - %lld, totalBytesEpectedToSend - %lld", bytesSent, totalBytesSent, totalBytesExpectedToSend);
+//        double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
+//        NSLog(@"DownloadTask: %@ progress: %lf", downloadTask, progress);
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            self.progressView.progress = progress;
+//        });
+//    }
+}
+
+
+- (NSURLSession *)backgroundSession {
+	static NSURLSession *session = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.viblio.BackGroundSession"];
+		session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+	});
+	return session;
+}
+
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
+    
+    if (error == nil) {
+        
+        NSLog(@"Task: %@ completed successfully", task);
+        
+        if([[NSFileManager defaultManager] fileExistsAtPath:self.filePath])
+            [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:&error];
+        _success(@"");
+        
+    } else {
+        NSLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
+    }
+	
+    double progress = (double)task.countOfBytesSent / (double)task.countOfBytesExpectedToSend;
+	dispatch_async(dispatch_get_main_queue(), ^{
+        DLog(@"LOG : The progress is %lf", progress);
+	});
+    
+    self.uploadTask = nil;
+}
+
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (appDelegate.backgroundSessionCompletionHandler) {
+        void (^completionHandler)() = appDelegate.backgroundSessionCompletionHandler;
+        appDelegate.backgroundSessionCompletionHandler = nil;
+        completionHandler();
+    }
+    
+    NSLog(@"All tasks are finished");
+}
 
 @end

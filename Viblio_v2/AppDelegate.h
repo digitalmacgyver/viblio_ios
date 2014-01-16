@@ -19,4 +19,6 @@
 //- (void)saveContext;
 //- (NSURL *)applicationDocumentsDirectory;
 
+@property (copy) void (^backgroundSessionCompletionHandler)();
+
 @end

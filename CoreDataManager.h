@@ -26,7 +26,7 @@
 -(void)deleteOperationOnDB:(NSString*)fileURL;
 -(void)deleteOperationOnDB;
 -(int)getTheCountOfRecordsInDB;
-
+-(NSArray*)fetchVideoListToBeUploaded;
 -(void)updateDB;
 
 @end

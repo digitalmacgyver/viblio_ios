@@ -43,6 +43,7 @@
 //    [VCLIENT startNewFileUpload];
 //    [VCLIENT getOffsetFromTheHeadService];
     [VCLIENT videoFromNSData];
+
 }
 
 

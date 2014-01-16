@@ -76,50 +76,6 @@ void(^_failure)(NSError *error);
                                                                                                    keyPath:@"user.uuid"
                                                                                                statusCodes:[NSIndexSet indexSetWithIndex:200]];
     [objectManager addResponseDescriptor:userResponseDescriptor];
-    
-    
-//    // Categories API descriptor
-//    RKObjectMapping *categoriesMapping = [RKObjectMapping mappingForClass:[TLCategory class]];
-//    [categoriesMapping addAttributeMappingsFromDictionary:[TLCategory mapping]];
-//    
-//    [categoriesMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"contents" toKeyPath:@"contentsRated" withMapping:contentsMapping]];
-//    
-//    RKResponseDescriptor *categoriesResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:categoriesMapping
-//                                                                                                 pathPattern:@"/categories"
-//                                                                                                     keyPath:@"payload.categories"
-//                                                                                                 statusCodes:[NSIndexSet indexSetWithIndex:200]];
-//    [objectManager addResponseDescriptor:categoriesResponseDescriptor];
-//    
-//    // Matches API descriptor
-//    RKObjectMapping *matchesMapping = [RKObjectMapping mappingForClass:[TLMatch class]];
-//    [matchesMapping addAttributeMappingsFromDictionary:[TLMatch mapping]];
-//    
-//    RKResponseDescriptor *matchesResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:matchesMapping
-//                                                                                              pathPattern:@"/matches"
-//                                                                                                  keyPath:@"payload.matches"
-//                                                                                              statusCodes:[NSIndexSet indexSetWithIndex:200]];
-//    [objectManager addResponseDescriptor:matchesResponseDescriptor];
-//    
-//    // User API descriptor
-//    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[TLUser class]];
-//    [userMapping addAttributeMappingsFromDictionary:[TLUser mapping]];
-//    [userMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"categories" toKeyPath:@"categoriesRated" withMapping:categoriesMapping]];
-//    
-//    RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:userMapping
-//                                                                                           pathPattern:@"/users/:userID"
-//                                                                                               keyPath:@"payload.user"
-//                                                                                           statusCodes:[NSIndexSet indexSetWithIndex:200]];
-//    [objectManager addResponseDescriptor:userResponseDescriptor];
-//    
-//    // Inbox API descriptor
-//    RKObjectMapping *inboxMapping = [RKObjectMapping mappingForClass:[TLInboxMessage class]];
-//    [inboxMapping addAttributeMappingsFromDictionary:[TLInboxMessage mapping]];
-//    
-//    RKResponseDescriptor *inboxResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:inboxMapping
-//                                                                                            pathPattern:@"/inbox"
-//                                                                                                keyPath:@"payload.users"
-//                                                                                            statusCodes:[NSIndexSet indexSetWithIndex:200]];
-//    [objectManager addResponseDescriptor:inboxResponseDescriptor];
 }
 
 
@@ -148,7 +104,8 @@ void(^_failure)(NSError *error);
                                       
                                       User *user = [[User alloc]init];
                                       user.userID = [JSON valueForKeyPath:@"user.uuid"];
-
+                                      user.emailId = emailID;
+                                      user.isFBUser = NO;
                                       if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
                                       {
                                           NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
@@ -162,6 +119,7 @@ void(^_failure)(NSError *error);
                                               }
                                           }
                                       }
+                                      success(user);
  
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
@@ -451,7 +409,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     
     if (error == nil) {
-        
+
         NSLog(@"Task: %@ completed successfully", task);
         
         if([[NSFileManager defaultManager] fileExistsAtPath:self.filePath])
@@ -468,6 +426,10 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 	});
     
     self.uploadTask = nil;
+    }];
+    
+    
+    [op start];
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {

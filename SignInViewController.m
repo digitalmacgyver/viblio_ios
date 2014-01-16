@@ -36,19 +36,15 @@
 }
 
 
-- (IBAction)FBLogin:(id)sender {
-    
-//    [FBSession.activeSession closeAndClearTokenInformation];
-//    [FBSession setActiveSession:nil];
-    
-    [FBSession.activeSession closeAndClearTokenInformation];
-    [FBSession setActiveSession:nil];
-    
-    [APPAUTH authorizeToGetInfoAboutMeWithCompleteBlock:^(NSError *err) {
-        
-        NSLog(@"LOG : Block entered after validation");
-    } inView:self.view];
+- (IBAction)LoginClick:(id)sender {
+    [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"LogInNav") sender:self];
 }
 
+- (IBAction)FBAccountClick:(id)sender {
+}
+
+- (IBAction)EmailAccountClick:(id)sender {
+   [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"SignUpNav") sender:self];
+}
 
 @end

@@ -5,11 +5,12 @@
     </entity>
     <entity name="Videos" representedClassName="Videos" syncable="YES">
         <attribute name="fileURL" optional="YES" attributeType="String" minValueString="0" defaultValueString="Video" syncable="YES"/>
+        <attribute name="hasFailed" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="sync_status" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="2" defaultValueString="0" syncable="YES"/>
         <attribute name="sync_time" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
     </entity>
     <elements>
         <element name="Info" positionX="-7265" positionY="-1603" width="128" height="58"/>
-        <element name="Videos" positionX="-7515" positionY="-1602" width="128" height="88"/>
+        <element name="Videos" positionX="-7515" positionY="-1602" width="128" height="103"/>
     </elements>
 </model>

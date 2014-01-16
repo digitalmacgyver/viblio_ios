@@ -36,7 +36,12 @@
 		2A715849187D4E9100163201 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A715848187D4E9100163201 /* SystemConfiguration.framework */; };
 		2A71584D187D75A400163201 /* NSString+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A71584C187D75A400163201 /* NSString+Additions.m */; };
 		2AD637D11886566A00012A86 /* Info.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637D01886566A00012A86 /* Info.m */; };
-		2AD637DA188673C700012A86 /* Videos.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637D9188673C700012A86 /* Videos.m */; };
+		2AD637E618868AE800012A86 /* Videos.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637E518868AE800012A86 /* Videos.m */; };
+		2AD637E91886A49900012A86 /* LandingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637E81886A49900012A86 /* LandingViewController.m */; };
+		2AD637EF1886B81B00012A86 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637EE1886B81B00012A86 /* LoginViewController.m */; };
+		2AD637F21886BC5400012A86 /* SignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637F11886BC5400012A86 /* SignUpViewController.m */; };
+		2AD637FD1886CBA600012A86 /* back.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 2AD637FC1886CBA600012A86 /* back.jpeg */; };
+		2AD638001886CFF400012A86 /* UITextField+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637FF1886CFF400012A86 /* UITextField+Additions.m */; };
 		4F469F010F6742979F21F117 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9B1AD470C747F8B704F802 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -95,8 +100,17 @@
 		2A71584C187D75A400163201 /* NSString+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Additions.m"; sourceTree = "<group>"; };
 		2AD637CF1886566A00012A86 /* Info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Info.h; path = Viblio_v2/Info.h; sourceTree = "<group>"; };
 		2AD637D01886566A00012A86 /* Info.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Info.m; path = Viblio_v2/Info.m; sourceTree = "<group>"; };
-		2AD637D8188673C700012A86 /* Videos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Videos.h; path = Viblio_v2/Videos.h; sourceTree = "<group>"; };
-		2AD637D9188673C700012A86 /* Videos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Videos.m; path = Viblio_v2/Videos.m; sourceTree = "<group>"; };
+		2AD637E418868AE800012A86 /* Videos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Videos.h; sourceTree = "<group>"; };
+		2AD637E518868AE800012A86 /* Videos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Videos.m; sourceTree = "<group>"; };
+		2AD637E71886A49900012A86 /* LandingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LandingViewController.h; sourceTree = "<group>"; };
+		2AD637E81886A49900012A86 /* LandingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LandingViewController.m; sourceTree = "<group>"; };
+		2AD637ED1886B81B00012A86 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		2AD637EE1886B81B00012A86 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		2AD637F01886BC5400012A86 /* SignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignUpViewController.h; sourceTree = "<group>"; };
+		2AD637F11886BC5400012A86 /* SignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignUpViewController.m; sourceTree = "<group>"; };
+		2AD637FC1886CBA600012A86 /* back.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = back.jpeg; sourceTree = "<group>"; };
+		2AD637FE1886CFF400012A86 /* UITextField+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITextField+Additions.h"; sourceTree = "<group>"; };
+		2AD637FF1886CFF400012A86 /* UITextField+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+Additions.m"; sourceTree = "<group>"; };
 		4C9B1AD470C747F8B704F802 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		519C6E49E6BB4DD89001E212 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -177,6 +191,7 @@
 		2A22F3E8187AAD8E002F71F8 /* Viblio_v2 */ = {
 			isa = PBXGroup;
 			children = (
+				2AD637F41886CAB400012A86 /* Images */,
 				2A631477187E702000D864FC /* Controllers */,
 				2A22F3F1187AAD8E002F71F8 /* AppDelegate.h */,
 				2A22F3F2187AAD8E002F71F8 /* AppDelegate.m */,
@@ -246,6 +261,12 @@
 				2A631475187E701600D864FC /* SignInViewController.m */,
 				2A6315A2188444BF00D864FC /* ViewController.h */,
 				2A6315A3188444BF00D864FC /* ViewController.m */,
+				2AD637E71886A49900012A86 /* LandingViewController.h */,
+				2AD637E81886A49900012A86 /* LandingViewController.m */,
+				2AD637ED1886B81B00012A86 /* LoginViewController.h */,
+				2AD637EE1886B81B00012A86 /* LoginViewController.m */,
+				2AD637F01886BC5400012A86 /* SignUpViewController.h */,
+				2AD637F11886BC5400012A86 /* SignUpViewController.m */,
 			);
 			name = Controllers;
 			path = ..;
@@ -263,12 +284,12 @@
 		2A71583E187D352C00163201 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				2AD637E418868AE800012A86 /* Videos.h */,
+				2AD637E518868AE800012A86 /* Videos.m */,
 				2A71583F187D355B00163201 /* User.h */,
 				2A715840187D355B00163201 /* User.m */,
 				2AD637CF1886566A00012A86 /* Info.h */,
 				2AD637D01886566A00012A86 /* Info.m */,
-				2AD637D8188673C700012A86 /* Videos.h */,
-				2AD637D9188673C700012A86 /* Videos.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -278,8 +299,66 @@
 			children = (
 				2A71584B187D75A400163201 /* NSString+Additions.h */,
 				2A71584C187D75A400163201 /* NSString+Additions.m */,
+				2AD637FE1886CFF400012A86 /* UITextField+Additions.h */,
+				2AD637FF1886CFF400012A86 /* UITextField+Additions.m */,
 			);
 			name = ViblioAdditions;
+			sourceTree = "<group>";
+		};
+		2AD637F41886CAB400012A86 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				2AD637F71886CAFF00012A86 /* iPhone3.5inch */,
+				2AD637F51886CABB00012A86 /* iPhone4inch */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
+		2AD637F51886CABB00012A86 /* iPhone4inch */ = {
+			isa = PBXGroup;
+			children = (
+				2AD637FB1886CB2400012A86 /* Retina */,
+				2AD637FA1886CB1E00012A86 /* NonRetina */,
+			);
+			name = iPhone4inch;
+			sourceTree = "<group>";
+		};
+		2AD637F71886CAFF00012A86 /* iPhone3.5inch */ = {
+			isa = PBXGroup;
+			children = (
+				2AD637F91886CB1600012A86 /* NonRetina */,
+				2AD637F81886CB0900012A86 /* Retina */,
+			);
+			name = iPhone3.5inch;
+			sourceTree = "<group>";
+		};
+		2AD637F81886CB0900012A86 /* Retina */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Retina;
+			sourceTree = "<group>";
+		};
+		2AD637F91886CB1600012A86 /* NonRetina */ = {
+			isa = PBXGroup;
+			children = (
+				2AD637FC1886CBA600012A86 /* back.jpeg */,
+			);
+			name = NonRetina;
+			sourceTree = "<group>";
+		};
+		2AD637FA1886CB1E00012A86 /* NonRetina */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = NonRetina;
+			sourceTree = "<group>";
+		};
+		2AD637FB1886CB2400012A86 /* Retina */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Retina;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -368,6 +447,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A22F3FE187AAD8E002F71F8 /* Images.xcassets in Resources */,
+				2AD637FD1886CBA600012A86 /* back.jpeg in Resources */,
 				2A22F3F6187AAD8E002F71F8 /* Main.storyboard in Resources */,
 				2A22F3ED187AAD8E002F71F8 /* InfoPlist.strings in Resources */,
 			);
@@ -422,15 +502,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A6315A4188444BF00D864FC /* ViewController.m in Sources */,
+				2AD637E91886A49900012A86 /* LandingViewController.m in Sources */,
 				2A63147B187E712E00D864FC /* AuthControllers.m in Sources */,
 				2A631476187E701600D864FC /* SignInViewController.m in Sources */,
+				2AD637F21886BC5400012A86 /* SignUpViewController.m in Sources */,
 				2A71584D187D75A400163201 /* NSString+Additions.m in Sources */,
 				2A22F3FC187AAD8E002F71F8 /* VideoManager.m in Sources */,
 				2A22F3F3187AAD8E002F71F8 /* AppDelegate.m in Sources */,
 				2A715841187D355B00163201 /* User.m in Sources */,
+				2AD638001886CFF400012A86 /* UITextField+Additions.m in Sources */,
+				2AD637EF1886B81B00012A86 /* LoginViewController.m in Sources */,
 				2A63159318801BC300D864FC /* CoreDataManager.m in Sources */,
 				2A22F423187AAF36002F71F8 /* ViblioClient.m in Sources */,
-				2AD637DA188673C700012A86 /* Videos.m in Sources */,
+				2AD637E618868AE800012A86 /* Videos.m in Sources */,
 				2AD637D11886566A00012A86 /* Info.m in Sources */,
 				2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */,
 				2A22F41F187AAED6002F71F8 /* ViblioHelper.m in Sources */,
@@ -595,6 +679,7 @@
 					Social,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
 			};
@@ -634,6 +719,7 @@
 					Social,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
 			};

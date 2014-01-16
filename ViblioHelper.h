@@ -17,4 +17,6 @@
               viewController:(UIViewController*)controller
               cancelBtnTitle:(NSString*)cancelBtnTitle;
 
+NSString* Viblio_wideNonWideSegue(NSString *segueName);
+
 @end

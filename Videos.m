@@ -14,10 +14,11 @@
 @dynamic fileURL;
 @dynamic sync_status;
 @dynamic sync_time;
+@dynamic hasFailed;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"fileURL: %@, sync_status : %@, sync_time : %@", self.fileURL, self.sync_status, self.sync_time];
+    return [NSString stringWithFormat:@"fileURL: %@, sync_status: %@, sync_time : %@,hasFailed :  %@", self.fileURL, self.sync_status, self.sync_time, self.hasFailed];
 }
 
 @end

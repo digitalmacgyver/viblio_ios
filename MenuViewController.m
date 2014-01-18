@@ -32,14 +32,23 @@
 //    self.menuList.dataSource = self;
 //    self.menuList.delegate = self;
     
-    [self.slidingViewController setAnchorRightRevealAmount:240.0f];
+    [self.slidingViewController setAnchorRightRevealAmount:280.0f];
     self.slidingViewController.underLeftWidthLayout = ECFullWidth;
-    self.slidingViewController.shouldAllowUserInteractionsWhenAnchored = NO;
     
     self.menuList.backgroundColor = [UIColor redColor];
     _menuSections = @[@"Settings", @"Help/FAQ", @"Tell A Friend", @"Give Feedback", @"Legal & Privacy", @"Rate Us In App Store"];
 	// Do any additional setup after loading the view.
 }
+
+//-(void)viewWillAppear:(BOOL)animated
+//{
+//    self.slidingViewController.topViewController.view.userInteractionEnabled = NO;
+//}
+
+//-(void)viewWillDisappear:(BOOL)animated
+//{
+//    self.slidingViewController.topViewController.view.userInteractionEnabled = YES;
+//}
 
 - (void)didReceiveMemoryWarning
 {

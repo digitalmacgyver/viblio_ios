@@ -1,5 +1,5 @@
 //
-//  HomeViewController.h
+//  InitialSlidingViewController.h
 //  Viblio_v2
 //
 //  Created by Vinay on 1/17/14.
@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "ECSlidingViewController.h"
 
-@interface HomeViewController : UIViewController
-
+@interface InitialSlidingViewController : ECSlidingViewController
 
 @end

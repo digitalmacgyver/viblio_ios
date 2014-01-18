@@ -19,7 +19,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"id: %@, session_cookie: %@, email : %@, isfbuser : %d", self.userID, self.sessionCookie, self.emailId, self.isFBUser];
+    return [NSString stringWithFormat:@"id: %@, session_cookie: %@, email : %@, isfbuser : %d, isNewUser : %d", self.userID, self.sessionCookie, self.emailId, self.isFBUser, self.isNewUser];
 }
 
 @end

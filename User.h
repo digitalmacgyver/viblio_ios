@@ -14,6 +14,7 @@
 @property (nonatomic, strong) NSString *sessionCookie;
 @property (nonatomic, strong) NSString *emailId;
 @property (nonatomic, assign) BOOL isFBUser;
+@property (nonatomic, assign) BOOL isNewUser;
 + (NSDictionary *)mapping;
 
 @end

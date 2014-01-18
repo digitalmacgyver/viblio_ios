@@ -43,6 +43,7 @@
 		2AD637FD1886CBA600012A86 /* back.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 2AD637FC1886CBA600012A86 /* back.jpeg */; };
 		2AD638001886CFF400012A86 /* UITextField+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2AD637FF1886CFF400012A86 /* UITextField+Additions.m */; };
 		4F469F010F6742979F21F117 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C9B1AD470C747F8B704F802 /* libPods.a */; };
+		85D81D4A18897F0200F4BC44 /* InitialSlidingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85D81D4918897F0200F4BC44 /* InitialSlidingViewController.m */; };
 		85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB4EB1887F5CC0068E738 /* TutFirstViewController.m */; };
 		85DCB4EF1887F5F60068E738 /* TutSecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB4EE1887F5F60068E738 /* TutSecondViewController.m */; };
 		85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB4F11887F60D0068E738 /* TutThirdViewController.m */; };
@@ -52,6 +53,7 @@
 		85DCB50A188861BC0068E738 /* DashBoardNavController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB509188861BC0068E738 /* DashBoardNavController.m */; };
 		85DCB50D1888646C0068E738 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB50C1888646C0068E738 /* HomeViewController.m */; };
 		85DCB510188865F60068E738 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB50F188865F60068E738 /* MenuViewController.m */; };
+		85F8B47D188A5E2200E92380 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B47C188A5E2200E92380 /* AppManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +124,8 @@
 		2AD637FF1886CFF400012A86 /* UITextField+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITextField+Additions.m"; sourceTree = "<group>"; };
 		4C9B1AD470C747F8B704F802 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		519C6E49E6BB4DD89001E212 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		85D81D4818897F0200F4BC44 /* InitialSlidingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitialSlidingViewController.h; sourceTree = "<group>"; };
+		85D81D4918897F0200F4BC44 /* InitialSlidingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitialSlidingViewController.m; sourceTree = "<group>"; };
 		85DCB4EA1887F5CC0068E738 /* TutFirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutFirstViewController.h; sourceTree = "<group>"; };
 		85DCB4EB1887F5CC0068E738 /* TutFirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TutFirstViewController.m; sourceTree = "<group>"; };
 		85DCB4ED1887F5F60068E738 /* TutSecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TutSecondViewController.h; sourceTree = "<group>"; };
@@ -140,6 +144,8 @@
 		85DCB50C1888646C0068E738 /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
 		85DCB50E188865F60068E738 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		85DCB50F188865F60068E738 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
+		85F8B47B188A5E2200E92380 /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppManager.h; sourceTree = "<group>"; };
+		85F8B47C188A5E2200E92380 /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -270,6 +276,8 @@
 				2A22F3FB187AAD8E002F71F8 /* VideoManager.m */,
 				2A63159118801BC300D864FC /* CoreDataManager.h */,
 				2A63159218801BC300D864FC /* CoreDataManager.m */,
+				85F8B47B188A5E2200E92380 /* AppManager.h */,
+				85F8B47C188A5E2200E92380 /* AppManager.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -422,6 +430,8 @@
 				85DCB509188861BC0068E738 /* DashBoardNavController.m */,
 				85DCB50B1888646C0068E738 /* HomeViewController.h */,
 				85DCB50C1888646C0068E738 /* HomeViewController.m */,
+				85D81D4818897F0200F4BC44 /* InitialSlidingViewController.h */,
+				85D81D4918897F0200F4BC44 /* InitialSlidingViewController.m */,
 			);
 			name = DashBoardControllers;
 			sourceTree = "<group>";
@@ -622,6 +632,8 @@
 				85DCB505188859740068E738 /* ECSlidingViewController.m in Sources */,
 				85DCB510188865F60068E738 /* MenuViewController.m in Sources */,
 				2A22F423187AAF36002F71F8 /* ViblioClient.m in Sources */,
+				85F8B47D188A5E2200E92380 /* AppManager.m in Sources */,
+				85D81D4A18897F0200F4BC44 /* InitialSlidingViewController.m in Sources */,
 				2AD637E618868AE800012A86 /* Videos.m in Sources */,
 				85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */,
 				85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */,

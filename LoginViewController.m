@@ -26,6 +26,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.email.text = @"vinay@cognitiveclouds.com";
+    self.password.text = @"MaraliMannige4";
 	// Do any additional setup after loading the view.
 }
 
@@ -54,13 +56,20 @@
              
            //  [DBCLIENT updateDB];
              
-             DLog(@"LOG : the class that has the control is - %@", NSStringFromClass([self.presentingViewController class]));
+            // DLog(@"LOG : the class that has the control is - %@", NSStringFromClass([self. class]));
              LandingViewController *lvc = (LandingViewController*)self.navigationController.presentingViewController;
-             
              [self.navigationController dismissViewControllerAnimated:YES completion:^(void)
              {
-                 DLog(@"LOG : the class that has the control is - %@", NSStringFromClass([self.presentingViewController class]));
-                 [lvc performSegueWithIdentifier:Viblio_wideNonWideSegue(@"tutorialNav") sender:self];
+                 if( APPMANAGER.user.isNewUser )
+                 {
+                     DLog(@"LOG : New user tutorials have to be shown");
+                     [lvc performSegueWithIdentifier:@"tutorialNav" sender:self];
+                 }
+                 else
+                 {
+                     DLog(@"LOG : Not new user... Take him to dashboard");
+                     [lvc performSegueWithIdentifier:@"dashboardNav" sender:self];
+                 }
              }];
          }failure:^(NSError *error)
          {

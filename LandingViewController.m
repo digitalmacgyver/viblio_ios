@@ -26,18 +26,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+   // self.topViewController = [self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"signinNavTop")];
+//    [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"signInNav") sender:self];
     [self performSelector:@selector(navigateToSignIn) withObject:nil afterDelay:1];
 	// Do any additional setup after loading the view.
+}
+
+-(void)navigateToSignIn
+{
+    //    self.topViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"dashboard"];
+    [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"signInNav") sender:self];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     
-}
-
--(void)navigateToSignIn
-{
-    [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"signInNav") sender:self];
 }
 
 - (void)didReceiveMemoryWarning

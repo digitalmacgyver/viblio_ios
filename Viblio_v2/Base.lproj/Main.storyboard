@@ -47,23 +47,41 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <navigationItem key="navigationItem" id="yJa-E0-VHI"/>
                     <connections>
                         <segue destination="cht-l0-GE2" kind="modal" identifier="signInNavWide" modalTransitionStyle="coverVertical" id="5yd-xP-fkl"/>
                         <segue destination="tUM-re-BsI" kind="modal" identifier="signInNav" modalTransitionStyle="coverVertical" id="XZs-zb-djN"/>
                         <segue destination="MuT-ZJ-lzR" kind="modal" identifier="tutorialNavWide" id="1kC-og-AJa"/>
                         <segue destination="CFe-YX-ssb" kind="modal" identifier="tutorialNav" id="47H-cc-cpY"/>
-                        <segue destination="spQ-sy-EXK" kind="modal" identifier="homeWide" id="ZEc-Sm-bt1"/>
-                        <segue destination="b83-wc-ImY" kind="modal" identifier="home" id="UyZ-qj-1IR"/>
+                        <segue destination="lUT-jg-Cwy" kind="modal" identifier="dashboardNav" id="kZp-jd-Gxj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WlZ-SZ-WQj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2509" y="210"/>
         </scene>
+        <!--Initial Sliding View Controller-->
+        <scene sceneID="GvN-HH-865">
+            <objects>
+                <viewController id="lUT-jg-Cwy" customClass="InitialSlidingViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="xhf-iK-vz2"/>
+                        <viewControllerLayoutGuide type="bottom" id="Jn0-X4-zIe"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="4Jg-NV-XWd">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JIp-Rl-Z9t" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1551" y="229"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="NWT-l9-mWW">
             <objects>
-                <navigationController definesPresentationContext="YES" navigationBarHidden="YES" id="cht-l0-GE2" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="signinNavTopWide" definesPresentationContext="YES" navigationBarHidden="YES" id="cht-l0-GE2" sceneMemberID="viewController">
                     <nil key="simulatedTopBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="REg-dx-Q1I">
                         <autoresizingMask key="autoresizingMask"/>
@@ -528,9 +546,6 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="L3J-Gg-uvb" appends="YES" id="lds-yr-NJr"/>
-                        </connections>
                     </view>
                     <navigationItem key="navigationItem" id="bN8-wX-vNg">
                         <barButtonItem key="leftBarButtonItem" style="plain" id="ydn-Ia-Umv">
@@ -549,12 +564,6 @@
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bE7-vt-7BX" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="L3J-Gg-uvb">
-                    <connections>
-                        <action selector="interactingWithTopViewController:" destination="4I0-24-kvl" id="Uah-7u-ceS"/>
-                        <outlet property="delegate" destination="4I0-24-kvl" id="jaS-OE-5zA"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="337" y="-232"/>
         </scene>
@@ -805,7 +814,7 @@
         <!--Navigation Controller-->
         <scene sceneID="d23-ln-dwD">
             <objects>
-                <navigationController definesPresentationContext="YES" navigationBarHidden="YES" id="tUM-re-BsI" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="signinNavTop" definesPresentationContext="YES" navigationBarHidden="YES" id="tUM-re-BsI" sceneMemberID="viewController">
                     <nil key="simulatedTopBarMetrics"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="peY-qu-qLj">
@@ -1037,7 +1046,7 @@
         <!--Home View Controller-->
         <scene sceneID="nKZ-eg-f3o">
             <objects>
-                <viewController storyboardIdentifier="homeWide" id="pPS-nY-vDK" customClass="HomeViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="home" id="pPS-nY-vDK" customClass="HomeViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="G81-cV-W8P"/>
                         <viewControllerLayoutGuide type="bottom" id="coo-Uh-a3t"/>
@@ -1045,11 +1054,20 @@
                     <view key="view" contentMode="scaleToFill" id="wli-mv-sKl">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7xb-zn-Rai">
+                                <rect key="frame" x="11" y="232" width="79" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="TouchMe!!!!">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="touchMeClicked:" destination="pPS-nY-vDK" eventType="touchUpInside" id="J4a-XO-835"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <gestureRecognizers/>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="2xP-tn-KMa" appends="YES" id="5BV-Bg-S74"/>
-                        </connections>
                     </view>
                     <navigationItem key="navigationItem" id="uTJ-j7-261">
                         <barButtonItem key="leftBarButtonItem" style="plain" id="RG4-or-rj6">
@@ -1071,12 +1089,6 @@
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5XM-vc-IbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="2xP-tn-KMa">
-                    <connections>
-                        <action selector="interactingWithTopViewController:" destination="pPS-nY-vDK" id="h0j-I0-bHB"/>
-                        <outlet property="delegate" destination="pPS-nY-vDK" id="0Ps-Tg-SBL"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="343" y="1477"/>
         </scene>

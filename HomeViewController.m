@@ -26,16 +26,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.slidingViewController.underLeftViewController = [self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"menu")];
+  //  self.slidingViewController.underLeftViewController = [self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"menu")];
 	// Do any additional setup after loading the view.
 }
 
-
-- (IBAction)interactingWithTopViewController:(id)sender {
+- (IBAction)touchMeClicked:(id)sender {
     
-    DLog(@"LOG : Restting top view");
-    if( self.slidingViewController.underLeftShowing )
-       [self.slidingViewController resetTopView];
+    DLog(@"LOG : Touch Me detected");
+    
+    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
+    {
+        DLog(@"Log : The count obtained is - %d", count);
+    }failure:^(NSError *error)
+    {
+        
+    }];
 }
 
 - (void)didReceiveMemoryWarning

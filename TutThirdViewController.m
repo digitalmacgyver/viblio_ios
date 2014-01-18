@@ -45,9 +45,9 @@
     
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^(void)
     {
-        lvc.topViewController = [self.storyboard instantiateViewControllerWithIdentifier: @"dashboard"];
+       // lvc.topViewController = [self.storyboard instantiateViewControllerWithIdentifier: @"dashboard"];
         
-        //[lvc performSegueWithIdentifier: @"home" sender:self];
+        [lvc performSegueWithIdentifier: @"dashboardNav" sender:self];
     }];
 }
 

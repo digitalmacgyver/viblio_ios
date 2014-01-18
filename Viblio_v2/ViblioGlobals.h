@@ -60,6 +60,7 @@
 #import "ViblioHelper.h"
 #import "CoreDataManager.h"
 #import "VideoManager.h"
+#import "AppManager.h"
 
 //Modals
 #import "User.h"

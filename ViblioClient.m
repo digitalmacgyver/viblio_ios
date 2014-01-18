@@ -106,6 +106,8 @@ void(^_failure)(NSError *error);
                                       user.userID = [JSON valueForKeyPath:@"user.uuid"];
                                       user.emailId = emailID;
                                       user.isFBUser = NO;
+                                      user.isNewUser = NO;
+                                      
                                       if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
                                       {
                                           NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
@@ -119,6 +121,9 @@ void(^_failure)(NSError *error);
                                               }
                                           }
                                       }
+                                      
+                                      DLog(@"LOG : storing a copy of the user object globally");
+                                      APPMANAGER.user = user;
                                       success(user);
  
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
@@ -148,6 +153,9 @@ void(^_failure)(NSError *error);
                                       
                                       User *user = [[User alloc]init];
                                       user.userID = [JSON valueForKeyPath:@"user.uuid"];
+                                      user.emailId = nil;
+                                      user.isFBUser = YES;
+                                      user.isNewUser = NO;
                                       
                                       if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
                                       {
@@ -192,6 +200,7 @@ void(^_failure)(NSError *error);
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
+                                      
 //                                      NSString *msg = [JSON valueForKeyPath:@"payload.sys_message"];
 //                                      success(msg);
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
@@ -438,5 +447,34 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     NSLog(@"All tasks are finished");
 }
+
+
+#pragma media APIs
+
+// API to get the count of media files uploaded by the user
+
+-(void)getCountOfMediaFilesUploadedByUser:(void(^)(int count))success
+                                 failure : (void (^) (NSError *error))failure
+{
+    NSString *path = @"/mediafile/count";
+    NSDictionary *params = @{
+                             @"uuid": APPMANAGER.user.userID,
+                             };
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:params];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
+
 
 @end

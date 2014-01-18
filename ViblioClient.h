@@ -67,4 +67,8 @@
                               success:(void (^)(NSString *user))success
                               failure:(void(^)(NSError *error))failure;
 
+
+-(void)getCountOfMediaFilesUploadedByUser:(void(^)(int count))success
+                                 failure : (void (^) (NSError *error))failure;
+
 @end

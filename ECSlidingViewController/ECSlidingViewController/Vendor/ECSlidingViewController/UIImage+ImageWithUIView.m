@@ -17,7 +17,7 @@
   [view drawLayer:view.layer inContext:ctx];
   img = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
-  
+    DLog(@"LOG : Returning an image");
   return img;
 }
 @end

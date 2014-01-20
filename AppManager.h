@@ -8,12 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "User.h"
+#import "Session.h"
 
 #define APPMANAGER [AppManager sharedClient]
 
 @interface AppManager : NSObject
 
 @property (nonatomic, strong) User *user;
+@property (nonatomic, strong) Session *activeSession;
 
 + (AppManager *)sharedClient;
 

@@ -16,5 +16,7 @@
 @property (nonatomic, retain) NSNumber * sync_status;
 @property (nonatomic, retain) NSNumber * sync_time;
 @property (nonatomic, retain) NSNumber * hasFailed;
+@property (nonatomic, retain) NSNumber * isPaused;
+@property (nonatomic, retain) NSString * fileLocation;
 
 @end

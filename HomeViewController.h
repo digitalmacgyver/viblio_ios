@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "ECSlidingViewController.h"
+#import "VideoCell.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface HomeViewController : UIViewController
 
+@property (weak, nonatomic) IBOutlet UICollectionView *videoList;
 
 @end

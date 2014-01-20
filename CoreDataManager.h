@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Videos.h"
+#import "Session.h"
 
 #define DBCLIENT [CoreDataManager sharedClient]
 
@@ -23,10 +25,22 @@
 -(void)updateSynStatusOfFile:(NSString*)fileUrl
                  syncStatus : (NSUInteger) status;
 -(void)listAllEntitiesinTheDB;
+-(Videos*)listTheDetailsOfObjectWithURL:(NSString*)fileURL;
 -(void)deleteOperationOnDB:(NSString*)fileURL;
 -(void)deleteOperationOnDB;
 -(int)getTheCountOfRecordsInDB;
 -(NSArray*)fetchVideoListToBeUploaded;
 -(void)updateDB;
+
+//Video File functions
+-(void)updateIsPausedStatusOfFile:(NSURL*)assetUrl forPausedState:(BOOL)isPaused;
+-(void)updateFileLocationFile:(NSURL*)assetUrl toLocation:(NSString*)locationID;
+-(void)updateFailStatusOfFile:(NSURL*)assetUrl toStatus:(NSNumber*)status;
+
+// Session setting functions
+-(Session*)getSessionSettings;
+-(void)insertDefaultSettingsIntoSession;
+-(void)updateSessionSettingsForAutoSync:(BOOL)autoSync;
+-(void)updateSessionSettingsForBackgroundSync:(BOOL)backgrndSync;
 
 @end

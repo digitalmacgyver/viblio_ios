@@ -9,19 +9,20 @@
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import "Videos.h"
 
 #define VCLIENT [VideoManager sharedClient]
 
 @interface VideoManager : NSObject
 {
     __block int i, videosCount;
-    int offset;
+    double offset;
 }
 @property(nonatomic,retain)NSMutableArray *filteredVideoList;
 
 @property(nonatomic, retain)NSMutableArray *chunks;
-
 @property(nonatomic,strong)ALAsset *asset;
+@property(nonatomic, strong)Videos *videoUploading;
 
 + (VideoManager *)sharedClient;
 -(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success
@@ -30,7 +31,9 @@
 
 -(void)otherServices;
 -(void)startNewFileUpload;
--(int)getOffsetFromTheHeadService;
+-(void)getOffsetFromTheHeadService;
 -(void)videoFromNSData;
+
+-(void)videoUploadIntelligence;
 
 @end

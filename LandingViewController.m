@@ -35,7 +35,9 @@
 -(void)navigateToSignIn
 {
     //    self.topViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"dashboard"];
+   // [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"dashboardNav") sender:self];
     [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"signInNav") sender:self];
+    
 }
 
 -(void)viewDidAppear:(BOOL)animated

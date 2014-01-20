@@ -41,6 +41,12 @@
 {
     // Override point for customization after application launch.
     
+    Session *session = [DBCLIENT getSessionSettings];
+    
+    if( session == nil )
+       [DBCLIENT insertDefaultSettingsIntoSession];
+    
+    session = nil;
 //    NSManagedObjectContext *context = [self managedObjectContext];
 //    Videos *video = [NSEntityDescription
 //                                      insertNewObjectForEntityForName:@"Videos"
@@ -95,6 +101,14 @@
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
     [DBCLIENT updateDB];
+    APPMANAGER.activeSession = (Session*)[DBCLIENT getSessionSettings];
+    
+    DLog(@"Log : Calling to check if any upload is interrupted....");
+    
+    // Start uploading if user session exists
+    
+    if([APPMANAGER.user.userID isValid])
+        [VCLIENT videoUploadIntelligence];
     [FBSession.activeSession handleDidBecomeActive];
 }
 

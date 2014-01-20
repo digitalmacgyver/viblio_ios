@@ -66,6 +66,7 @@
 #import "User.h"
 #import "Info.h"
 #import "Videos.h"
+#import "Session.h"
 
 //Addtions
 #import "UITextField+Additions.h"

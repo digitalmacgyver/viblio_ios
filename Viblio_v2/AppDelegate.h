@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NSString+Additions.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

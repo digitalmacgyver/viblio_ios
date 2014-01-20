@@ -264,7 +264,7 @@ void(^_failure)(NSError *error);
 -(void)startUploadingFileForUserId : (NSString*)userUUId
                      fileLocalPath : (NSString*)fileLocalPath
                           fileSize : (NSString*)fileSize
-                           success : (void (^)(NSString *user))success
+                           success : (void (^)(NSString *fileLocation))success
                            failure : (void(^)(NSError *error))failure
 
 {
@@ -293,7 +293,12 @@ void(^_failure)(NSError *error);
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
-                                      
+                                      if( [((NSDictionary*)response.allHeaderFields)[@"Location"] isValid] )
+                                      {
+                                          NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Location"] componentsSeparatedByString:@"files/"];
+                                          if( parsedSession != nil && parsedSession.count > 0 )
+                                              success([parsedSession lastObject]);
+                                      }
                                       
                                       NSLog(@"LOG : Response Headers - %@",response);
                                       NSLog(@"LOG : Response Body - %@",op.responseString);
@@ -308,7 +313,7 @@ void(^_failure)(NSError *error);
 
 -(void)getOffsetOfTheFileAtLocationID : (NSString*)fileLocationID
                         sessionCookie : (NSString*)sessionCookie
-                              success : (void (^)(NSString *user))success
+                              success : (void (^)(double offset))success
                               failure : (void(^)(NSError *error))failure
 {
     NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
@@ -321,6 +326,9 @@ void(^_failure)(NSError *error);
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
+                                          
+                                      success([((NSDictionary*)response.allHeaderFields)[@"Offset"] doubleValue]);
+                                      
                                       NSLog(@"LOG : The response headers is - %@", response);
                                       NSLog(@"LOG : The response body - %@",op.responseString);
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
@@ -357,30 +365,12 @@ void(^_failure)(NSError *error);
     [chunk writeToFile:dataPath atomically:YES];
     
     _success = success;
+    _failure = failure;
     self.filePath = dataPath;
     
     self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromFile:[NSURL fileURLWithPath:dataPath]];
     // self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromData:chunk];
     [self.uploadTask resume];
-//    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:afRequest success:
-//                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
-//                                  {
-//                                      NSLog(@"LOG : check - 2.4");
-//                                     // [MBProgressHUD tl_fadeOutHUDInView:view withSuccessText:@"Image saved !"];
-//                                      success(@"");
-//                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
-//                                  {
-//                                    //  [MBProgressHUD tl_fadeOutHUDInView:view withFailureText:@"Saving image failed !"];
-//                                      failure(error);
-//                                  }];
-//    
-//    [op setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-//        NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
-//        
-////        if( totalBytesExpectedToWrite == totalBytesWritten )
-////            success(@"");
-//    }];
-//    [op start];
 }
 
 
@@ -427,6 +417,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         
     } else {
         NSLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
+        _failure(error);
     }
 	
     double progress = (double)task.countOfBytesSent / (double)task.countOfBytesExpectedToSend;

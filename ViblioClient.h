@@ -48,13 +48,13 @@
 -(void)startUploadingFileForUserId : (NSString*)userUUId
                      fileLocalPath : (NSString*)fileLocalPath
                           fileSize : (NSString*)fileSize
-                           success : (void (^)(NSString *user))success
+                           success : (void (^)(NSString *fileLocation))success
                            failure : (void(^)(NSError *error))failure;
 
 
 -(void)getOffsetOfTheFileAtLocationID : (NSString*)fileLocationID
                         sessionCookie : (NSString*)sessionCookie
-                              success : (void (^)(NSString *user))success
+                              success : (void (^)(double offset))success
                               failure : (void(^)(NSError *error))failure;
 
 

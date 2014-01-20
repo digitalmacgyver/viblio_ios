@@ -54,6 +54,11 @@
 		85DCB50D1888646C0068E738 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB50C1888646C0068E738 /* HomeViewController.m */; };
 		85DCB510188865F60068E738 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB50F188865F60068E738 /* MenuViewController.m */; };
 		85F8B47D188A5E2200E92380 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B47C188A5E2200E92380 /* AppManager.m */; };
+		85F8B484188AA89600E92380 /* share.png in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B482188AA89600E92380 /* share.png */; };
+		85F8B485188AA89600E92380 /* play_img.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B483188AA89600E92380 /* play_img.jpeg */; };
+		85F8B488188AAC9D00E92380 /* VideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B487188AAC9D00E92380 /* VideoCell.m */; };
+		85F8B48A188ABD9E00E92380 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85F8B489188ABD9E00E92380 /* AVFoundation.framework */; };
+		85F8B48D188B026B00E92380 /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B48C188B026B00E92380 /* Session.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -146,6 +151,13 @@
 		85DCB50F188865F60068E738 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		85F8B47B188A5E2200E92380 /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppManager.h; sourceTree = "<group>"; };
 		85F8B47C188A5E2200E92380 /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppManager.m; sourceTree = "<group>"; };
+		85F8B482188AA89600E92380 /* share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = share.png; sourceTree = "<group>"; };
+		85F8B483188AA89600E92380 /* play_img.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = play_img.jpeg; sourceTree = "<group>"; };
+		85F8B486188AAC9D00E92380 /* VideoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoCell.h; sourceTree = "<group>"; };
+		85F8B487188AAC9D00E92380 /* VideoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoCell.m; sourceTree = "<group>"; };
+		85F8B489188ABD9E00E92380 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		85F8B48B188B026B00E92380 /* Session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Session.h; sourceTree = "<group>"; };
+		85F8B48C188B026B00E92380 /* Session.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Session.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85F8B48A188ABD9E00E92380 /* AVFoundation.framework in Frameworks */,
 				2A63159B1883F88D00D864FC /* AssetsLibrary.framework in Frameworks */,
 				2A715849187D4E9100163201 /* SystemConfiguration.framework in Frameworks */,
 				2A715847187D4E8300163201 /* CFNetwork.framework in Frameworks */,
@@ -181,6 +194,7 @@
 		2A22F3D6187AAD8E002F71F8 = {
 			isa = PBXGroup;
 			children = (
+				85F8B47E188AA04B00E92380 /* Views */,
 				85DCB4FC188859740068E738 /* ECSlidingViewController */,
 				2A63158B187FDF2800D864FC /* Videos.xcdatamodeld */,
 				2A631478187E711700D864FC /* AuthHandlers */,
@@ -208,6 +222,7 @@
 		2A22F3E1187AAD8E002F71F8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				85F8B489188ABD9E00E92380 /* AVFoundation.framework */,
 				85DCB4FA188831DE0068E738 /* libz.dylib */,
 				2A63159A1883F88D00D864FC /* AssetsLibrary.framework */,
 				2A715848187D4E9100163201 /* SystemConfiguration.framework */,
@@ -320,6 +335,8 @@
 		2A71583E187D352C00163201 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				85F8B48B188B026B00E92380 /* Session.h */,
+				85F8B48C188B026B00E92380 /* Session.m */,
 				2AD637E418868AE800012A86 /* Videos.h */,
 				2AD637E518868AE800012A86 /* Videos.m */,
 				2A71583F187D355B00163201 /* User.h */,
@@ -378,6 +395,8 @@
 		2AD637F91886CB1600012A86 /* NonRetina */ = {
 			isa = PBXGroup;
 			children = (
+				85F8B482188AA89600E92380 /* share.png */,
+				85F8B483188AA89600E92380 /* play_img.jpeg */,
 				2AD637FC1886CBA600012A86 /* back.jpeg */,
 			);
 			name = NonRetina;
@@ -472,6 +491,15 @@
 			path = ECSlidingViewController;
 			sourceTree = "<group>";
 		};
+		85F8B47E188AA04B00E92380 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				85F8B486188AAC9D00E92380 /* VideoCell.h */,
+				85F8B487188AAC9D00E92380 /* VideoCell.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -558,6 +586,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2A22F3FE187AAD8E002F71F8 /* Images.xcassets in Resources */,
+				85F8B484188AA89600E92380 /* share.png in Resources */,
+				85F8B485188AA89600E92380 /* play_img.jpeg in Resources */,
 				2AD637FD1886CBA600012A86 /* back.jpeg in Resources */,
 				85DCB507188859740068E738 /* README.md in Resources */,
 				2A22F3F6187AAD8E002F71F8 /* Main.storyboard in Resources */,
@@ -635,9 +665,11 @@
 				85F8B47D188A5E2200E92380 /* AppManager.m in Sources */,
 				85D81D4A18897F0200F4BC44 /* InitialSlidingViewController.m in Sources */,
 				2AD637E618868AE800012A86 /* Videos.m in Sources */,
+				85F8B488188AAC9D00E92380 /* VideoCell.m in Sources */,
 				85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */,
 				85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */,
 				2AD637D11886566A00012A86 /* Info.m in Sources */,
+				85F8B48D188B026B00E92380 /* Session.m in Sources */,
 				2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */,
 				2A22F41F187AAED6002F71F8 /* ViblioHelper.m in Sources */,
 				2A22F3EF187AAD8E002F71F8 /* main.m in Sources */,

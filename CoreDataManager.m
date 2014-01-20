@@ -350,7 +350,7 @@
 
 // List all the entities in the DB
 
--(void)listAllEntitiesinTheDB
+-(NSArray*)listAllEntitiesinTheDB
 {
     NSManagedObjectContext *context = self.managedObjectContext;
     NSError *error;
@@ -363,6 +363,7 @@
     for (Videos *info in fetchedObjects) {
         DLog(@"LOG : %@", info);
     }
+    return fetchedObjects;
 }
 
 -(Videos *)listTheDetailsOfObjectWithURL:(NSString*)fileURL
@@ -527,6 +528,39 @@
     
     request = nil;
 }
+
+
+
+-(void)updateUploadedBytesForFile:(NSURL*)assetUrl toBytes:(NSNumber*)bytes
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", assetUrl];
+    [request setPredicate:predicate];
+    
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    NSLog(@"LOG : The results obtained are - %@", results);
+    
+    Videos *video = [results firstObject];
+    [video setValue:bytes forKey:@"uploadedBytes"];
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    request = nil;
+}
+
+
+//-(void)resetSyncStatusOfAllDBRecordsTo:(NSUInteger)sync_status
+//{
+//    DLog(@"Log : Resetting the status of sync to - %lu", (unsigned long)sync_status);
+//    for(ALAsset *asset in VCLIENT.filteredVideoList)
+//    {
+//        
+//    }
+//}
 
 /*--------------------------------- Core Data Functionalities ------------------------------------------------- */
 

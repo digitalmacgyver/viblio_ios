@@ -30,6 +30,7 @@
 	// Do any additional setup after loading the view.
     
    // [self.videoList registerClass:[VideoCell class] forCellWithReuseIdentifier:@"VideoStaticCell"];
+    [VCLIENT videoUploadIntelligence];
 }
 - (IBAction)stopMe:(id)sender {
     [APPCLIENT invalidateFileUploadTask];

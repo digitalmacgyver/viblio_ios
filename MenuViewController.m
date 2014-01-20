@@ -42,8 +42,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshProgressBar) name:refreshProgress object:nil];
 }
 
-
--(void)viewWillAppear:(BOOL)animated
+-(void)viewDidAppear:(BOOL)animated
 {
     DLog(@"Log : Geting the information of video being uploaded to show in progress bar");
     
@@ -52,6 +51,7 @@
         DLog(@"Log : Upload in progress....");
         [self.vwProgressBar setHidden:NO];
         //self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
+        // [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:YES];
         [self refreshProgressBar];
     }
     else
@@ -70,17 +70,22 @@
     DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
     DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
     
-    double percentageUploaded = APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size;
-    CGRect progressBarFrame = self.lblProgressBar.frame;
-    progressBarFrame.size.width = self.vwProgressBar.frame.size.width * percentageUploaded;
-    self.lblProgressBar.frame = progressBarFrame;
+    [UIView animateWithDuration:1 animations:^(void)
+    {
+        CGRect progressBarFrame = self.lblProgressBar.frame;
+        progressBarFrame.size.width = (int) (APPCLIENT.uploadedSize * self.vwProgressBar.frame.size.width) / VCLIENT.asset.defaultRepresentation.size ;
+        self.lblProgressBar.frame = progressBarFrame;
+            DLog(@"Log : progress bar width should be - %f", progressBarFrame.size.width);
+    }];
     self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
-    
-    
-    DLog(@"Log : progress bar width should be - %f", progressBarFrame.size.width);
 }
 
 - (IBAction)progressBarClicked:(id)sender {
+    DLog(@"Log : Progress bar clicked.. Show list of uploading screens...");
+    [self.slidingViewController resetTopView];
+    
+    DLog(@"Log : The class of top view controlelr is - %@", NSStringFromClass([self.slidingViewController.topViewController class]));
+    [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"uploadList"] animated:YES];
 }
 
 //-(void)viewWillAppear:(BOOL)animated

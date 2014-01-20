@@ -147,6 +147,7 @@
      {
          DLog(@"Log : The offset obtained is - %lf", offsetObtained);
          offset = offsetObtained;
+         APPCLIENT.uploadedSize = offset;
          [self videoFromNSData];
      }failure:^(NSError *error)
      {
@@ -229,6 +230,10 @@
                  DLog(@"Log : Error uploading file and the error is - %@", error);
                  // Commiting to DB that the File has failed
                  [DBCLIENT updateFailStatusOfFile:self.asset.defaultRepresentation.url toStatus:@(1)];
+                 
+                 // Commit the uploaded bytes to the DB
+                 [DBCLIENT updateUploadedBytesForFile:self.asset.defaultRepresentation.url toBytes:@(APPCLIENT.uploadedSize)];
+                 
                  self.asset = nil; self.videoUploading = nil;
                  
                  if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive )

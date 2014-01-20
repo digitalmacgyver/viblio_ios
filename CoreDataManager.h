@@ -24,7 +24,7 @@
 - (NSURL *)applicationDocumentsDirectory;
 -(void)updateSynStatusOfFile:(NSString*)fileUrl
                  syncStatus : (NSUInteger) status;
--(void)listAllEntitiesinTheDB;
+-(NSArray*)listAllEntitiesinTheDB;
 -(Videos*)listTheDetailsOfObjectWithURL:(NSString*)fileURL;
 -(void)deleteOperationOnDB:(NSString*)fileURL;
 -(void)deleteOperationOnDB;
@@ -36,6 +36,7 @@
 -(void)updateIsPausedStatusOfFile:(NSURL*)assetUrl forPausedState:(BOOL)isPaused;
 -(void)updateFileLocationFile:(NSURL*)assetUrl toLocation:(NSString*)locationID;
 -(void)updateFailStatusOfFile:(NSURL*)assetUrl toStatus:(NSNumber*)status;
+-(void)updateUploadedBytesForFile:(NSURL*)assetUrl toBytes:(NSNumber*)bytes;
 
 // Session setting functions
 -(Session*)getSessionSettings;

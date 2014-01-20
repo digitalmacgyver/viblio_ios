@@ -392,7 +392,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
         DLog(@"LOG : The details are as follows - bytesSent - %lld, totalBytesSent - %lld, totalBytesEpectedToSend - %lld", bytesSent, totalBytesSent, totalBytesExpectedToSend);
     
-    self.uploadedSize += totalBytesSent;
+    self.uploadedSize += bytesSent;
     DLog(@"Log : Uploaded Size = %f", self.uploadedSize);
     
     [[NSNotificationCenter defaultCenter] postNotificationName:refreshProgress object:nil];

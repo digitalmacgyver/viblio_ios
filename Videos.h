@@ -2,7 +2,7 @@
 //  Videos.h
 //  Viblio_v2
 //
-//  Created by Dunty Vinay Raj on 1/15/14.
+//  Created by Vinay on 1/21/14.
 //  Copyright (c) 2014 Dunty Vinay Raj. All rights reserved.
 //
 
@@ -12,11 +12,12 @@
 
 @interface Videos : NSManagedObject
 
+@property (nonatomic, retain) NSString * fileLocation;
 @property (nonatomic, retain) NSString * fileURL;
-@property (nonatomic, retain) NSNumber * sync_status;
-@property (nonatomic, retain) NSNumber * sync_time;
 @property (nonatomic, retain) NSNumber * hasFailed;
 @property (nonatomic, retain) NSNumber * isPaused;
-@property (nonatomic, retain) NSString * fileLocation;
+@property (nonatomic, retain) NSNumber * sync_status;
+@property (nonatomic, retain) NSNumber * sync_time;
+@property (nonatomic, retain) NSNumber * uploadedBytes;
 
 @end

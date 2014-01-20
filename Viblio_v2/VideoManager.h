@@ -35,5 +35,6 @@
 -(void)videoFromNSData;
 
 -(void)videoUploadIntelligence;
+-(ALAsset*)getAssetFromFilteredVideosForUrl:(NSString*)url;
 
 @end

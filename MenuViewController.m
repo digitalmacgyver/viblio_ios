@@ -38,6 +38,49 @@
     self.menuList.backgroundColor = [UIColor redColor];
     _menuSections = @[@"Settings", @"Help/FAQ", @"Tell A Friend", @"Give Feedback", @"Legal & Privacy", @"Rate Us In App Store"];
 	// Do any additional setup after loading the view.
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshProgressBar) name:refreshProgress object:nil];
+}
+
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    DLog(@"Log : Geting the information of video being uploaded to show in progress bar");
+    
+    if( VCLIENT.asset != nil )
+    {
+        DLog(@"Log : Upload in progress....");
+        [self.vwProgressBar setHidden:NO];
+        //self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
+        [self refreshProgressBar];
+    }
+    else
+    {
+        DLog(@"Log : No Upload in progress....");
+        [self.vwProgressBar setHidden:YES];
+        self.uploadingImg.image = nil;
+        self.lblProgressTitle.text = @"All uploads have finished";
+    }
+}
+
+-(void)refreshProgressBar
+{
+    DLog(@"Log : Refreshing the progress bar for file");
+    DLog(@"Log : uploaded size is - %f", APPCLIENT.uploadedSize);
+    DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
+    DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
+    
+    double percentageUploaded = APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size;
+    CGRect progressBarFrame = self.lblProgressBar.frame;
+    progressBarFrame.size.width = self.vwProgressBar.frame.size.width * percentageUploaded;
+    self.lblProgressBar.frame = progressBarFrame;
+    self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
+    
+    
+    DLog(@"Log : progress bar width should be - %f", progressBarFrame.size.width);
+}
+
+- (IBAction)progressBarClicked:(id)sender {
 }
 
 //-(void)viewWillAppear:(BOOL)animated

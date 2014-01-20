@@ -31,11 +31,18 @@
     
    // [self.videoList registerClass:[VideoCell class] forCellWithReuseIdentifier:@"VideoStaticCell"];
 }
+- (IBAction)stopMe:(id)sender {
+    [APPCLIENT invalidateFileUploadTask];
+}
 
 - (IBAction)touchMeClicked:(id)sender {
     
     DLog(@"LOG : Touch Me detected");
   
+//    [APPCLIENT invalidateFileUploadTask];
+    [DBCLIENT updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=81A618BF-5E75-4EB9-B186-F247CF0EB4B8&ext=MOV" syncStatus:0];
+//    [DBCLIENT updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=3CB0B4EA-D6E0-4454-942D-4FAD79660304&ext=MOV" syncStatus:0];
+    
     [DBCLIENT listAllEntitiesinTheDB];
 //    [VCLIENT videoUploadIntelligence];
 //    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
@@ -73,19 +80,33 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     VideoCell *cell = (VideoCell*)[cv dequeueReusableCellWithReuseIdentifier:@"VideoStaticCell" forIndexPath:indexPath];
     
-    DLog(@"LOG : filteredVideoList - %@", VCLIENT.filteredVideoList);
+   // DLog(@"LOG : filteredVideoList - %@", VCLIENT.filteredVideoList);
+    DLog(@"Log : Asst details are - %@", VCLIENT.filteredVideoList[indexPath.row]);
     
     Videos *assetVideo = [DBCLIENT listTheDetailsOfObjectWithURL:[[VCLIENT.filteredVideoList[indexPath.row] defaultRepresentation] url].absoluteString];
     cell.videoImage.image =  [UIImage imageWithCGImage:[VCLIENT.filteredVideoList[indexPath.row] thumbnail]];
     cell.video = [DBCLIENT listTheDetailsOfObjectWithURL:[[VCLIENT.filteredVideoList[indexPath.row] defaultRepresentation] url].absoluteString];
+    cell.asset = VCLIENT.filteredVideoList[indexPath.row];
     
     if( [assetVideo.sync_status  isEqual: @(0)] )
     {
+        DLog(@"Log : Getting into this if condition");
         [cell.vwUpload setHidden:NO];
+    }
+    else
+    {
+        DLog(@"Log : Getting into else condition");
+        [cell.vwUpload setHidden:YES];
     }
     return cell;
 }
 
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    DLog(@"Item selected at index path - %d", indexPath.row);
+    DLog(@"item at index path is - %@", VCLIENT.filteredVideoList[indexPath.row]);
+}
 //
 
 - (UIImage*)loadImage : (ALAsset *)videoAsset {

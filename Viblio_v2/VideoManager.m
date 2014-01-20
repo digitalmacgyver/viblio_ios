@@ -198,6 +198,9 @@
             DLog(@"Log : Remove the file record from DB ----");
             [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
             
+            // Clean the video uploaded size
+            APPCLIENT.uploadedSize = 0;
+            
             self.asset = nil;
             self.videoUploading = nil;
             
@@ -250,6 +253,7 @@
         
         if( videoList != nil && videoList.count > 0 )
         {
+            DLog(@"Log : The autoSyncStatus is - %@", APPMANAGER.activeSession.autoSyncEnabled);
             DLog(@"Log : The list of videos to be uploaded are - %@", videoList);
             self.videoUploading = (Videos*)[videoList firstObject];
             self.asset = [self getAssetFromFilteredVideosForUrl: self.videoUploading.fileURL];

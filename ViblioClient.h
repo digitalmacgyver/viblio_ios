@@ -14,6 +14,8 @@
 
 @interface ViblioClient : AFHTTPClient <NSURLSessionDelegate, NSURLSessionTaskDelegate>
 
+@property(nonatomic, assign) double uploadedSize;
+
 @property (nonatomic) NSURLSession *session;
 @property (nonatomic) NSURLSessionUploadTask *uploadTask;
 @property (nonatomic) NSString *filePath;
@@ -64,9 +66,11 @@
                               offset : (NSString*)offset
                                chunk : (NSData*)chunk
                        sessionCookie : (NSString*)sessionCookie
-                              success:(void (^)(NSString *user))success
-                              failure:(void(^)(NSError *error))failure;
+                              success:(void (^)(NSString *user))successCallback
+                              failure:(void(^)(NSError *error))failureCallback;
 
+
+-(void)invalidateFileUploadTask;
 
 -(void)getCountOfMediaFilesUploadedByUser:(void(^)(int count))success
                                  failure : (void (^) (NSError *error))failure;

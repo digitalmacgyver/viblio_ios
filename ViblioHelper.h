@@ -10,6 +10,8 @@
 
 @interface ViblioHelper : NSObject
 
+extern NSString * const refreshProgress;
+
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 
 +(void)displayAlertWithTitle:(NSString*)titleString

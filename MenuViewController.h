@@ -13,4 +13,8 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *menuList;
 
+@property (weak, nonatomic) IBOutlet UIImageView *uploadingImg;
+@property (weak, nonatomic) IBOutlet UIView *vwProgressBar;
+@property (weak, nonatomic) IBOutlet UILabel *lblProgressBar;
+@property (weak, nonatomic) IBOutlet UILabel *lblProgressTitle;
 @end

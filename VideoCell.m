@@ -16,8 +16,8 @@
     if (self) {
         // Initialization code
         DLog(@"LOG : Cell initialised");
-        self.videoImage.image = [self loadImage:self.asset];
-        [self.vwUpload setHidden:NO];
+        //self.videoImage.image = [self loadImage:self.asset];
+        //[self.vwUpload setHidden:NO];
     }
     return self;
 }
@@ -44,6 +44,7 @@
     // If an upload is in progres then we just make an update to the DB
     // We change the sync_status of the video file to 1 so that its taken on priority
     
+    DLog(@"Log : Upload initialised for video - %@", self.asset);
     [DBCLIENT updateSynStatusOfFile:self.video.fileURL syncStatus:1];
     
     if( VCLIENT.asset == nil )
@@ -62,17 +63,17 @@
 - (IBAction)shareViaMail:(id)sender {
 }
 
-- (UIImage*)loadImage : (ALAsset *)videoAsset {
-    
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoAsset.defaultRepresentation.url options:nil];
-    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    NSError *err = NULL;
-    CMTime time = CMTimeMake(1, 60);
-    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-    NSLog(@"err==%@, imageRef==%@", err, imgRef);
-    
-    return [[UIImage alloc] initWithCGImage:imgRef];
-    
-}
+//- (UIImage*)loadImage : (ALAsset *)videoAsset {
+//    
+//    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoAsset.defaultRepresentation.url options:nil];
+//    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+//    NSError *err = NULL;
+//    CMTime time = CMTimeMake(1, 60);
+//    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
+//    NSLog(@"err==%@, imageRef==%@", err, imgRef);
+//    
+//    return [[UIImage alloc] initWithCGImage:imgRef];
+//    
+//}
 
 @end

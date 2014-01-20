@@ -11,6 +11,8 @@
 
 @implementation ViblioHelper
 
+NSString *const refreshProgress = @"com.viblio.app : UplodProgressNotification";
+
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {
     return [FBUtility stringBySerializingQueryParameters:queryParameters];

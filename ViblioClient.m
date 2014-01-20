@@ -272,7 +272,7 @@ void(^_failure)(NSError *error);
     NSDictionary *params = @{
                              @"uuid": userUUId,
                              @"file": @{
-                                     @"Path": @"Sample Video.MOV"
+                                     @"Path": @"Sample Video Monday.MOV"
                                      },
                              @"user-agent": @"your-client-name: your-client-version"
                              };
@@ -289,7 +289,7 @@ void(^_failure)(NSError *error);
     
     
 //    NSLog(@"LOG : REquest that was sent - %@ --- %@",request, );
-    
+
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
@@ -347,8 +347,8 @@ void(^_failure)(NSError *error);
                            offset : (NSString*)offset
                             chunk : (NSData*)chunk
                     sessionCookie : (NSString*)sessionCookie
-                    success:(void (^)(NSString *user))success
-                    failure:(void(^)(NSError *error))failure
+                    success:(void (^)(NSString *user))successCallback
+                    failure:(void(^)(NSError *error))failureCallback
 {
     
     NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
@@ -364,9 +364,15 @@ void(^_failure)(NSError *error);
     NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"/tempFile"];
     [chunk writeToFile:dataPath atomically:YES];
     
-    _success = success;
-    _failure = failure;
+    _success = successCallback;
+    _failure = failureCallback;
     self.filePath = dataPath;
+    
+    if( self.session == nil )
+    {
+        DLog(@"Log : Session might have been invalidated.. Create new session instance..");
+        self.session = [self backgroundSession];
+    }
     
     self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromFile:[NSURL fileURLWithPath:dataPath]];
     // self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromData:chunk];
@@ -385,6 +391,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 //    if (task == self.uploadTask) {
     
         DLog(@"LOG : The details are as follows - bytesSent - %lld, totalBytesSent - %lld, totalBytesEpectedToSend - %lld", bytesSent, totalBytesSent, totalBytesExpectedToSend);
+    
+    self.uploadedSize += totalBytesSent;
+    DLog(@"Log : Uploaded Size = %f", self.uploadedSize);
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:refreshProgress object:nil];
 //        double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
 //        NSLog(@"DownloadTask: %@ progress: %lf", downloadTask, progress);
 //        dispatch_async(dispatch_get_main_queue(), ^{
@@ -407,25 +418,31 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     
-    if (error == nil) {
-
-        NSLog(@"Task: %@ completed successfully", task);
-        
-        if([[NSFileManager defaultManager] fileExistsAtPath:self.filePath])
-            [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:&error];
-        _success(@"");
-        
-    } else {
-        NSLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
-        _failure(error);
-    }
-	
-    double progress = (double)task.countOfBytesSent / (double)task.countOfBytesExpectedToSend;
-	dispatch_async(dispatch_get_main_queue(), ^{
-        DLog(@"LOG : The progress is %lf", progress);
-	});
+    // Clean the uplaoded size
     
-    self.uploadTask = nil;
+    if(self.uploadTask != nil)
+    {
+        if (error == nil) {
+            
+            NSLog(@"Task: %@ completed successfully", task);
+            
+            if([[NSFileManager defaultManager] fileExistsAtPath:self.filePath])
+                [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:&error];
+            
+            _success(@"");
+            
+        } else {
+            NSLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
+            _failure(error);
+        }
+        
+        double progress = (double)task.countOfBytesSent / (double)task.countOfBytesExpectedToSend;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            DLog(@"LOG : The progress is %lf", progress);
+        });
+        
+        self.uploadTask = nil;
+    }
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
@@ -435,8 +452,20 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         appDelegate.backgroundSessionCompletionHandler = nil;
         completionHandler();
     }
-    
     NSLog(@"All tasks are finished");
+}
+
+-(void)invalidateFileUploadTask
+{
+    DLog(@"Log : Initialising upload Pause ----");
+    
+    // Upload paused by the user.... Update the user isPaused status
+    
+    [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
+    [self.uploadTask suspend];
+    
+    NSError *error = nil;
+    _failure(error);
 }
 
 

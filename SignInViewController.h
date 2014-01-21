@@ -10,6 +10,7 @@
 
 @interface SignInViewController : UIViewController
 
-
+@property (weak, nonatomic) IBOutlet UILabel *lblSignUpWith;
+@property (weak, nonatomic) IBOutlet UILabel *lblTrial;
 
 @end

@@ -390,12 +390,18 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     DLog(@"LOG : In call back handler - ");
 //    if (task == self.uploadTask) {
     
+    if( self.uploadTask != nil )
+    {
         DLog(@"LOG : The details are as follows - bytesSent - %lld, totalBytesSent - %lld, totalBytesEpectedToSend - %lld", bytesSent, totalBytesSent, totalBytesExpectedToSend);
-    
-    self.uploadedSize += bytesSent;
-    DLog(@"Log : Uploaded Size = %f", self.uploadedSize);
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:refreshProgress object:nil];
+        
+        self.uploadedSize += bytesSent;
+        DLog(@"Log : Uploaded Size = %f", self.uploadedSize);
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:refreshProgress object:nil];
+    }
+    else
+        DLog(@"Log : Task being performed is nil");
+
 //        double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
 //        NSLog(@"DownloadTask: %@ progress: %lf", downloadTask, progress);
 //        dispatch_async(dispatch_get_main_queue(), ^{
@@ -420,8 +426,10 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     // Clean the uplaoded size
     
-    if(self.uploadTask != nil)
-    {
+    DLog(@"Log : Did complete called");
+//    if(task != nil)
+//    {
+        DLog(@"Log : Not entering if");
         if (error == nil) {
             
             NSLog(@"Task: %@ completed successfully", task);
@@ -429,20 +437,24 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
             if([[NSFileManager defaultManager] fileExistsAtPath:self.filePath])
                 [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:&error];
             
-            _success(@"");
+            if(self.uploadTask != nil)
+                _success(@"");
             
         } else {
             NSLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
-            _failure(error);
+            if(self.uploadTask != nil)
+                _failure(error);
         }
         
-        double progress = (double)task.countOfBytesSent / (double)task.countOfBytesExpectedToSend;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            DLog(@"LOG : The progress is %lf", progress);
-        });
+//        double progress = (double)task.countOfBytesSent / (double)task.countOfBytesExpectedToSend;
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            DLog(@"LOG : The progress is %lf", progress);
+//        });
         
-        self.uploadTask = nil;
-    }
+      //  self.uploadTask = nil;
+//    }
+//    else
+//        DLog(@"Log : Upload task is nil");
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {

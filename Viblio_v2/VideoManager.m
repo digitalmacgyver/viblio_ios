@@ -234,7 +234,7 @@
                  // Commit the uploaded bytes to the DB
                  [DBCLIENT updateUploadedBytesForFile:self.asset.defaultRepresentation.url toBytes:@(APPCLIENT.uploadedSize)];
                  
-                 self.asset = nil; self.videoUploading = nil;
+                 self.asset = nil; self.videoUploading = nil; APPCLIENT.uploadedSize = 0;
                  
                  if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive )
                      [self videoUploadIntelligence];
@@ -252,8 +252,8 @@
 
 -(void)videoUploadIntelligence
 {
-//    if( self.asset == nil )
-//    {
+    if( self.asset == nil )
+    {
         NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
         
         if( videoList != nil && videoList.count > 0 )
@@ -281,9 +281,9 @@
             self.asset = nil;
             self.videoUploading = nil;
         }
-//    }
-//    else
-//        DLog(@"Log : An upload in progress.....");
+    }
+    else
+        DLog(@"Log : An upload in progress.....");
 }
 
 /*------------------------------------------------------- Function to get the ALAsset by passing asset URL -----------------------------------------*/

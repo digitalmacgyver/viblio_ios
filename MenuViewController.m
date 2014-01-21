@@ -49,12 +49,12 @@
 {
     DLog(@"Log : Geting the information of video being uploaded to show in progress bar");
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshProgressBar) name:refreshProgress object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
     
     if( VCLIENT.asset != nil )
     {
         DLog(@"Log : Upload in progress....");
-        [self.vwProgressBar setHidden:NO];
+        [self.progressView setHidden:NO];
         //self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
         // [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:YES];
         [self refreshProgressBar];
@@ -62,10 +62,15 @@
     else
     {
         DLog(@"Log : No Upload in progress....");
-        [self.vwProgressBar setHidden:YES];
+        [self.progressView setHidden:YES];
         self.uploadingImg.image = nil;
         self.lblProgressTitle.text = @"All uploads have finished";
     }
+}
+
+-(void)refreshBar
+{
+    [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:NO];
 }
 
 -(void)refreshProgressBar
@@ -75,13 +80,15 @@
     DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
     DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
     
-    [UIView animateWithDuration:1 animations:^(void)
-    {
-        CGRect progressBarFrame = self.lblProgressBar.frame;
-        progressBarFrame.size.width = (int) (APPCLIENT.uploadedSize * self.vwProgressBar.frame.size.width) / VCLIENT.asset.defaultRepresentation.size ;
-        self.lblProgressBar.frame = progressBarFrame;
-            DLog(@"Log : progress bar width should be - %f", progressBarFrame.size.width);
-    }];
+//    [UIView animateWithDuration:0.1 animations:^(void)
+//    {
+//    if( self.lblProgressBar != nil )
+//       [self.lblProgressBar removeFromSuperview];
+    
+    self.progressView.progress = APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size;
+    
+//    [self.vwProgressBar addSubview:self.lblProgressBar];
+//    }];
     self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
 }
 

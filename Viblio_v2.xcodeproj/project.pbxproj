@@ -55,6 +55,12 @@
 		85DCB50A188861BC0068E738 /* DashBoardNavController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB509188861BC0068E738 /* DashBoardNavController.m */; };
 		85DCB50D1888646C0068E738 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB50C1888646C0068E738 /* HomeViewController.m */; };
 		85DCB510188865F60068E738 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85DCB50F188865F60068E738 /* MenuViewController.m */; };
+		85ED7FFF188EBB8C00CEAE85 /* Aleo-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85ED7FF9188EAE8900CEAE85 /* Aleo-Bold.otf */; };
+		85ED8000188EBB8C00CEAE85 /* Aleo-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85ED7FFA188EAE8900CEAE85 /* Aleo-BoldItalic.otf */; };
+		85ED8001188EBB8C00CEAE85 /* Aleo-Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85ED7FFB188EAE8900CEAE85 /* Aleo-Italic.otf */; };
+		85ED8002188EBB8C00CEAE85 /* Aleo-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85ED7FFC188EAE8900CEAE85 /* Aleo-Light.otf */; };
+		85ED8003188EBB8C00CEAE85 /* Aleo-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85ED7FFD188EAE8900CEAE85 /* Aleo-LightItalic.otf */; };
+		85ED8004188EBB8C00CEAE85 /* Aleo-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85ED7FFE188EAE8900CEAE85 /* Aleo-Regular.otf */; };
 		85F8B47D188A5E2200E92380 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B47C188A5E2200E92380 /* AppManager.m */; };
 		85F8B484188AA89600E92380 /* share.png in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B482188AA89600E92380 /* share.png */; };
 		85F8B485188AA89600E92380 /* play_img.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B483188AA89600E92380 /* play_img.jpeg */; };
@@ -155,6 +161,12 @@
 		85DCB50C1888646C0068E738 /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
 		85DCB50E188865F60068E738 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		85DCB50F188865F60068E738 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
+		85ED7FF9188EAE8900CEAE85 /* Aleo-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aleo-Bold.otf"; sourceTree = "<group>"; };
+		85ED7FFA188EAE8900CEAE85 /* Aleo-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aleo-BoldItalic.otf"; sourceTree = "<group>"; };
+		85ED7FFB188EAE8900CEAE85 /* Aleo-Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aleo-Italic.otf"; sourceTree = "<group>"; };
+		85ED7FFC188EAE8900CEAE85 /* Aleo-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aleo-Light.otf"; sourceTree = "<group>"; };
+		85ED7FFD188EAE8900CEAE85 /* Aleo-LightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aleo-LightItalic.otf"; sourceTree = "<group>"; };
+		85ED7FFE188EAE8900CEAE85 /* Aleo-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Aleo-Regular.otf"; sourceTree = "<group>"; };
 		85F8B47B188A5E2200E92380 /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppManager.h; sourceTree = "<group>"; };
 		85F8B47C188A5E2200E92380 /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppManager.m; sourceTree = "<group>"; };
 		85F8B482188AA89600E92380 /* share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = share.png; sourceTree = "<group>"; };
@@ -262,6 +274,7 @@
 		2A22F3E9187AAD8E002F71F8 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				85ED7FF8188EAE2E00CEAE85 /* Font */,
 				2A22F3EA187AAD8E002F71F8 /* Viblio_v2-Info.plist */,
 				2A22F3EB187AAD8E002F71F8 /* InfoPlist.strings */,
 				2A22F3EE187AAD8E002F71F8 /* main.m */,
@@ -499,6 +512,19 @@
 			path = ECSlidingViewController;
 			sourceTree = "<group>";
 		};
+		85ED7FF8188EAE2E00CEAE85 /* Font */ = {
+			isa = PBXGroup;
+			children = (
+				85ED7FF9188EAE8900CEAE85 /* Aleo-Bold.otf */,
+				85ED7FFA188EAE8900CEAE85 /* Aleo-BoldItalic.otf */,
+				85ED7FFB188EAE8900CEAE85 /* Aleo-Italic.otf */,
+				85ED7FFC188EAE8900CEAE85 /* Aleo-Light.otf */,
+				85ED7FFD188EAE8900CEAE85 /* Aleo-LightItalic.otf */,
+				85ED7FFE188EAE8900CEAE85 /* Aleo-Regular.otf */,
+			);
+			name = Font;
+			sourceTree = "<group>";
+		};
 		85F8B47E188AA04B00E92380 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -595,6 +621,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85ED7FFF188EBB8C00CEAE85 /* Aleo-Bold.otf in Resources */,
+				85ED8000188EBB8C00CEAE85 /* Aleo-BoldItalic.otf in Resources */,
+				85ED8001188EBB8C00CEAE85 /* Aleo-Italic.otf in Resources */,
+				85ED8002188EBB8C00CEAE85 /* Aleo-Light.otf in Resources */,
+				85ED8003188EBB8C00CEAE85 /* Aleo-LightItalic.otf in Resources */,
+				85ED8004188EBB8C00CEAE85 /* Aleo-Regular.otf in Resources */,
 				2A22F3FE187AAD8E002F71F8 /* Images.xcassets in Resources */,
 				85F8B484188AA89600E92380 /* share.png in Resources */,
 				85F8B485188AA89600E92380 /* play_img.jpeg in Resources */,

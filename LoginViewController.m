@@ -26,8 +26,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self.email setFont: [UIFont fontWithName:@"Aleo-LightItalic" size:13]];
     self.email.text = @"vinay@cognitiveclouds.com";
     self.password.text = @"MaraliMannige4";
+
 	// Do any additional setup after loading the view.
 }
 

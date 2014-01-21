@@ -27,6 +27,36 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
+    for (NSString* family in [UIFont familyNames])
+    {
+        NSLog(@"%@", family);
+        
+        for (NSString* name in [UIFont fontNamesForFamilyName: family])
+        {
+            NSLog(@"  %@", name);
+        }
+    }
+    
+    
+    self.lblTrial.text = @"we promise you";
+    self.lblTrial.numberOfLines = 0;
+    
+   if( self.lblSignUpWith == nil )
+       DLog(@"Label is nil");
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+//    self.lblSignUpWith.text = @"Sign up";
+   // [self.lblSignUpWith setFont:[UIFont fontWithName:@"Avenir-Medium" size:13]];
+//    self.lblSignUpWith.font = [UIFont fontWithName:@"Avenir-Medium" size:20];
+//    self.lblSignUpWith.font = [ViblioHelper viblio_Font_Light_Italic_WithSize:14 isBold:YES];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+   // [self.lblSignUpWith setFont: [UIFont fontWithName:@"Aleo-LightItalic" size:13]];
 }
 
 - (void)didReceiveMemoryWarning

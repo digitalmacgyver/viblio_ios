@@ -119,6 +119,11 @@
     
     if( progressCell != nil )
     {
+        if( [progressCell.video.fileURL isEqualToString:VCLIENT.videoUploading.fileURL] )
+        {
+            DLog(@"Log : The cell is the same as the one uploading now.. Index is - %d", indexPath.row);
+            progressCell.video.uploadedBytes = @(APPCLIENT.uploadedSize);
+        }
         CGRect progressBarFrame = progressCell.lblUploadProgress.frame;
         progressBarFrame.size.width = (int) ([video.uploadedBytes doubleValue] * progressCell.vwUploadProgress.frame.size.width) / VCLIENT.asset.defaultRepresentation.size ;
         progressCell.lblUploadProgress.frame = progressBarFrame;

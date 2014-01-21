@@ -24,7 +24,13 @@
 
 -(void)presentNotification{
     UILocalNotification* localNotification = [[UILocalNotification alloc] init];
-    localNotification.alertBody = @"Upload Complete!";
+    
+    int chunk = (int)(VCLIENT.asset.defaultRepresentation.size / 1048576);
+    int rem = VCLIENT.asset.defaultRepresentation.size % 1048576;
+    if(rem > 0)
+        chunk++;
+    
+    localNotification.alertBody = [NSString stringWithFormat:@"%d chunks of %d completed", (int)APPCLIENT.uploadedSize/1048576, chunk];
     localNotification.alertAction = @"Background Transfer Upload!";
     
     //On sound
@@ -32,6 +38,8 @@
     
     //increase the badge number of application plus 1
     localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+    
+    
     
     [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
 }

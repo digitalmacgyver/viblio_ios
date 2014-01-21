@@ -48,4 +48,53 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     VCLIENT.filteredVideoList = nil;
 }
 
+
++(UIFont*)viblio_Font_Bold_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold
+{
+    UIFont *customFont = [UIFont fontWithName:@"Aleo Light" size:fontSize];
+    if(isBold)
+        customFont = [UIFont boldSystemFontOfSize:fontSize];
+    return customFont;
+}
+
++(UIFont*)viblio_Font_Bold_Italic_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold
+{
+    UIFont *customFont = [UIFont fontWithName:@"Aleo-BoldItalic" size:fontSize];
+    if(isBold)
+        customFont = [UIFont boldSystemFontOfSize:fontSize];
+    return customFont;
+}
+
++(UIFont*)viblio_Font_Italic_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold
+{
+    UIFont *customFont = [UIFont fontWithName:@"Aleo-Italic" size:fontSize];
+    if(isBold)
+        customFont = [UIFont boldSystemFontOfSize:fontSize];
+    return customFont;
+}
+
++(UIFont*)viblio_Font_Light_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold
+{
+    UIFont *customFont = [UIFont fontWithName:@"Aleo-Light" size:fontSize];
+    if(isBold)
+        customFont = [UIFont boldSystemFontOfSize:fontSize];
+    return customFont;
+}
+
++(UIFont*)viblio_Font_Light_Italic_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold
+{
+    UIFont *customFont = [UIFont fontWithName:@"Aleo Light Italic" size:fontSize];
+    if(isBold)
+        customFont = [UIFont boldSystemFontOfSize:fontSize];
+    return customFont;
+}
+
++(UIFont*)viblio_Font_Regular_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold
+{
+    UIFont *customFont = [UIFont fontWithName:@"Aleo-Regular" size:fontSize];
+    if(isBold)
+        customFont = [UIFont boldSystemFontOfSize:fontSize];
+    return customFont;
+}
+
 @end

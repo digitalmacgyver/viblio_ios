@@ -38,9 +38,54 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshProgressBar) name:refreshProgress object:nil];
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
 {
     return self.uploadArray.count;
+}
+
+-(void)refreshProgressBar
+{
+    DLog(@"Log : progress bar is to be refreshed now...");
+    int  index = 0;
+    for( Videos *video in self.uploadArray )
+    {
+        if( [video.fileURL isEqualToString:VCLIENT.videoUploading.fileURL] )
+        {
+            uploadProgress *cell = [self getCellAt:index];
+//            [UIView animateWithDuration:1 animations:^(void)
+//             {
+            if( cell != nil )
+            {
+                CGRect progressBarFrame = cell.lblUploadProgress.frame;
+                progressBarFrame.size.width = (int) (APPCLIENT.uploadedSize * cell.vwUploadProgress.frame.size.width) / VCLIENT.asset.defaultRepresentation.size ;
+                cell.lblUploadProgress.frame = progressBarFrame;
+                DLog(@"Log : progress bar width should be - %f", progressBarFrame.size.width);
+            }
+            else
+                DLog(@"Log : The cell is not isible currently");
+
+//             }];
+        }
+        index++;
+    }
+}
+
+-(uploadProgress *) getCellAt:(NSInteger)index{
+    NSUInteger indexArr[] = {0,index};  // First one is the section, second the row
+    
+    NSIndexPath *myPath = [NSIndexPath indexPathWithIndexes:indexArr length:2];
+    
+    return (uploadProgress*)[self tableView:self.listTableView cellForRowAtIndexPath:myPath];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -68,6 +113,16 @@
         [progressCell.btnCancel setHidden:YES];
         [progressCell.btnPause setHidden:NO];
         [progressCell.btnResume setHidden:YES];
+    }
+    
+    // Logic for computing the progress bar for individual uploads
+    
+    if( progressCell != nil )
+    {
+        CGRect progressBarFrame = progressCell.lblUploadProgress.frame;
+        progressBarFrame.size.width = (int) ([video.uploadedBytes doubleValue] * progressCell.vwUploadProgress.frame.size.width) / VCLIENT.asset.defaultRepresentation.size ;
+        progressCell.lblUploadProgress.frame = progressBarFrame;
+        DLog(@"Log : progress bar width should be - %f", progressBarFrame.size.width);
     }
     
     return progressCell;

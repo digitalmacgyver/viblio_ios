@@ -38,13 +38,18 @@
     self.menuList.backgroundColor = [UIColor redColor];
     _menuSections = @[@"Settings", @"Help/FAQ", @"Tell A Friend", @"Give Feedback", @"Legal & Privacy", @"Rate Us In App Store"];
 	// Do any additional setup after loading the view.
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshProgressBar) name:refreshProgress object:nil];
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     DLog(@"Log : Geting the information of video being uploaded to show in progress bar");
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshProgressBar) name:refreshProgress object:nil];
     
     if( VCLIENT.asset != nil )
     {

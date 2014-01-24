@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UIButton+Additions.h"
 
 @interface ViblioHelper : NSObject
 
@@ -27,5 +28,18 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 +(UIFont*)viblio_Font_Light_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold;
 +(UIFont*)viblio_Font_Light_Italic_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold;
 +(UIFont*)viblio_Font_Regular_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold;
+
++(BOOL)vbl_isValidEmail:(NSString *)emailString;
+
++(NSError*)getCustomErrorWithMessage:(NSString*)errMsg withCode:(NSUInteger)code;
++(NSUInteger) DeviceSystemMajorVersion;
++(UIImage*)setUpNavigationBarBackgroundImage;
++(UIView *)vbl_navigationTitleView;
+
++(void)clearSessionVariables;
++(void)setUpNavigationBarForController : (UIViewController*)vc withLeftBarButtonSelector : (SEL)leftSelector andRightBarButtonSelector : (SEL) rightSelector;
+
++(UIColor*)getVblRedColor;
++(UIColor*)getVblGrayColor;
 
 @end

@@ -14,5 +14,8 @@
 @interface HomeViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UICollectionView *videoList;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *segment;
+@property (weak, nonatomic) IBOutlet UIButton *btnMyViblio;
+@property (weak, nonatomic) IBOutlet UIButton *btnSharedWithMe;
 
 @end

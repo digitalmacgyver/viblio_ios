@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LandingViewController.h"
 
 @interface TutFirstViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UILabel *lblHeading;
+@property (weak, nonatomic) IBOutlet UILabel *lblContent;
 
 @end

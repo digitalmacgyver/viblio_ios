@@ -11,5 +11,7 @@
 #import "DashBoardNavController.h"
 
 @interface TutThirdViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UILabel *lblHeading;
 
+@property (weak, nonatomic) IBOutlet UILabel *lblContent;
 @end

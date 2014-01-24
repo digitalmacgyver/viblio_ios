@@ -28,6 +28,10 @@
     [super viewDidLoad];
     self.navigationItem.hidesBackButton = YES;
 	// Do any additional setup after loading the view.
+    
+    self.lblHeading.font = [ViblioHelper viblio_Font_Regular_WithSize:30 isBold:NO];
+    self.lblContent.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
+    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -36,6 +40,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+- (IBAction)skipTutorial:(id)sender {
+    LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:^(void)
+     {
+         [lvc performSegueWithIdentifier: @"dashboardNav" sender:self];
+     }];
+}
 
 
 - (IBAction)showFirstTutorial:(id)sender {

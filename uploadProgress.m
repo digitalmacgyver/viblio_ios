@@ -27,13 +27,18 @@
 }
 
 - (IBAction)pauseVideoUploadClicked:(id)sender {
+    DLog(@"Log : pause at index %d clicked", self.btnPause.tag);
 }
 
 
 - (IBAction)resumeVideoUploadClicked:(id)sender {
+    DLog(@"Log : resume at index %d clicked", self.btnPause.tag);
 }
 
 
 - (IBAction)cancelVideoUpload:(id)sender {
+    DLog(@"Log : cancel at index %d clicked", self.btnPause.tag);
 }
+
+
 @end

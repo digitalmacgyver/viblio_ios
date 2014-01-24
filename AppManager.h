@@ -17,6 +17,9 @@
 @property (nonatomic, strong) User *user;
 @property (nonatomic, strong) Session *activeSession;
 
+
 + (AppManager *)sharedClient;
+-(NSArray*)getSettings;
+-(NSDictionary*)getSessionKeysAndValues;
 
 @end

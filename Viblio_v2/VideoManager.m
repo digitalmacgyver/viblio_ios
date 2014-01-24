@@ -127,19 +127,19 @@
 //    df = nil; str = nil;
 }
 
--(void)otherServices
-{
-    NSLog(@"LOG : The asset details are - %@",self.asset);
-    
-    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(User *user)
-     {
-         NSLog(@"LOG : Modal user object obtained is - %@",user);
-         
-     }failure:^(NSError *error)
-     {
-         
-     }];
-}
+//-(void)otherServices
+//{
+//    NSLog(@"LOG : The asset details are - %@",self.asset);
+//    
+//    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(User *user)
+//     {
+//         NSLog(@"LOG : Modal user object obtained is - %@",user);
+//         
+//     }failure:^(NSError *error)
+//     {
+//         
+//     }];
+//}
 
 -(void)getOffsetFromTheHeadService
 {
@@ -158,6 +158,7 @@
 -(void)startNewFileUpload
 {
     DLog(@"Log : The asset is - %@", self.asset);
+    DLog(@"Log : Details of user in APP Manager - %@", APPMANAGER.user);
     [APPCLIENT startUploadingFileForUserId:APPMANAGER.user.userID fileLocalPath:self.asset.defaultRepresentation.url.absoluteString fileSize:[NSString stringWithFormat:@"%lld",self.asset.defaultRepresentation.size] success:^(NSString *fileLocation)
      {
          DLog(@"Log : The file locaion Id is obtained --- %@", fileLocation);
@@ -300,5 +301,14 @@
     }
     return nil;
 }
+
+
+/*------------------------- Pause, Resume and Cancel Functionalities here -----------------------------------------*/
+
+-(void)pauseSyncingFileAndContinue:(BOOL)proceed
+{
+    
+}
+
 
 @end

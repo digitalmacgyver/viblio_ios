@@ -10,12 +10,13 @@
 
 @interface uploadProgress : UITableViewCell
 
-@property (weak, nonatomic) IBOutlet UIImageView *uploadThumbnail;
-@property (weak, nonatomic) IBOutlet UIView *vwUploadProgress;
-@property (weak, nonatomic) IBOutlet UILabel *lblUploadProgress;
-@property (weak, nonatomic) IBOutlet UIButton *btnPause;
+@property (weak, nonatomic) IBOutlet UIImageView *thumbImg;
+@property (weak, nonatomic) IBOutlet UIProgressView *progressBar;
 @property (weak, nonatomic) IBOutlet UIButton *btnCancel;
-@property (weak, nonatomic) IBOutlet UIButton *btnResume;
+@property (weak, nonatomic) IBOutlet UIButton *btnPlay;
+@property (weak, nonatomic) IBOutlet UIButton *btnPause;
+@property (weak, nonatomic) IBOutlet UILabel *lblMetaData;
+
 
 @property(nonatomic, strong) ALAsset *asset;
 @property(nonatomic, strong) Videos *video;

@@ -33,8 +33,9 @@
     if (![self.slidingViewController.underLeftViewController isKindOfClass:[MenuViewController class]])
         self.slidingViewController.underLeftViewController = [self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"menu")];
     
-  //  [self.view addGestureRecognizer:self.slidingViewController.panGesture];
+    APPDEL.navController = self;
 }
+
 
 - (void)didReceiveMemoryWarning
 {

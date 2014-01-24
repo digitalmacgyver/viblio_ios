@@ -61,6 +61,7 @@
 #import "CoreDataManager.h"
 #import "VideoManager.h"
 #import "AppManager.h"
+#import "UserManager.h"
 
 //Modals
 #import "User.h"

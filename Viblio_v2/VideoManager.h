@@ -23,6 +23,7 @@
 @property(nonatomic, retain)NSMutableArray *chunks;
 @property(nonatomic,strong)ALAsset *asset;
 @property(nonatomic, strong)Videos *videoUploading;
+@property(nonatomic, assign)BOOL shouldProceedWithNextFile;
 
 + (VideoManager *)sharedClient;
 -(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success

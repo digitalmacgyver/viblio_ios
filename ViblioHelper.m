@@ -37,21 +37,38 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     NSString *segueName_ = segueName;
     if(IS_IPHONE_5)
         segueName_ = [segueName_ stringByAppendingFormat:@"Wide"];
+    DLog(@"Log : Returning value - %@", segueName_);
     return segueName_;
 }
 
--(void)clearSessionVariables
++(void)clearSessionVariables
 {
     // Assets will be loaded on subsequent logins again
     
     [VCLIENT.filteredVideoList  removeAllObjects];
     VCLIENT.filteredVideoList = nil;
+    
+
+    [DBCLIENT deleteUserEntity];
+    APPMANAGER.user = nil;
+    UserClient.emailId = nil; UserClient.password = nil; UserClient.sessionCookie = nil;
+    UserClient.isNewUser = @(NO); UserClient.isFbUser = @(NO); UserClient.userID = nil;
+    UserClient.fbAccessToken = nil;
 }
+
+// The font list to be used
+
+/*      "Aleo-Regular",
+        "Aleo-Bold",
+        "Aleo-Italic",
+        "Aleo-LightItalic",
+        "Aleo-Light",
+        "Aleo-BoldItalic"     */
 
 
 +(UIFont*)viblio_Font_Bold_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold
 {
-    UIFont *customFont = [UIFont fontWithName:@"Aleo Light" size:fontSize];
+    UIFont *customFont = [UIFont fontWithName:@"Aleo-Bold" size:fontSize];
     if(isBold)
         customFont = [UIFont boldSystemFontOfSize:fontSize];
     return customFont;
@@ -83,7 +100,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(UIFont*)viblio_Font_Light_Italic_WithSize:(CGFloat)fontSize isBold : (BOOL)isBold
 {
-    UIFont *customFont = [UIFont fontWithName:@"Aleo Light Italic" size:fontSize];
+    UIFont *customFont = [UIFont fontWithName:@"Aleo-LightItalic" size:fontSize];
     if(isBold)
         customFont = [UIFont boldSystemFontOfSize:fontSize];
     return customFont;
@@ -95,6 +112,73 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     if(isBold)
         customFont = [UIFont boldSystemFontOfSize:fontSize];
     return customFont;
+}
+
++(BOOL)vbl_isValidEmail:(NSString *)emailString
+{
+    BOOL stricterFilter = YES;
+    NSString *stricterFilterString = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
+    NSString *laxString = @".+@.+\\.[A-Za-z]{2}[A-Za-z]*";
+    NSString *emailRegex = stricterFilter ? stricterFilterString : laxString;
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    return [emailTest evaluateWithObject:emailString];
+}
+
++(NSError*)getCustomErrorWithMessage:(NSString*)errMsg withCode:(NSUInteger)code
+{
+    DLog(@"Log : The error message to be shown in the custom object is - %@", errMsg);
+    NSMutableDictionary *details = [[NSDictionary dictionary] mutableCopy];
+    [details setValue:errMsg forKey:NSLocalizedDescriptionKey];
+    return [NSError errorWithDomain:ERROR_DOMAIN code:code userInfo:details];
+    
+}
+
++(NSUInteger) DeviceSystemMajorVersion
+{
+    static NSUInteger _deviceSystemMajorVersion = -1;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{_deviceSystemMajorVersion = [[[[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."] objectAtIndex:0] intValue];});
+    return _deviceSystemMajorVersion;
+}
+
+
++(UIView *)vbl_navigationTitleView
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 61, 17)];
+    [imageView setImage:[UIImage imageNamed:@"viblio"]];
+    return (UIView *)imageView;
+}
+
++(UIImage*)setUpNavigationBarBackgroundImage
+{
+    UIImage *gradientImage44;
+    if([ViblioHelper DeviceSystemMajorVersion] < 7)
+        gradientImage44 = [[UIImage imageNamed:@"nav_bar_ios6"]
+                           resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+    else
+        gradientImage44 = [[UIImage imageNamed:@"nav_bar_ios7"]
+                           resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+    return gradientImage44;
+}
+
+
++(void)setUpNavigationBarForController : (UIViewController*)vc withLeftBarButtonSelector : (SEL)leftSelector andRightBarButtonSelector : (SEL) rightSelector
+{
+    [vc.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
+    vc.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
+                                           [UIButton navigationItemWithTarget:vc action:leftSelector withImage:@"" withTitle:@"Cancel"]];
+    vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
+                                            [UIButton navigationItemWithTarget:vc action:rightSelector withImage:@"" withTitle:@"Done"]];
+}
+
++(UIColor*)getVblRedColor
+{
+    return [UIColor colorWithRed:0.8196 green:0.3372 blue:0.2075 alpha:1];
+}
+
++(UIColor*)getVblGrayColor
+{
+    return [UIColor colorWithRed:0.3725 green:0.3843 blue:0.4431 alpha:1];
 }
 
 @end

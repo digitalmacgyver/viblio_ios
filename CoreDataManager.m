@@ -25,6 +25,13 @@
     return _sharedClient;
 }
 
+// Function to roll back
+
+-(void)rollbackChanges
+{
+    [self.managedObjectContext rollback];
+}
+
 
 /* Function to return the list of videos that are to be uploaded */
 
@@ -119,7 +126,8 @@
 
 /* Check for DB Updates */
 
--(void)updateDB
+-(void)updateDB : (void(^)(NSString *msg))success
+        failure : (void(^)(NSError *error)) failure
 {
     DLog(@"Log : Performing an update on the DB");
     [VCLIENT loadAssetsFromCameraRoll:^(NSArray *filteredVideoList)
@@ -161,91 +169,12 @@
             }
         }
         [self updateLastSyncDate];
+        success(@"success");
         
     }failure:^(NSError *error) {
+        DLog(@"Log : Error - %@", error.localizedDescription);
+        failure(error);
     }];
-}
-
-/*------------------------------------------------------------------------------------------ Insert Default selections for Session --------------------*/
-
--(Session*)getSessionSettings
-{
-    DLog(@"Log : Fetching default session settings");
-    NSManagedObjectContext *context = self.managedObjectContext;
-    NSError *error;
-    
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Session"
-                                              inManagedObjectContext:context];
-    [fetchRequest setEntity:entity];
-    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
-    fetchRequest = nil;
-    
-    if( fetchedObjects == nil )
-        return nil;
-    
-    if( fetchedObjects != nil && fetchedObjects.count == 0 )
-        return nil;
-    
-    Session *sessionInfo = [fetchedObjects firstObject];
-    return sessionInfo;
-}
-
--(void)insertDefaultSettingsIntoSession
-{
-    DLog(@"Log : Setting default settings for session");
-    Session *sessionSettings = [NSEntityDescription
-                     insertNewObjectForEntityForName:@"Session"
-                     inManagedObjectContext:[self managedObjectContext]];
-    
-    sessionSettings.autoSyncEnabled = @(YES);
-    sessionSettings.backgroundSyncEnabled = @(YES);
-    
-    NSError *error;
-    if (![[self managedObjectContext] save:&error]) {
-        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-    sessionSettings = nil;
-}
-
--(void)updateSessionSettingsForAutoSync:(BOOL)autoSync
-{
-    DLog(@"Log : The session setting for Auto Sync is being updated to - %@", @(autoSync));
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:@"Session" inManagedObjectContext:self.managedObjectContext]];
-    
-    NSError *error = nil;
-    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-    
-    Session *sessionInfo = [results firstObject];
-    [sessionInfo setValue:@(autoSync) forKey:@"autoSyncEnabled"];
-    
-    if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-    
-    request = nil;
-    sessionInfo = nil;
-}
-
--(void)updateSessionSettingsForBackgroundSync:(BOOL)backgrndSync
-{
-    DLog(@"Log : The session setting for Auto Sync is being updated to - %@", @(backgrndSync));
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:[NSEntityDescription entityForName:@"Session" inManagedObjectContext:self.managedObjectContext]];
-    
-    NSError *error = nil;
-    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-    
-    Session *sessionInfo = [results firstObject];
-    [sessionInfo setValue:@(backgrndSync) forKey:@"backgroundSyncEnabled"];
-    
-    if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-    }
-    
-    request = nil;
-    sessionInfo = nil;
 }
 
 /*------------------------------------------------------------------------------------------- Syncing Date Related Functions --------------------------*/
@@ -344,6 +273,22 @@
     videos = nil;
     
     return videoList.count;
+}
+
+-(NSArray*)getTheListOfPausedVideos
+{
+    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
+    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isPaused == %@", @(1)];
+    [videos setPredicate:predicate];
+    
+    NSError * error = nil;
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
+    videos = nil;
+    
+    return videoList;
 }
 
 /*------------------------------------------------------------------------------------------*/
@@ -544,6 +489,7 @@
     NSLog(@"LOG : The results obtained are - %@", results);
     
     Videos *video = [results firstObject];
+    DLog(@"Log : Storing uploaded bytes --- %lf", bytes.doubleValue);
     [video setValue:bytes forKey:@"uploadedBytes"];
     
     if (![self.managedObjectContext save:&error]) {
@@ -553,14 +499,157 @@
 }
 
 
-//-(void)resetSyncStatusOfAllDBRecordsTo:(NSUInteger)sync_status
-//{
-//    DLog(@"Log : Resetting the status of sync to - %lu", (unsigned long)sync_status);
-//    for(ALAsset *asset in VCLIENT.filteredVideoList)
-//    {
-//        
-//    }
-//}
+/*************************************** Session Entity Related Functions ***************************************************/
+
+#pragma session entity functions
+
+
+-(Session*)getSessionSettings
+{
+    DLog(@"Log : Fetching default session settings");
+    NSManagedObjectContext *context = self.managedObjectContext;
+    NSError *error;
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Session"
+                                              inManagedObjectContext:context];
+    [fetchRequest setEntity:entity];
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    fetchRequest = nil;
+    
+    if( fetchedObjects == nil )
+        return nil;
+    
+    if( fetchedObjects != nil && fetchedObjects.count == 0 )
+        return nil;
+    DLog(@"Log : Fetched results- %@", fetchedObjects);
+    
+    return (Session*)[fetchedObjects firstObject];
+}
+
+-(void)insertDefaultSettingsIntoSession
+{
+    DLog(@"Log : Setting default settings for session");
+    Session *sessionSettings = [NSEntityDescription
+                                insertNewObjectForEntityForName:@"Session"
+                                inManagedObjectContext:[self managedObjectContext]];
+    
+    sessionSettings.autoSyncEnabled = @(YES);
+    sessionSettings.backgroundSyncEnabled = @(YES);
+    sessionSettings.wifiupload = @(NO);
+    sessionSettings.autolockdisable = @(YES);
+    sessionSettings.batterSaving = @(YES);
+    
+    NSError *error;
+    if (![[self managedObjectContext] save:&error]) {
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    sessionSettings = nil;
+}
+
+
+-(void)updateSessionSettingsForKey:(NSString*)key forValue:(BOOL)value
+{
+    DLog(@"Log : The session setting for %@ is being updated to - %@",key, @(value));
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Session" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    
+    Session *sessionInfo = [results firstObject];
+    [sessionInfo setValue:@(value) forKey:key];
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    
+    request = nil;
+    sessionInfo = nil;
+}
+
+
+/**************************************** User Entity related functions *****************************************************/
+
+#pragma user entity functions
+
+-(void)persistUserDetailsWithEmail:(NSString*)email
+                          password:(NSString*)password
+                            userID:(NSString*)userID
+                         isNewUser:(NSNumber*)isNewUser
+                          isFbUser:(NSNumber*)isFbUser
+                     sessionCookie:(NSString*)sessionCookie
+                     fbAccessToken:(NSString*)fbAccessToken
+{
+    NSArray *results = [self getUserDataFromDB];
+    
+        NSError *deleteError;
+    
+        DLog(@"Log : User object already exists ------ Deleting the existing entity");
+        //error handling goes here
+        for (User * user in results) {
+            [self.managedObjectContext deleteObject:user];
+        }
+        
+        if (![self.managedObjectContext save:&deleteError]) {
+            NSLog(@"Whoops, couldn't save: %@", [deleteError localizedDescription]);
+        }
+    
+        DLog(@"LOG : Adding the new user details to the DB");
+        User *userDB = [NSEntityDescription
+                      insertNewObjectForEntityForName:@"User"
+                      inManagedObjectContext:[self managedObjectContext]];
+        
+        userDB.userID = userID;
+        userDB.emailId = email;
+        userDB.fbAccessToken = fbAccessToken;
+        userDB.isNewUser = isNewUser;
+        userDB.isFbUser = isFbUser;
+        userDB.sessionCookie = sessionCookie;
+        userDB.password = password;
+        
+        NSError *errorUserStore;
+        if (![[self managedObjectContext] save:&errorUserStore]) {
+            DLog(@"Whoops, couldn't save: %@", [errorUserStore localizedDescription]);
+        }
+        userDB = nil;
+}
+
+
+-(NSArray *)getUserDataFromDB
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    DLog(@"Log : The fetched user set is - %@", results);
+    
+    if( results != nil && results.count > 0 )
+        return results;
+    return nil;
+}
+
+-(void)deleteUserEntity
+{
+    NSFetchRequest * userResult = [[NSFetchRequest alloc] init];
+    [userResult setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:self.managedObjectContext ]];
+    [userResult setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError * error = nil;
+    NSArray * userList = [self.managedObjectContext executeFetchRequest:userResult error:&error];
+    userResult = nil;
+    
+    //error handling goes here
+    for (User * user in userList) {
+        [self.managedObjectContext deleteObject:user];
+    }
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+}
+
 
 /*--------------------------------- Core Data Functionalities ------------------------------------------------- */
 

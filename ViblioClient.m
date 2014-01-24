@@ -60,22 +60,6 @@ void(^_failure)(NSError *error);
     
     //we want to work with JSON-Data
     [client setDefaultHeader:@"Accept" value:RKMIMETypeJSON];
-    
-    // Initialize RestKit
-    RKObjectManager *objectManager = [[RKObjectManager alloc] initWithHTTPClient:client];
-    
-    // Setting up object mappings
-    
-    
-    // Contents API descriptor
-    RKObjectMapping *contentsMapping = [RKObjectMapping mappingForClass:[User class]];
-    [contentsMapping addAttributeMappingsFromDictionary:[User mapping]];
-    
-    RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:contentsMapping
-                                                                                               pathPattern:@"/services/na/authenticate"
-                                                                                                   keyPath:@"user.uuid"
-                                                                                               statusCodes:[NSIndexSet indexSetWithIndex:200]];
-    [objectManager addResponseDescriptor:userResponseDescriptor];
 }
 
 
@@ -86,7 +70,7 @@ void(^_failure)(NSError *error);
 - (void)authenticateUserWithEmail : (NSString*)emailID
                          password : (NSString*)password
                              type : (NSString*)loginType
-                    success:(void (^)(User *user))success
+                    success:(void (^)(NSString *msg))success
                     failure:(void(^)(NSError *error))failure
 {
     NSDictionary *queryParams = @{ @"email": emailID,
@@ -99,33 +83,38 @@ void(^_failure)(NSError *error);
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
-                                      NSLog(@"LOG : result - %@",JSON);
-                                      NSLog(@"LOG : response - %@", response);
+                                      // Check whether we got a success response or a success response with error code
                                       
-                                      User *user = [[User alloc]init];
-                                      user.userID = [JSON valueForKeyPath:@"user.uuid"];
-                                      user.emailId = emailID;
-                                      user.isFBUser = NO;
-                                      user.isNewUser = NO;
-                                      
-                                      if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
+                                      if( [[JSON valueForKey:@"code"] integerValue] > 299 )
                                       {
-                                          NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
-                                          for ( NSString *str in parsedSession )
+                                          DLog(@"Log : The server failed to service the login request...");
+                                          failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                      }
+                                      else
+                                      {
+                                          DLog(@"Log : The result obtained is - %@", response);
+
+                                          UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
+                                          UserClient.emailId = emailID;
+                                          UserClient.isFbUser = @(NO);
+                                          UserClient.isNewUser = @(NO);
+                                          
+                                          if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
                                           {
-                                              if( [str rangeOfString:@"va_session"].location != NSNotFound )
+                                              NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
+                                              for ( NSString *str in parsedSession )
                                               {
-                                                  NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
-                                                  user.sessionCookie = sessionParsed[1];
-                                                  break;
+                                                  if( [str rangeOfString:@"va_session"].location != NSNotFound )
+                                                  {
+                                                      NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
+                                                      UserClient.sessionCookie = sessionParsed[1];
+                                                      break;
+                                                  }
                                               }
                                           }
+                                          
+                                          success(@"Success");
                                       }
-                                      
-                                      DLog(@"LOG : storing a copy of the user object globally");
-                                      APPMANAGER.user = user;
-                                      success(user);
- 
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
@@ -136,7 +125,7 @@ void(^_failure)(NSError *error);
 
 - (void)authenticateUserWithFacebook : (NSString*)accessToken
                                 type : (NSString*)loginType
-                              success:(void (^)(User *user))success
+                              success:(void (^)(NSString *msg))success
                               failure:(void(^)(NSError *error))failure
 {
     NSDictionary *queryParams = @{ @"access_token": accessToken,
@@ -151,11 +140,11 @@ void(^_failure)(NSError *error);
                                       NSLog(@"LOG : result - %@",JSON);
                                       NSLog(@"LOG : response - %@", response);
                                       
-                                      User *user = [[User alloc]init];
-                                      user.userID = [JSON valueForKeyPath:@"user.uuid"];
-                                      user.emailId = nil;
-                                      user.isFBUser = YES;
-                                      user.isNewUser = NO;
+                                      UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
+                                      UserClient.emailId = nil;
+                                      UserClient.isFbUser = @(YES);
+                                      UserClient.isNewUser = @(NO);
+                                      UserClient.fbAccessToken = accessToken;
                                       
                                       if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
                                       {
@@ -165,7 +154,7 @@ void(^_failure)(NSError *error);
                                               if( [str rangeOfString:@"va_session"].location != NSNotFound )
                                               {
                                                   NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
-                                                  user.sessionCookie = sessionParsed[1];
+                                                  UserClient.sessionCookie = sessionParsed[1];
                                                   break;
                                               }
                                           }
@@ -184,7 +173,7 @@ void(^_failure)(NSError *error);
                              password : (NSString*)password
                           displayName : (NSString*)displayName
                                  type : (NSString*)loginType
-                   success:(void (^)(NSString *user))success
+                   success:(void (^)(NSString *msg))success
                    failure:(void(^)(NSError *error))failure
 {
     
@@ -200,9 +189,35 @@ void(^_failure)(NSError *error);
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
+                                      // Check whether we got a success response or a success response with error code
                                       
-//                                      NSString *msg = [JSON valueForKeyPath:@"payload.sys_message"];
-//                                      success(msg);
+                                      if( [[JSON valueForKey:@"code"] integerValue] > 299 )
+                                      {
+                                          DLog(@"Log : The server failed to service the login request...");
+                                          failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                      }
+                                      else
+                                      {
+                                          UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
+                                          UserClient.emailId = emailID;
+                                          UserClient.isFbUser = @(NO);
+                                          UserClient.isNewUser = @(YES);
+
+                                          if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
+                                          {
+                                              NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
+                                              for ( NSString *str in parsedSession )
+                                              {
+                                                  if( [str rangeOfString:@"va_session"].location != NSNotFound )
+                                                  {
+                                                      NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
+                                                      UserClient.sessionCookie = sessionParsed[1];
+                                                      break;
+                                                  }
+                                              }
+                                          }
+                                          success(@"success");
+                                      }
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
@@ -234,6 +249,33 @@ void(^_failure)(NSError *error);
                                   }];
     [op start];
 }
+
+// To raise a request for forgot password
+
+-(void)passwordForgot : (NSString*)emailId
+              success : (void(^)(NSString *msg))success
+              failure : (void(^)(NSError *error))failure
+{
+    DLog(@"Log : Raising request for password forgot");
+    
+
+        NSString *path = @"/services/na/forgot_password_request";
+        NSDictionary *params = @{
+                                 @"email": emailId
+                                 };
+        NSURLRequest *req = [self requestWithMethod:@"POST" path:path parameters:params];
+        
+        __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
+                                              ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                              {
+                                                  NSLog(@"LOG : The response obtained is - %@",op.responseString);
+                                              } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                              {
+                                                  failure(error);
+                                              }];
+        [op start];
+}
+
 
 // To check whether a valid session is running on the server
 
@@ -375,7 +417,6 @@ void(^_failure)(NSError *error);
     }
     
     self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromFile:[NSURL fileURLWithPath:dataPath]];
-    // self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromData:chunk];
     [self.uploadTask resume];
 }
 
@@ -401,13 +442,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     }
     else
         DLog(@"Log : Task being performed is nil");
-
-//        double progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
-//        NSLog(@"DownloadTask: %@ progress: %lf", downloadTask, progress);
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            self.progressView.progress = progress;
-//        });
-//    }
 }
 
 
@@ -490,7 +524,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
     NSString *path = @"/mediafile/count";
     NSDictionary *params = @{
-                             @"uuid": APPMANAGER.user.userID,
+                             @"uuid": APPMANAGER.user.userID
                              };
     
     NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:params];
@@ -507,6 +541,37 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           }];
     [op start];
 }
+
+
+// The below web service checks for the validity of the email. It also tells the clien whether  email has already been taken by any other user on Viblio
+
+
+-(void)checkWhetherEmailIsValid:(NSString*)emailId
+                        success:(void(^)(BOOL status))success
+                        failure:(void(^)(NSError *error))failure
+{
+    DLog(@"Log : Checking for the validity of the email address - %@", emailId);
+    NSString *path = @"/services/na/valid_email";
+    NSDictionary *params = @{
+                             @"email" : emailId
+                             };
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:params];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback");
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+    
+}
+
 
 
 @end

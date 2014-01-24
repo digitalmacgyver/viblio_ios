@@ -2,24 +2,27 @@
 //  User.m
 //  Viblio_v2
 //
-//  Created by Dunty Vinay Raj on 1/8/14.
+//  Created by Vinay on 1/22/14.
 //  Copyright (c) 2014 Dunty Vinay Raj. All rights reserved.
 //
 
 #import "User.h"
 
+
 @implementation User
 
-+ (NSDictionary *)mapping
+@dynamic userID;
+@dynamic emailId;
+@dynamic password;
+@dynamic isFbUser;
+@dynamic fbAccessToken;
+@dynamic sessionCookie;
+@dynamic isNewUser;
+
+-(NSString*)description
 {
-    return @{
-             @"uuid": @"userID"
-             };
+    return [NSString stringWithFormat:@"userId : %@, emailID : %@, password : %@, isFbUser : %@, fbAccessToken : %@, sessionCokkie : %@, isNewUser : %@", self.userID, self.emailId, self.password, self.isFbUser, self.fbAccessToken, self.sessionCookie, self.isNewUser];
 }
 
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"id: %@, session_cookie: %@, email : %@, isfbuser : %d, isNewUser : %d", self.userID, self.sessionCookie, self.emailId, self.isFBUser, self.isNewUser];
-}
 
 @end

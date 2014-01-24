@@ -28,6 +28,10 @@
     [super viewDidLoad];
     self.navigationItem.hidesBackButton = YES;
 	// Do any additional setup after loading the view.
+    
+    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
+    self.lblHeading.font = [ViblioHelper viblio_Font_Regular_WithSize:30 isBold:NO];
+    self.lblContent.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -38,15 +42,9 @@
 
 
 - (IBAction)navigateToHomeScreen:(id)sender {
-    
-    DLog(@"LOG : Done clicked on tutorials");
-    
     LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
-    
     [self.presentingViewController dismissViewControllerAnimated:YES completion:^(void)
     {
-       // lvc.topViewController = [self.storyboard instantiateViewControllerWithIdentifier: @"dashboard"];
-        
         [lvc performSegueWithIdentifier: @"dashboardNav" sender:self];
     }];
 }

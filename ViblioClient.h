@@ -11,6 +11,7 @@
 
 #define APPCLIENT [ViblioClient sharedClient]
 #define APPAUTH [AuthControllers sharedInstance]
+#define ERROR_DOMAIN @"com.viblio.error"
 
 @interface ViblioClient : AFHTTPClient <NSURLSessionDelegate, NSURLSessionTaskDelegate>
 
@@ -25,21 +26,21 @@
 - (void)authenticateUserWithEmail : (NSString*)emailID
                          password : (NSString*)password
                              type : (NSString*)loginType
-                           success:(void (^)(User *user))success
+                           success:(void (^)(NSString *msg))success
                            failure:(void(^)(NSError *error))failure;
 
 
 - (void)authenticateUserWithFacebook : (NSString*)accessToken
-                             type : (NSString*)loginType
-                           success:(void (^)(User *user))success
-                           failure:(void(^)(NSError *error))failure;
+                                type : (NSString*)loginType
+                              success:(void (^)(NSString *msg))success
+                              failure:(void(^)(NSError *error))failure;
 
 
 - (void)createNewUserAccountWithEmail : (NSString *)emailID
                              password : (NSString*)password
                           displayName : (NSString*)displayName
                                  type : (NSString*)loginType
-                               success:(void (^)(NSString *user))success
+                               success:(void (^)(NSString *msg))success
                                failure:(void(^)(NSError *error))failure;
 
 
@@ -74,5 +75,9 @@
 
 -(void)getCountOfMediaFilesUploadedByUser:(void(^)(int count))success
                                  failure : (void (^) (NSError *error))failure;
+
+-(void)passwordForgot : (NSString*)emailId
+              success : (void(^)(NSString *msg))success
+              failure : (void(^)(NSError *error))failure;
 
 @end

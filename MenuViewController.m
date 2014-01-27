@@ -119,13 +119,27 @@
 - (IBAction)vwInProgessClicked:(id)sender {
     DLog(@"Log : List of uploads under progress needs to be shown here...");
     
+    DLog(@"Log : In Progress clicked");
     
+    [self.slidingViewController resetTopView];
+    
+    [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")] animated:YES];
 }
 
 
 - (IBAction)pauseSyncingFileClicked:(id)sender {
     DLog(@"Log : File Syncing has to be paused now");
-    [APPCLIENT invalidateFileUploadTask];
+    
+//    if( self.btnUploadPause.tag == 0 )
+//    {
+//        APPMANAGER.turnOffUploads = YES;
+        [APPCLIENT invalidateFileUploadTask];
+//    }
+//    else
+//    {
+//        APPMANAGER.turnOffUploads = NO;
+//        
+//    }
 }
 
 //-(void)viewWillAppear:(BOOL)animated
@@ -146,13 +160,43 @@
 
 
 - (IBAction)showUploadList:(id)sender {
+    
+    DLog(@"Log : In Progress clicked");
+    
+    [self.slidingViewController resetTopView];
+    
+    [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")] animated:YES];
 }
 
 - (IBAction)logoutAction:(id)sender {
     DLog(@"Log : Logout button tapped");
     
+    if( VCLIENT.asset == nil )
+      [ self logoutUser];
+    else{
+       
+        self.logoutAlert = [[UIAlertView alloc] initWithTitle:@"Logout"
+                                                        message:@"An upload in progress. Do you wish to Logout ?"
+                                                       delegate:self
+                                              cancelButtonTitle:@"Cancel"
+                                              otherButtonTitles:@"OK",nil];
+        [self.logoutAlert show];
+        self.logoutAlert = nil;
+    }
+}
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    DLog(@"Log : Clicked button at index - %d", buttonIndex);
+    if( buttonIndex == 1 )
+        [  self logoutUser];
+}
+
+-(void)logoutUser
+{
+    APPMANAGER.turnOffUploads = YES;
+    [APPCLIENT invalidateFileUploadTask];
     [ViblioHelper clearSessionVariables];
-    
     LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
     [self.presentingViewController dismissViewControllerAnimated:NO completion:^(void)
      {
@@ -196,20 +240,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DLog(@"Log : Option %@ selected....", _menuSections[indexPath.row]);
+     [self.slidingViewController resetTopView];
     
     if( [_menuSections[indexPath.row] isEqualToString:@"Home"] )
     {
-        DLog(@"Log : In Progress clicked");
-        
-        [self.slidingViewController resetTopView];
-        
-        [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")] animated:YES];
+        DLog(@"Log : Show home screen");
+        [(DashBoardNavController*)self.slidingViewController.topViewController popToRootViewControllerAnimated:YES];
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Settings"])
     {
         DLog(@"Log : setting clicked");
-        
-        [self.slidingViewController resetTopView];
         
         [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"settings")] animated:YES];
     }
@@ -227,7 +267,9 @@
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Legal & Privacy"])
     {
+        DLog(@"Log : Terms clicked");
         
+        [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"terms")] animated:YES];
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Rate Us In App Store"])
     {

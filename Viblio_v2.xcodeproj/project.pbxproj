@@ -91,6 +91,7 @@
 		85ED80521891B44300CEAE85 /* bttn_list_view_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 85ED804E1891B44300CEAE85 /* bttn_list_view_selected@2x.png */; };
 		85ED80551891C59E00CEAE85 /* ListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85ED80541891C59E00CEAE85 /* ListViewController.m */; };
 		85ED80581891D8B200CEAE85 /* InProgressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85ED80571891D8B200CEAE85 /* InProgressViewController.m */; };
+		85ED805B1892862E00CEAE85 /* TermsOfUseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85ED805A1892862E00CEAE85 /* TermsOfUseViewController.m */; };
 		85F8B47D188A5E2200E92380 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B47C188A5E2200E92380 /* AppManager.m */; };
 		85F8B484188AA89600E92380 /* share.png in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B482188AA89600E92380 /* share.png */; };
 		85F8B485188AA89600E92380 /* play_img.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B483188AA89600E92380 /* play_img.jpeg */; };
@@ -234,6 +235,8 @@
 		85ED80541891C59E00CEAE85 /* ListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ListViewController.m; sourceTree = "<group>"; };
 		85ED80561891D8B200CEAE85 /* InProgressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InProgressViewController.h; sourceTree = "<group>"; };
 		85ED80571891D8B200CEAE85 /* InProgressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InProgressViewController.m; sourceTree = "<group>"; };
+		85ED80591892862E00CEAE85 /* TermsOfUseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermsOfUseViewController.h; sourceTree = "<group>"; };
+		85ED805A1892862E00CEAE85 /* TermsOfUseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermsOfUseViewController.m; sourceTree = "<group>"; };
 		85F8B47B188A5E2200E92380 /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppManager.h; sourceTree = "<group>"; };
 		85F8B47C188A5E2200E92380 /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppManager.m; sourceTree = "<group>"; };
 		85F8B482188AA89600E92380 /* share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = share.png; sourceTree = "<group>"; };
@@ -408,6 +411,8 @@
 				85DCB50F188865F60068E738 /* MenuViewController.m */,
 				85ED803B189161E000CEAE85 /* SettingsViewController.h */,
 				85ED803C189161E000CEAE85 /* SettingsViewController.m */,
+				85ED80591892862E00CEAE85 /* TermsOfUseViewController.h */,
+				85ED805A1892862E00CEAE85 /* TermsOfUseViewController.m */,
 			);
 			name = Controllers;
 			path = ..;
@@ -841,6 +846,7 @@
 				85DCB50D1888646C0068E738 /* HomeViewController.m in Sources */,
 				2A631476187E701600D864FC /* SignInViewController.m in Sources */,
 				85ED802818907AE600CEAE85 /* CameraRollDenialControler.m in Sources */,
+				85ED805B1892862E00CEAE85 /* TermsOfUseViewController.m in Sources */,
 				2AD637F21886BC5400012A86 /* SignUpViewController.m in Sources */,
 				2A71584D187D75A400163201 /* NSString+Additions.m in Sources */,
 				85ED802218904B4300CEAE85 /* Session.m in Sources */,

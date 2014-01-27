@@ -28,16 +28,34 @@
 
 - (IBAction)pauseVideoUploadClicked:(id)sender {
     DLog(@"Log : pause at index %d clicked", self.btnPause.tag);
+    
+    if( [self.video.fileURL isEqualToString:VCLIENT.videoUploading.fileURL] )
+    {
+        DLog(@"Log : Pausing the uploading file..");
+        [APPCLIENT invalidateFileUploadTask];
+    }
+    else
+    {
+        [DBCLIENT updateIsPausedStatusOfFile:self.asset.defaultRepresentation.url forPausedState:0];
+        [ViblioHelper displayAlertWithTitle:@"Resume" messageBody:@"Video Upload paused" viewController:nil cancelBtnTitle:@"OK"];
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:uploadComplete object:nil];
 }
 
 
 - (IBAction)resumeVideoUploadClicked:(id)sender {
     DLog(@"Log : resume at index %d clicked", self.btnPause.tag);
+    
+    [DBCLIENT updateIsPausedStatusOfFile:self.asset.defaultRepresentation.url forPausedState:0];
+    [ViblioHelper displayAlertWithTitle:@"Resume" messageBody:@"Video queued for resuming upload" viewController:nil cancelBtnTitle:@"OK"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:uploadComplete object:nil];
 }
 
 
 - (IBAction)cancelVideoUpload:(id)sender {
     DLog(@"Log : cancel at index %d clicked", self.btnPause.tag);
+    [DBCLIENT deleteOperationOnDB:self.video.fileURL];
+    [[NSNotificationCenter defaultCenter] postNotificationName:uploadComplete object:nil];
 }
 
 

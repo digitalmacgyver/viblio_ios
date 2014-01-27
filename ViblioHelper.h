@@ -12,6 +12,7 @@
 @interface ViblioHelper : NSObject
 
 extern NSString * const refreshProgress;
+extern NSString * const uploadComplete;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 

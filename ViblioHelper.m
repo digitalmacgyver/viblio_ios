@@ -12,6 +12,7 @@
 @implementation ViblioHelper
 
 NSString *const refreshProgress = @"com.viblio.app : UplodProgressNotification";
+NSString *const uploadComplete = @"com.viblio.app : uploadComplete";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {

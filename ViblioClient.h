@@ -80,4 +80,7 @@
               success : (void(^)(NSString *msg))success
               failure : (void(^)(NSError *error))failure;
 
+-(void)fetchTermsAndConditions:(void(^)(NSString *terms))success
+                       failure:(void(^)(NSError *error))failure;
+
 @end

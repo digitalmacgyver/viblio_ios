@@ -32,7 +32,6 @@
     [ViblioHelper setUpNavigationBarForController:self withLeftBarButtonSelector:@selector(cancelChanges) andRightBarButtonSelector:@selector(doneChanges)];
 }
 
-
 -(void)cancelChanges
 {
     DLog(@"Log : Changes Cancelled initiated");

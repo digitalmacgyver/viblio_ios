@@ -573,5 +573,27 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 
 
+-(void)fetchTermsAndConditions:(void(^)(NSString *terms))success
+                        failure:(void(^)(NSError *error))failure
+{
+    DLog(@"Log : Fetching Viblio terms of use....");
+    NSString *path = @"/services/na/terms";
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Terms and Conditions - %@", JSON);
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+    
+}
+
 
 @end

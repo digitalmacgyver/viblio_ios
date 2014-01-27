@@ -212,6 +212,8 @@
                 [self videoUploadIntelligence];
             else
                 DLog(@"Log : App is in background.. Dont initiate next request...");
+            
+            [[NSNotificationCenter defaultCenter]postNotificationName:uploadComplete object:nil];
         }
         else
         {
@@ -241,6 +243,8 @@
                      [self videoUploadIntelligence];
                  else
                      DLog(@"Log : App is in background.. Dont initiate next request...");
+                 
+                 [[NSNotificationCenter defaultCenter]postNotificationName:uploadComplete object:nil];
              }];
             
             offset +=[chunkData length];
@@ -253,7 +257,7 @@
 
 -(void)videoUploadIntelligence
 {
-    if( self.asset == nil )
+    if( self.asset == nil && !APPMANAGER.turnOffUploads)
     {
         NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
         
@@ -284,7 +288,7 @@
         }
     }
     else
-        DLog(@"Log : An upload in progress.....");
+        DLog(@"Log : An upload in progress..... or uploads are turned off");
 }
 
 /*------------------------------------------------------- Function to get the ALAsset by passing asset URL -----------------------------------------*/

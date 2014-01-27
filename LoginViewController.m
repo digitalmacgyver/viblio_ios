@@ -125,6 +125,7 @@
                      // Persist the user details in the DB until the user logs out
                      [DBCLIENT persistUserDetailsWithEmail:UserClient.emailId password:self.password.text userID:UserClient.userID isNewUser:UserClient.isNewUser isFbUser:UserClient.isFbUser sessionCookie:UserClient.sessionCookie fbAccessToken:UserClient.fbAccessToken];
                      
+                     APPMANAGER.turnOffUploads = NO;
                      APPMANAGER.user = [[DBCLIENT getUserDataFromDB] firstObject];
                      DLog(@"Log : The user details are - %@", APPMANAGER.user);
                      // Perform an DB update for storing the assetsas well

@@ -34,13 +34,24 @@
 	// Do any additional setup after loading the view.
     
     self.celIndex = -1;
-    self.videoList = [DBCLIENT listAllEntitiesinTheDB];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
+    APPMANAGER.listVideos = [DBCLIENT listAllEntitiesinTheDB];
+    DLog(@"Log : view did load called... List of videos fetched is - %@", APPMANAGER.listVideos);
     
     [self.navigationController.navigationBar setBackgroundImage:[ViblioHelper setUpNavigationBarBackgroundImage] forBarMetrics:UIBarMetricsDefault];
     [self.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
                                            [UIButton navigationItemWithTarget:self action:@selector(revealMenu) withImage:@"icon_options"]];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadList) name:uploadComplete object:nil];
+}
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -54,7 +65,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
 {
-    return self.videoList.count;
+    return APPMANAGER.listVideos.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -63,7 +74,7 @@
     
     uploadProgress *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
-    cell.video = self.videoList[indexPath.row];
+    cell.video = APPMANAGER.listVideos[indexPath.row];
     cell.asset = [VCLIENT getAssetFromFilteredVideosForUrl:cell.video.fileURL];
     
     NSString *dateString = [NSDateFormatter localizedStringFromDate:[cell.asset valueForProperty:ALAssetPropertyDate]
@@ -97,8 +108,11 @@
         DLog(@"Log : File has been uploaded partially");
         cell.progressBar.progress = cell.video.uploadedBytes.doubleValue/cell.asset.defaultRepresentation.size;
     }
+    else
+        cell.progressBar.progress = 0;
+
     
-    if([cell.asset isEqual:VCLIENT.asset] || (indexPath.row == 0))
+    if([cell.video.fileURL isEqualToString:VCLIENT.videoUploading.fileURL])
     {
         DLog(@"Log : Assets are the same a index - %d", indexPath.row);
         self.celIndex = indexPath.row;
@@ -122,11 +136,23 @@
 {
     if( self.celIndex != -1 )
     {
-        uploadProgress *cell = (uploadProgress*)[self.tblInProgress cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        uploadProgress *cell = (uploadProgress*)[self.tblInProgress cellForRowAtIndexPath:[NSIndexPath indexPathForRow:self.celIndex inSection:0]];
         
         if( [cell.video.fileURL isEqualToString:VCLIENT.videoUploading.fileURL] )
             cell.progressBar.progress = APPCLIENT.uploadedSize/VCLIENT.asset.defaultRepresentation.size;
     }
+}
+
+-(void)reloadList
+{
+    [self performSelectorOnMainThread:@selector(reloadListProgress) withObject:nil waitUntilDone:NO];
+}
+
+-(void)reloadListProgress
+{
+    DLog(@"Log : ReloadList progress called....");
+    APPMANAGER.listVideos = [DBCLIENT listAllEntitiesinTheDB];
+    [self.tblInProgress reloadData];
 }
 
 @end

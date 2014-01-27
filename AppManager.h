@@ -16,7 +16,8 @@
 
 @property (nonatomic, strong) User *user;
 @property (nonatomic, strong) Session *activeSession;
-
+@property (nonatomic, strong) NSArray *listVideos;
+@property (nonatomic) BOOL turnOffUploads;
 
 + (AppManager *)sharedClient;
 -(NSArray*)getSettings;

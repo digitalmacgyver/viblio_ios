@@ -22,7 +22,7 @@
 //};
 
 
-@interface MenuViewController : UIViewController
+@interface MenuViewController : UIViewController<UIAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *menuList;
 @property (weak, nonatomic) IBOutlet UIImageView *uploadingImg;
@@ -33,5 +33,8 @@
 @property (weak, nonatomic) IBOutlet UIView *vwSyncingFile;
 @property (weak, nonatomic) IBOutlet UILabel *lblEmailId;
 //@property (nonatomic)Settings selectedOption;
+@property (weak, nonatomic) IBOutlet UIButton *btnUploadPause;
+
+@property(nonatomic, strong)UIAlertView *logoutAlert;
 
 @end

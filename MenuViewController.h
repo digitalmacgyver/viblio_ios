@@ -34,6 +34,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblEmailId;
 //@property (nonatomic)Settings selectedOption;
 @property (weak, nonatomic) IBOutlet UIButton *btnUploadPause;
+@property (weak, nonatomic) IBOutlet UIButton *btnUploadResume;
+
 
 @property(nonatomic, strong)UIAlertView *logoutAlert;
 

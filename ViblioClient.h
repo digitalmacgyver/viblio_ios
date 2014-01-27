@@ -83,4 +83,6 @@
 -(void)fetchTermsAndConditions:(void(^)(NSString *terms))success
                        failure:(void(^)(NSError *error))failure;
 
+-(void)invalidateUploadTaskWithoutPausing;
+
 @end

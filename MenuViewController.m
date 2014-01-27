@@ -50,39 +50,61 @@
     DLog(@"Log : Geting the information of video being uploaded to show in progress bar");
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
+    [self videoUploadDescretion];
     
-    if( VCLIENT.asset != nil )
-    {
-        DLog(@"Log : Upload in progress....");
-       
-        [self.lblSyncNotInProgress setHidden:YES];
-        [self.vwSyncingFile setHidden:NO];
-        [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:YES];
-    }
-    else
-    {
-        [self.vwSyncingFile setHidden:YES];
-        [self.lblSyncNotInProgress setHidden:NO];
-        
-        if( [DBCLIENT getTheCountOfRecordsInDB] > 0 )
-        {
-            if( [APPMANAGER.activeSession.autoSyncEnabled isEqual:@(1)] )
-            {
-                if( [DBCLIENT getTheListOfPausedVideos].count > 0 )
-                {
-                    self.lblSyncNotInProgress.text = @"Please consider syncing paused uploadss";
-                }
-                else
-                    self.lblSyncNotInProgress.text = @"All videos are uploaded !!";
-            }
-            else
-                self.lblSyncNotInProgress.text = @"Enable Auto Sync to upload all your videos !!";
-        }
-        else
-        {
-            self.lblSyncNotInProgress.text = @"No videos found to upload !!";
-        }
-    }
+//    if( VCLIENT.asset != nil )
+//    {
+//        DLog(@"Log : Upload in progress....");
+//       
+//        [self.lblSyncNotInProgress setHidden:YES];
+//        [self.vwSyncingFile setHidden:NO];
+//        [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:YES];
+//    }
+//    else
+//    {
+////        NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
+////        Videos *video = [videoList firstObject];
+////        ALAsset *asset = [VCLIENT getAssetFromFilteredVideosForUrl:video.fileURL];
+////        
+////        if( video.sync_status.integerValue == 1 && video.isPaused.integerValue == 0 )
+////        {
+////            self.progressView.progress = video.uploadedBytes.doubleValue / asset.defaultRepresentation.size;
+////            self.uploadingImg.image = [UIImage imageWithCGImage:[asset thumbnail]];
+////            
+////            NSString *dateString = [NSDateFormatter localizedStringFromDate:[asset valueForProperty:ALAssetPropertyDate]
+////                                                                  dateStyle:NSDateFormatterShortStyle
+////                                                                  timeStyle:NSDateFormatterFullStyle];
+////            dateString = (NSString*)[[dateString componentsSeparatedByString:@" "] firstObject];
+////            DLog(@"Log : The date sring about to be set is - %@", dateString);
+////            self.lblProgressTitle.text = dateString;
+////        }
+////        else
+////        {
+//            [self.vwSyncingFile setHidden:YES];
+//            [self.lblSyncNotInProgress setHidden:NO];
+//            
+//            if( [DBCLIENT getTheCountOfRecordsInDB] > 0 )
+//            {
+//                if( [APPMANAGER.activeSession.autoSyncEnabled isEqual:@(1)] )
+//                {
+//                    if( [DBCLIENT getTheListOfPausedVideos].count > 0 )
+//                    {
+//                        self.lblSyncNotInProgress.text = @"Please consider syncing paused uploadss";
+//                        self.lblSyncNotInProgress.numberOfLines = 0;
+//                        self.lblSyncNotInProgress.font = [ViblioHelper viblio_Font_Regular_WithSize:12 isBold:NO];
+//                    }
+//                    else
+//                        self.lblSyncNotInProgress.text = @"All videos are uploaded !!";
+//                }
+//                else
+//                    self.lblSyncNotInProgress.text = @"Enable Auto Sync to upload all your videos !!";
+//            }
+//            else
+//            {
+//                self.lblSyncNotInProgress.text = @"No videos found to upload !!";
+//            }
+////        }
+//    }
 }
 
 -(void)refreshBar
@@ -126,19 +148,100 @@
     [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")] animated:YES];
 }
 
+- (IBAction)resumeSyncingFileClicked:(id)sender {
+    DLog(@"Log : Resume syncing file clicked");
+    
+//    if(VCLIENT.asset != nil)
+//    {
+        [self.btnUploadPause setHidden:NO];
+        [self.btnUploadResume setHidden:YES];
+        APPMANAGER.turnOffUploads = NO;
+    [VCLIENT videoUploadIntelligence];
+//    }
+//    else
+//    {
+//        DLog(@"Log : Vclient does not have an asset.. Probably pause has been clicked there...");
+//        
+//        NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
+//        Videos *video = [videoList firstObject];
+//        ALAsset *asset = [VCLIENT getAssetFromFilteredVideosForUrl:video.fileURL];
+//        
+//        if( video.sync_status.integerValue == 1 && video.isPaused.integerValue == 0 )
+//        {
+//            VCLIENT.
+//        }
+//    }
+}
+
+-(void)videoUploadDescretion
+{
+    if( VCLIENT.asset != nil )
+    {
+        DLog(@"Log : Upload in progress....");
+        
+        [self.lblSyncNotInProgress setHidden:YES];
+        [self.vwSyncingFile setHidden:NO];
+        [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:YES];
+    }
+    else
+    {
+        [self.vwSyncingFile setHidden:YES];
+        [self.lblSyncNotInProgress setHidden:NO];
+        
+        if( [DBCLIENT getTheCountOfRecordsInDB] > 0 )
+        {
+            if( [APPMANAGER.activeSession.autoSyncEnabled isEqual:@(1)] )
+            {
+                if( [DBCLIENT getTheListOfPausedVideos].count > 0 )
+                {
+                    self.lblSyncNotInProgress.text = @"Please consider syncing paused uploads";
+                    self.lblSyncNotInProgress.numberOfLines = 0;
+                    self.lblSyncNotInProgress.font = [ViblioHelper viblio_Font_Regular_WithSize:12 isBold:NO];
+                }
+                else
+                    self.lblSyncNotInProgress.text = @"All videos are uploaded !!";
+            }
+            else
+                self.lblSyncNotInProgress.text = @"Enable Auto Sync to upload all your videos !!";
+        }
+        else
+        {
+            self.lblSyncNotInProgress.text = @"No videos found to upload !!";
+        }
+        //        }
+    }
+}
 
 - (IBAction)pauseSyncingFileClicked:(id)sender {
     DLog(@"Log : File Syncing has to be paused now");
     
 //    if( self.btnUploadPause.tag == 0 )
 //    {
+//    [self.btnUploadPause setHidden:YES];
+//    [self.btnUploadResume setHidden:NO];
 //        APPMANAGER.turnOffUploads = YES;
-        [APPCLIENT invalidateFileUploadTask];
+//        self.btnUploadPause.tag = 1;
+        //[self.btnUploadPause setBackgroundImage:nil forState:UIControlStateNormal];
+//        [self.btnUploadPause setBackgroundImage:[UIImage imageNamed:@"icon_play"] forState:UIControlStateNormal];
+//        [self.btnUploadPause setBackgroundImage:[UIImage imageNamed:@"icon_play"] forState:UIControlStateHighlighted];
+
+//    [APPCLIENT invalidateUploadTaskWithoutPausing];
+    
+            [APPCLIENT invalidateFileUploadTask];
+    
+    [self videoUploadDescretion];
+    
+    
+//    [self refreshBar];
+//    [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:0];
 //    }
 //    else
 //    {
 //        APPMANAGER.turnOffUploads = NO;
-//        
+//        self.btnUploadPause.tag = 0;
+//        [self.btnUploadPause setBackgroundImage:[UIImage imageNamed:@"icon_pause"] forState:UIControlStateNormal];
+//        [self.btnUploadPause setBackgroundImage:[UIImage imageNamed:@"icon_pause"] forState:UIControlStateHighlighted];
+//        [VCLIENT videoUploadIntelligence];
 //    }
 }
 
@@ -269,7 +372,7 @@
     {
         DLog(@"Log : Terms clicked");
         
-        [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"terms")] animated:YES];
+      //  [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"terms")] animated:YES];
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Rate Us In App Store"])
     {

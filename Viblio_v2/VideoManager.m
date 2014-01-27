@@ -9,7 +9,7 @@
 #import "VideoManager.h"
 #import "NSString+Additions.h"
 
-#define BUFFER_LEN 1024*1024*1
+#define BUFFER_LEN 1024*512*1
 
 @interface VideoManager ()
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
@@ -304,14 +304,6 @@
         }
     }
     return nil;
-}
-
-
-/*------------------------- Pause, Resume and Cancel Functionalities here -----------------------------------------*/
-
--(void)pauseSyncingFileAndContinue:(BOOL)proceed
-{
-    
 }
 
 

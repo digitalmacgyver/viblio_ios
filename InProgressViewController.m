@@ -76,7 +76,7 @@
     
     cell.video = APPMANAGER.listVideos[indexPath.row];
     cell.asset = [VCLIENT getAssetFromFilteredVideosForUrl:cell.video.fileURL];
-    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     NSString *dateString = [NSDateFormatter localizedStringFromDate:[cell.asset valueForProperty:ALAssetPropertyDate]
                                                           dateStyle:NSDateFormatterShortStyle
                                                           timeStyle:NSDateFormatterFullStyle];

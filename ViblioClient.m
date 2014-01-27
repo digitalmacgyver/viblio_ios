@@ -26,6 +26,34 @@ void(^_failure)(NSError *error);
     return _sharedClient;
 }
 
+// Battery status notification handler
+- (void)batteryChanged:(NSNotification *)notification
+{
+    UIDevice *device = [UIDevice currentDevice];
+    NSLog(@"state: %i | charge: %f", device.batteryState, device.batteryLevel);
+    
+    if( APPMANAGER.activeSession.batterSaving.integerValue )
+    {
+        if( device.batteryLevel < 0.2 )
+        {
+            DLog(@"Log : Battery low.. Stop uploads...");
+            
+            if( VCLIENT.asset != nil )
+            {
+                APPMANAGER.turnOffUploads = YES;
+                [APPCLIENT invalidateFileUploadTask];
+            }
+            else
+                DLog(@"Log : No uploads going on to be paused by low battery status...");
+        }
+        else
+        {
+            DLog(@"Log : Battery status charged....");
+            [VCLIENT videoUploadIntelligence];
+        }
+    }
+}
+
 - (id)initWithBaseURL:(NSURL *)url {
     self = [super initWithBaseURL:url];
     
@@ -33,9 +61,50 @@ void(^_failure)(NSError *error);
         return nil;
     }
     
+    // Set up lsteners for battery level change
+    
+    
+    UIDevice *device = [UIDevice currentDevice];
+    device.batteryMonitoringEnabled = YES;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryChanged:) name:@"UIDeviceBatteryLevelDidChangeNotification" object:device];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryChanged:) name:@"UIDeviceBatteryStateDidChangeNotification" object:device];
+    
+    
     [self setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status)
     {
         NSLog(@"LOG : Reachability of the base URL changed to - %d",status);
+        
+        if([APPMANAGER.user.userID isValid])
+        {
+            if( status == 0 )
+            {
+                APPMANAGER.turnOffUploads = YES;
+                [APPCLIENT invalidateFileUploadTask];
+            }
+            else
+            {
+                if( APPMANAGER.activeSession.wifiupload.integerValue )
+                {
+                    if( status == 2 )
+                    {
+                        APPMANAGER.turnOffUploads = NO;
+                        [VCLIENT videoUploadIntelligence];
+                    }
+                    else
+                        DLog(@"Log : Need to wait for wifi connection");
+                }
+                else
+                {
+                    APPMANAGER.turnOffUploads = NO;
+                    [VCLIENT videoUploadIntelligence];
+                }
+            }
+        }
+        else
+        {
+            DLog(@"Log : Wifi Upload - User session does not exist...");
+        }
+
     }];
     
     self.session = [self backgroundSession];
@@ -450,6 +519,16 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.viblio.BackGroundSession"];
+        
+        if( APPMANAGER.activeSession.wifiupload.integerValue )
+        {
+            configuration.allowsCellularAccess = NO;
+        }
+        else
+        {
+            configuration.allowsCellularAccess = YES;
+        }
+        
 		session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
 	});
 	return session;
@@ -479,16 +558,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
             if(self.uploadTask != nil)
                 _failure(error);
         }
-        
-//        double progress = (double)task.countOfBytesSent / (double)task.countOfBytesExpectedToSend;
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            DLog(@"LOG : The progress is %lf", progress);
-//        });
-        
-      //  self.uploadTask = nil;
-//    }
-//    else
-//        DLog(@"Log : Upload task is nil");
 }
 
 - (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
@@ -512,6 +581,21 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     NSError *error = nil;
     _failure(error);
+}
+
+-(void)invalidateUploadTaskWithoutPausing
+{
+      //  DLog(@"Log : Initialising upload Pause ----");
+        
+        // Upload paused by the user.... Update the user isPaused status
+        
+      //  [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
+    
+    APPMANAGER.turnOffUploads = YES;
+    [self.uploadTask suspend];
+        
+        NSError *error = nil;
+        _failure(error);
 }
 
 

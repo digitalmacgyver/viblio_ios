@@ -18,7 +18,7 @@
   completionHandler:(void (^)())completionHandler {
 	self.backgroundSessionCompletionHandler = completionHandler;
     //add notification
-    [self presentNotification];
+  //  [self presentNotification];
 }
 
 -(void)presentNotification{
@@ -48,7 +48,11 @@
 {
     // Override point for customization after application launch.
     
+    UIDevice *device = [UIDevice currentDevice];
+    device.batteryMonitoringEnabled = YES;
+    
     Session *session = [DBCLIENT getSessionSettings];
+    APPMANAGER.turnOffUploads = NO;
     
     if( session == nil )
     {
@@ -125,7 +129,10 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    DLog(@"Log : App is terminating");
     
+    APPMANAGER.turnOffUploads = YES;
+    [APPCLIENT invalidateFileUploadTask];
     APPCLIENT.uploadTask = nil;
     [FBSession.activeSession close];
 }

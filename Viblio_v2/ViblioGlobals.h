@@ -60,11 +60,14 @@
 #import "ViblioHelper.h"
 #import "CoreDataManager.h"
 #import "VideoManager.h"
+#import "AppManager.h"
+#import "UserManager.h"
 
 //Modals
 #import "User.h"
 #import "Info.h"
 #import "Videos.h"
+#import "Session.h"
 
 //Addtions
 #import "UITextField+Additions.h"

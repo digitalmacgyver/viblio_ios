@@ -20,6 +20,15 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Aleo-Bold.otf</string>
+		<string>Aleo-BoldItalic.otf</string>
+		<string>Aleo-Italic.otf</string>
+		<string>Aleo-Light.otf</string>
+		<string>Aleo-LightItalic.otf</string>
+		<string>Aleo-Regular.otf</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -33,6 +42,8 @@
 	<string>1.0</string>
 	<key>FacebookAppID</key>
 	<string>543892705706494</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIMainStoryboardFile</key>

@@ -25,6 +25,13 @@
     return _sharedClient;
 }
 
+// Function to roll back
+
+-(void)rollbackChanges
+{
+    [self.managedObjectContext rollback];
+}
+
 
 /* Function to return the list of videos that are to be uploaded */
 
@@ -34,7 +41,7 @@
        such files are found we do take up newer files for uploading. Older files are given priority over the newer files meaning, older files will
        be synced first on priority. Blocks of 3 files will be taken for upload which means we will be making upload request for 3 files together */
     
-    NSMutableArray *filteredDBSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:0];
+    NSMutableArray *filteredDBSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:0 andIsPaused:0];
     
     if( filteredDBSet != nil && filteredDBSet.count == BLOCK_REQ_SIZE )
         return filteredDBSet;
@@ -44,7 +51,7 @@
         
         DLog(@"LOG : Querying DB for sync initialised failed videos to fill up the Block size");
         
-        NSMutableArray *failedSyncingSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:1];
+        NSMutableArray *failedSyncingSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:1 andIsPaused:0];
         if( failedSyncingSet != nil && failedSyncingSet.count > 0 )
         {
             for( Videos *video in failedSyncingSet )
@@ -58,28 +65,30 @@
         [failedSyncingSet removeAllObjects];
         failedSyncingSet = nil;
         
-        
-        /*------------------------------------------------------------------------------------------------*/
-        
-        // If sufficient videos are not found then next priority is given for non sync initialized videos
-        
-        if( filteredDBSet.count < BLOCK_REQ_SIZE )
+        if( APPMANAGER.activeSession.autoSyncEnabled )
         {
-            DLog(@"LOG : Querying DB for non sync initialised videos to fill up the Block size");
-            
-            NSMutableArray *filteredNewSet = [self getFilteredDBEntriesBasedOnSyncStatus:0 andHasFailed:0];
-            if( filteredNewSet != nil && filteredNewSet.count > 0 )
+            /*------------------------------------------------------------------------------------------------*/
+        
+            // If sufficient videos are not found then next priority is given for non sync initialized videos
+        
+            if( filteredDBSet.count < BLOCK_REQ_SIZE )
             {
-                for( Videos *video in filteredNewSet )
+                DLog(@"LOG : Querying DB for non sync initialised videos to fill up the Block size");
+            
+                NSMutableArray *filteredNewSet = [self getFilteredDBEntriesBasedOnSyncStatus:0 andHasFailed:0 andIsPaused:0];
+                if( filteredNewSet != nil && filteredNewSet.count > 0 )
                 {
-                    if( filteredDBSet.count < BLOCK_REQ_SIZE )
-                        [filteredDBSet addObject:video];
-                    else
-                        break;
+                    for( Videos *video in filteredNewSet )
+                    {
+                        if( filteredDBSet.count < BLOCK_REQ_SIZE )
+                            [filteredDBSet addObject:video];
+                        else
+                            break;
+                    }
                 }
+                [filteredNewSet removeAllObjects];
+                filteredNewSet = nil;
             }
-            [filteredNewSet removeAllObjects];
-            filteredNewSet = nil;
         }
     }
     return filteredDBSet;
@@ -88,7 +97,7 @@
 
 /* Function returning the filtered DB entries based on failure, sync in progress and not initiated sync */
 
--(NSMutableArray*)getFilteredDBEntriesBasedOnSyncStatus : (NSUInteger)sync_status andHasFailed : (NSUInteger)hasFailed
+-(NSMutableArray*)getFilteredDBEntriesBasedOnSyncStatus : (NSUInteger)sync_status andHasFailed : (NSUInteger)hasFailed andIsPaused : (NSUInteger)isPaused
 {
     NSFetchRequest * videosResultSet = [[NSFetchRequest alloc] init];
     [videosResultSet setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
@@ -98,7 +107,7 @@
     videosResultSet.fetchLimit = BLOCK_REQ_SIZE;
     
     // Sync_Status of 1 indicates that the file has already been considered for uploading
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"sync_status == %d AND hasFailed = %d", sync_status, hasFailed];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"sync_status == %d AND hasFailed = %d AND isPaused = %d", sync_status, hasFailed, isPaused];
     [videosResultSet setPredicate:predicate];
     
     // Only sort by name if the destination entity actually has a "name" field
@@ -117,9 +126,9 @@
 
 /* Check for DB Updates */
 
--(void)updateDB
+-(void)updateDB : (void(^)(NSString *msg))success
+        failure : (void(^)(NSError *error)) failure
 {
-    //[self updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=B431EADC-C4AC-48E2-B256-923F8B292056&ext=MOV" syncStatus:2];
     DLog(@"Log : Performing an update on the DB");
     [VCLIENT loadAssetsFromCameraRoll:^(NSArray *filteredVideoList)
     {
@@ -143,6 +152,7 @@
                         video.fileURL = [asset.defaultRepresentation.url absoluteString];
                         video.sync_status = [NSNumber numberWithInt:0];
                         video.sync_time = @([date timeIntervalSince1970]);
+                        video.fileLocation = nil;
                         
                         NSError *error;
                         if (![[self managedObjectContext] save:&error]) {
@@ -159,10 +169,15 @@
             }
         }
         [self updateLastSyncDate];
+        success(@"success");
         
     }failure:^(NSError *error) {
+        DLog(@"Log : Error - %@", error.localizedDescription);
+        failure(error);
     }];
 }
+
+/*------------------------------------------------------------------------------------------- Syncing Date Related Functions --------------------------*/
 
 -(NSDate*)getDateOfLastSync
 {
@@ -227,6 +242,8 @@
     }
 }
 
+/*------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 // Getting the count of records in DB
 
 -(int)getTheCountOfRecordsInDB
@@ -258,11 +275,27 @@
     return videoList.count;
 }
 
+-(NSArray*)getTheListOfPausedVideos
+{
+    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
+    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isPaused == %@", @(1)];
+    [videos setPredicate:predicate];
+    
+    NSError * error = nil;
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
+    videos = nil;
+    
+    return videoList;
+}
+
 /*------------------------------------------------------------------------------------------*/
 
 // List all the entities in the DB
 
--(void)listAllEntitiesinTheDB
+-(NSArray*)listAllEntitiesinTheDB
 {
     NSManagedObjectContext *context = self.managedObjectContext;
     NSError *error;
@@ -275,9 +308,10 @@
     for (Videos *info in fetchedObjects) {
         DLog(@"LOG : %@", info);
     }
+    return fetchedObjects;
 }
 
--(void)listTheDetailsOfObjectWithURL:(NSString*)fileURL
+-(Videos *)listTheDetailsOfObjectWithURL:(NSString*)fileURL
 {
     NSFetchRequest * videos = [[NSFetchRequest alloc] init];
     [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
@@ -290,12 +324,10 @@
     NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
     videos = nil;
     
-    NSLog(@"LOG : The list obtained is as follows - %@",videoList);
-    //more error handling here
+    return [videoList firstObject];
 }
 
 // Delete operation on the DB
-
 // Delete a single file
 
 -(void)deleteOperationOnDB:(NSString*)fileURL
@@ -372,6 +404,250 @@
     }
     
     request = nil;
+}
+
+
+-(void)updateIsPausedStatusOfFile:(NSURL*)assetUrl forPausedState:(BOOL)isPaused
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", assetUrl];
+    [request setPredicate:predicate];
+    
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    NSLog(@"LOG : The results obtained are - %@", results);
+    
+    Videos *video = [results firstObject];
+    [video setValue:@(isPaused) forKey:@"isPaused"];
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    
+    request = nil;
+}
+
+-(void)updateFileLocationFile:(NSURL*)assetUrl toLocation:(NSString*)locationID
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", assetUrl];
+    [request setPredicate:predicate];
+    
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    NSLog(@"LOG : The results obtained are - %@", results);
+    
+    Videos *video = [results firstObject];
+    [video setValue:locationID forKey:@"fileLocation"];
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    
+    request = nil;
+}
+
+
+-(void)updateFailStatusOfFile:(NSURL*)assetUrl toStatus:(NSNumber*)status
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", assetUrl];
+    [request setPredicate:predicate];
+    
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    NSLog(@"LOG : The results obtained are - %@", results);
+    
+    Videos *video = [results firstObject];
+    [video setValue:status forKey:@"hasFailed"];
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    
+    request = nil;
+}
+
+
+
+-(void)updateUploadedBytesForFile:(NSURL*)assetUrl toBytes:(NSNumber*)bytes
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", assetUrl];
+    [request setPredicate:predicate];
+    
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    NSLog(@"LOG : The results obtained are - %@", results);
+    
+    Videos *video = [results firstObject];
+    DLog(@"Log : Storing uploaded bytes --- %lf", bytes.doubleValue);
+    [video setValue:bytes forKey:@"uploadedBytes"];
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    request = nil;
+}
+
+
+/*************************************** Session Entity Related Functions ***************************************************/
+
+#pragma session entity functions
+
+
+-(Session*)getSessionSettings
+{
+    DLog(@"Log : Fetching default session settings");
+    NSManagedObjectContext *context = self.managedObjectContext;
+    NSError *error;
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Session"
+                                              inManagedObjectContext:context];
+    [fetchRequest setEntity:entity];
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    fetchRequest = nil;
+    
+    if( fetchedObjects == nil )
+        return nil;
+    
+    if( fetchedObjects != nil && fetchedObjects.count == 0 )
+        return nil;
+    DLog(@"Log : Fetched results- %@", fetchedObjects);
+    
+    return (Session*)[fetchedObjects firstObject];
+}
+
+-(void)insertDefaultSettingsIntoSession
+{
+    DLog(@"Log : Setting default settings for session");
+    Session *sessionSettings = [NSEntityDescription
+                                insertNewObjectForEntityForName:@"Session"
+                                inManagedObjectContext:[self managedObjectContext]];
+    
+    sessionSettings.autoSyncEnabled = @(YES);
+    sessionSettings.backgroundSyncEnabled = @(YES);
+    sessionSettings.wifiupload = @(NO);
+    sessionSettings.autolockdisable = @(YES);
+    sessionSettings.batterSaving = @(YES);
+    
+    NSError *error;
+    if (![[self managedObjectContext] save:&error]) {
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    sessionSettings = nil;
+}
+
+
+-(void)updateSessionSettingsForKey:(NSString*)key forValue:(BOOL)value
+{
+    DLog(@"Log : The session setting for %@ is being updated to - %@",key, @(value));
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Session" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    
+    Session *sessionInfo = [results firstObject];
+    [sessionInfo setValue:@(value) forKey:key];
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    
+    request = nil;
+    sessionInfo = nil;
+}
+
+
+/**************************************** User Entity related functions *****************************************************/
+
+#pragma user entity functions
+
+-(void)persistUserDetailsWithEmail:(NSString*)email
+                          password:(NSString*)password
+                            userID:(NSString*)userID
+                         isNewUser:(NSNumber*)isNewUser
+                          isFbUser:(NSNumber*)isFbUser
+                     sessionCookie:(NSString*)sessionCookie
+                     fbAccessToken:(NSString*)fbAccessToken
+{
+    NSArray *results = [self getUserDataFromDB];
+    
+        NSError *deleteError;
+    
+        DLog(@"Log : User object already exists ------ Deleting the existing entity");
+        //error handling goes here
+        for (User * user in results) {
+            [self.managedObjectContext deleteObject:user];
+        }
+        
+        if (![self.managedObjectContext save:&deleteError]) {
+            NSLog(@"Whoops, couldn't save: %@", [deleteError localizedDescription]);
+        }
+    
+        DLog(@"LOG : Adding the new user details to the DB");
+        User *userDB = [NSEntityDescription
+                      insertNewObjectForEntityForName:@"User"
+                      inManagedObjectContext:[self managedObjectContext]];
+        
+        userDB.userID = userID;
+        userDB.emailId = email;
+        userDB.fbAccessToken = fbAccessToken;
+        userDB.isNewUser = isNewUser;
+        userDB.isFbUser = isFbUser;
+        userDB.sessionCookie = sessionCookie;
+        userDB.password = password;
+        
+        NSError *errorUserStore;
+        if (![[self managedObjectContext] save:&errorUserStore]) {
+            DLog(@"Whoops, couldn't save: %@", [errorUserStore localizedDescription]);
+        }
+        userDB = nil;
+}
+
+
+-(NSArray *)getUserDataFromDB
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    DLog(@"Log : The fetched user set is - %@", results);
+    
+    if( results != nil && results.count > 0 )
+        return results;
+    return nil;
+}
+
+-(void)deleteUserEntity
+{
+    NSFetchRequest * userResult = [[NSFetchRequest alloc] init];
+    [userResult setEntity:[NSEntityDescription entityForName:@"User" inManagedObjectContext:self.managedObjectContext ]];
+    [userResult setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSError * error = nil;
+    NSArray * userList = [self.managedObjectContext executeFetchRequest:userResult error:&error];
+    userResult = nil;
+    
+    //error handling goes here
+    for (User * user in userList) {
+        [self.managedObjectContext deleteObject:user];
+    }
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
 }
 
 

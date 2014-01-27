@@ -7,8 +7,9 @@
 //
 
 #import "VideoManager.h"
+#import "NSString+Additions.h"
 
-#define BUFFER_LEN 1024*1024*1
+#define BUFFER_LEN 1024*512*1
 
 @interface VideoManager ()
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
@@ -25,7 +26,7 @@
     return _sharedClient;
 }
 
-- (NSData *)getDataPartAtOffset:(NSInteger)offset  {
+- (NSData *)getDataPartAtOffset:(NSInteger)offsetOfUpload  {
     __block NSData *chunkData = nil;
     if (self.asset){
         static const NSUInteger BufferSize = BUFFER_LEN; // 1 MB chunk
@@ -36,7 +37,7 @@
         
         @try
         {
-            bytesRead = [rep getBytes:buffer fromOffset:offset length:BufferSize error:&error];
+            bytesRead = [rep getBytes:buffer fromOffset:offsetOfUpload length:BufferSize error:&error];
             NSLog(@"LOG : Bytes read length - %d",bytesRead);
             chunkData = [NSData dataWithData:[NSData dataWithBytesNoCopy:buffer length:bytesRead freeWhenDone:NO]];
         }
@@ -126,37 +127,53 @@
 //    df = nil; str = nil;
 }
 
--(void)otherServices
-{
-    NSLog(@"LOG : The asset details are - %@",self.asset);
-    
-    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(User *user)
-     {
-         NSLog(@"LOG : Modal user object obtained is - %@",user);
-         
-     }failure:^(NSError *error)
-     {
-         
-     }];
-}
+//-(void)otherServices
+//{
+//    NSLog(@"LOG : The asset details are - %@",self.asset);
+//    
+//    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(User *user)
+//     {
+//         NSLog(@"LOG : Modal user object obtained is - %@",user);
+//         
+//     }failure:^(NSError *error)
+//     {
+//         
+//     }];
+//}
 
--(int)getOffsetFromTheHeadService
+-(void)getOffsetFromTheHeadService
 {
-    [APPCLIENT getOffsetOfTheFileAtLocationID:@"f3c552f0-7e22-11e3-9ee5-2bc59fa2be56" sessionCookie:nil success:^(NSString *msg)
+    [APPCLIENT getOffsetOfTheFileAtLocationID:self.videoUploading.fileLocation sessionCookie:nil success:^(double offsetObtained)
      {
-         
+         DLog(@"Log : The offset obtained is - %lf", offsetObtained);
+         offset = offsetObtained;
+         APPCLIENT.uploadedSize = offset;
+         [self videoFromNSData];
      }failure:^(NSError *error)
      {
          NSLog(@"LOG : %@", error);
      }];
-    return 1;
 }
 
 -(void)startNewFileUpload
 {
-    [APPCLIENT startUploadingFileForUserId:@"FD5C4166-67AC-11E3-B0E6-7B6FF9A9DC35" fileLocalPath:self.asset.defaultRepresentation.url.absoluteString fileSize:[NSString stringWithFormat:@"%lld",self.asset.defaultRepresentation.size] success:^(NSString *msg)
+    DLog(@"Log : The asset is - %@", self.asset);
+    DLog(@"Log : Details of user in APP Manager - %@", APPMANAGER.user);
+    [APPCLIENT startUploadingFileForUserId:APPMANAGER.user.userID fileLocalPath:self.asset.defaultRepresentation.url.absoluteString fileSize:[NSString stringWithFormat:@"%lld",self.asset.defaultRepresentation.size] success:^(NSString *fileLocation)
      {
+         DLog(@"Log : The file locaion Id is obtained --- %@", fileLocation);
+         self.videoUploading.fileLocation = fileLocation;
+         self.videoUploading.sync_status = @(1);
          
+         DLog(@"Log : Updating DB for file location");
+         [DBCLIENT updateFileLocationFile:self.asset.defaultRepresentation.url toLocation:self.videoUploading.fileLocation];
+         
+         DLog(@"Log : Updating the DB for sync_status of the video file");
+         [DBCLIENT updateSynStatusOfFile:self.videoUploading.fileURL syncStatus:1];
+         
+         // Set offset to 0 before starting uploading a new file. Offset has to be set to the value obtained from HEAD request if it is a resumable upload
+         offset = 0;
+         [self videoFromNSData];
      }failure:^(NSError *error)
      {
          NSLog(@"LOG : The error is - %@",error);
@@ -180,27 +197,113 @@
             NSLog(@"LOG : Chunk data failure --- %d --- %@",chunkData.length,chunkData);
             NSLog(@"LOG : File transmission done");
             
+            DLog(@"Log : Remove the file record from DB ----");
+            [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
+            
+            // Clean the video uploaded size
+            APPCLIENT.uploadedSize = 0;
+            
+            self.asset = nil;
+            self.videoUploading = nil;
+            
+            DLog(@"Log : Trying to fetch more files for uploading");
+            
+            if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive )
+                [self videoUploadIntelligence];
+            else
+                DLog(@"Log : App is in background.. Dont initiate next request...");
+            
+            [[NSNotificationCenter defaultCenter]postNotificationName:uploadComplete object:nil];
         }
         else
         {
             // do your stuff here
-            [APPCLIENT resumeUploadOfFileLocationID:@"790d57b0-7e5e-11e3-9ee5-2bc59fa2be56" localFileName:@"movieTrialPav" chunkSize:[NSString stringWithFormat:@"%d",chunkData.length]  offset:[NSString stringWithFormat:@"%d",offset] chunk:chunkData sessionCookie:nil success:^(NSString *msg)
+            [APPCLIENT resumeUploadOfFileLocationID:self.videoUploading.fileLocation localFileName:@"movieTrialSunday" chunkSize:[NSString stringWithFormat:@"%d",chunkData.length]  offset:[NSString stringWithFormat:@"%f",offset] chunk:chunkData sessionCookie:nil success:^(NSString *msg)
              {
-                 NSLog(@"LOG : Uploading next chunk---- completed upload till offset - %d",offset);
+                 NSLog(@"LOG : Uploading next chunk---- completed upload till offset - %f",offset);
                  
-                 NSLog(@"LOG : 1 / %lld th part uploading..... ", offset/self.asset.defaultRepresentation.size);
+                 NSLog(@"LOG : 1 / %f th part uploading..... ", offset/self.asset.defaultRepresentation.size);
                  
                  [self videoFromNSData];
                  
              }failure:^(NSError *error)
              {
-                 offset -=[chunkData length];
-                 [self videoFromNSData];
+//                 offset -=[chunkData length];
+//                 [self videoFromNSData];
+                 DLog(@"Log : Error uploading file and the error is - %@", error);
+                 // Commiting to DB that the File has failed
+                 [DBCLIENT updateFailStatusOfFile:self.asset.defaultRepresentation.url toStatus:@(1)];
+                 
+                 // Commit the uploaded bytes to the DB
+                 [DBCLIENT updateUploadedBytesForFile:self.asset.defaultRepresentation.url toBytes:@(APPCLIENT.uploadedSize)];
+                 
+                 self.asset = nil; self.videoUploading = nil; APPCLIENT.uploadedSize = 0;
+                 
+                 if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive )
+                     [self videoUploadIntelligence];
+                 else
+                     DLog(@"Log : App is in background.. Dont initiate next request...");
+                 
+                 [[NSNotificationCenter defaultCenter]postNotificationName:uploadComplete object:nil];
              }];
             
             offset +=[chunkData length];
         }
     }
+}
+
+
+/************************************************ Video Upload intelligence ************************************************************************/
+
+-(void)videoUploadIntelligence
+{
+    if( self.asset == nil && !APPMANAGER.turnOffUploads)
+    {
+        NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
+        
+        if( videoList != nil && videoList.count > 0 )
+        {
+            DLog(@"Log : The autoSyncStatus is - %@", APPMANAGER.activeSession.autoSyncEnabled);
+            DLog(@"Log : The list of videos to be uploaded are - %@", videoList);
+            self.videoUploading = (Videos*)[videoList firstObject];
+            self.asset = [self getAssetFromFilteredVideosForUrl: self.videoUploading.fileURL];
+            
+            if([self.videoUploading.sync_status  isEqual: @(0)] || ![self.videoUploading.fileLocation isValid])
+            {
+                DLog(@"Log : New file.. File location will not be existing...");
+                [self startNewFileUpload];
+            }
+            else
+            {
+                DLog(@"Log : File already syncing and has been stopped at certain offset....");
+                DLog(@"Log : The video and asset details are as follows - %@ --------- %@", self.videoUploading, self.asset);
+                [self getOffsetFromTheHeadService];
+            }
+        }
+        else
+        {
+            DLog(@"Log : All videos are synced.. No videos to be uploaded");
+            self.asset = nil;
+            self.videoUploading = nil;
+        }
+    }
+    else
+        DLog(@"Log : An upload in progress..... or uploads are turned off");
+}
+
+/*------------------------------------------------------- Function to get the ALAsset by passing asset URL -----------------------------------------*/
+
+-(ALAsset*)getAssetFromFilteredVideosForUrl:(NSString*)url
+{
+    for (ALAsset *asset in self.filteredVideoList)
+    {
+        if( [asset.defaultRepresentation.url.absoluteString isEqualToString:url] )
+        {
+            DLog(@"Log : Asset found.. And the asset is - %@", asset);
+            return asset;
+        }
+    }
+    return nil;
 }
 
 

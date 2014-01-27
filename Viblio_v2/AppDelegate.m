@@ -17,14 +17,19 @@
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier
   completionHandler:(void (^)())completionHandler {
 	self.backgroundSessionCompletionHandler = completionHandler;
-    
     //add notification
-    [self presentNotification];
+  //  [self presentNotification];
 }
 
 -(void)presentNotification{
     UILocalNotification* localNotification = [[UILocalNotification alloc] init];
-    localNotification.alertBody = @"Upload Complete!";
+    
+    int chunk = (int)(VCLIENT.asset.defaultRepresentation.size / 1048576);
+    int rem = VCLIENT.asset.defaultRepresentation.size % 1048576;
+    if(rem > 0)
+        chunk++;
+    
+    localNotification.alertBody = [NSString stringWithFormat:@"%d chunks of %d completed", (int)APPCLIENT.uploadedSize/1048576, chunk];
     localNotification.alertAction = @"Background Transfer Upload!";
     
     //On sound
@@ -32,6 +37,8 @@
     
     //increase the badge number of application plus 1
     localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+    
+    
     
     [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
 }
@@ -41,35 +48,27 @@
 {
     // Override point for customization after application launch.
     
-//    NSManagedObjectContext *context = [self managedObjectContext];
-//    Videos *video = [NSEntityDescription
-//                                      insertNewObjectForEntityForName:@"Videos"
-//                                      inManagedObjectContext:context];
-//
-//    video.fileURL = @"checking URL";
-//    video.sync_status = [NSNumber numberWithInt:0];
-//    
-//    NSError *error;
-//    if (![context save:&error]) {
-//        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-//    }
-//    
-//    // Test listing all FailedBankInfos from the store
-//    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-//    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Videos"
-//                                              inManagedObjectContext:context];
-//    [fetchRequest setEntity:entity];
-//    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
-//    for (Videos *info in fetchedObjects) {
-//        NSLog(@"Name: %@", video.fileURL);
-//        NSLog(@"Zip: %@", video.sync_status);
-//    }
+    UIDevice *device = [UIDevice currentDevice];
+    device.batteryMonitoringEnabled = YES;
     
-    // Override point for customization after application launch.
-//    UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
-//    FBCDMasterViewController *controller = (FBCDMasterViewController *)navigationController.topViewController;
-//    controller.managedObjectContext = self.managedObjectContext;
+    Session *session = [DBCLIENT getSessionSettings];
+    APPMANAGER.turnOffUploads = NO;
     
+    if( session == nil )
+    {
+        [DBCLIENT insertDefaultSettingsIntoSession];
+        [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
+    }
+    else
+    {
+        if( session.autolockdisable.integerValue )
+            [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
+        else
+            [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+    }
+    session = nil;
+    
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     return YES;
 }
 							
@@ -94,7 +93,28 @@
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
-    [DBCLIENT updateDB];
+    NSArray *userResults = [DBCLIENT getUserDataFromDB];
+    if( userResults != nil && userResults.count > 0 )
+    {
+        DLog(@"Log : User session exits.. Peform update on DB here");
+        [DBCLIENT updateDB:^(NSString *msg)
+        {
+            DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
+            if([APPMANAGER.user.userID isValid])
+                [VCLIENT videoUploadIntelligence];
+            
+        }failure:^(NSError *error)
+        {
+            DLog(@"Log : Camera roll access denied case...");
+        }];
+    }
+    else
+    {
+        DLog(@"Log : No user session exits.. User has to Login first...");
+    }
+    
+    APPMANAGER.activeSession = (Session*)[DBCLIENT getSessionSettings];
+    userResults = nil;
     [FBSession.activeSession handleDidBecomeActive];
 }
 
@@ -109,107 +129,12 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    DLog(@"Log : App is terminating");
     
+    APPMANAGER.turnOffUploads = YES;
+    [APPCLIENT invalidateFileUploadTask];
+    APPCLIENT.uploadTask = nil;
     [FBSession.activeSession close];
 }
-
-
-//- (void)saveContext
-//{
-//    NSError *error = nil;
-//    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
-//    if (managedObjectContext != nil) {
-//        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
-//            // Replace this implementation with code to handle the error appropriately.
-//            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-//            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-//            abort();
-//        }
-//    }
-//}
-//
-//#pragma mark - Core Data stack
-//
-//// Returns the managed object context for the application.
-//// If the context doesn't already exist, it is created and bound to the persistent store coordinator for the application.
-//- (NSManagedObjectContext *)managedObjectContext
-//{
-//    if (__managedObjectContext != nil) {
-//        return __managedObjectContext;
-//    }
-//    
-//    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
-//    if (coordinator != nil) {
-//        __managedObjectContext = [[NSManagedObjectContext alloc] init];
-//        [__managedObjectContext setPersistentStoreCoordinator:coordinator];
-//    }
-//    return __managedObjectContext;
-//}
-//
-//// Returns the managed object model for the application.
-//// If the model doesn't already exist, it is created from the application's model.
-//- (NSManagedObjectModel *)managedObjectModel
-//{
-//    if (__managedObjectModel != nil) {
-//        return __managedObjectModel;
-//    }
-//    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Videos" withExtension:@"momd"];
-//    __managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
-//    return __managedObjectModel;
-//}
-//
-//// Returns the persistent store coordinator for the application.
-//// If the coordinator doesn't already exist, it is created and the application's store added to it.
-//- (NSPersistentStoreCoordinator *)persistentStoreCoordinator
-//{
-//    if (__persistentStoreCoordinator != nil) {
-//        return __persistentStoreCoordinator;
-//    }
-//    
-//    NSLog(@"LOG : The app URL is - %@",[self applicationDocumentsDirectory]);
-//    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Videos.sqlite"];
-//    
-//    NSError *error = nil;
-//    __persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-//    if (![__persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
-//        /*
-//         Replace this implementation with code to handle the error appropriately.
-//         
-//         abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-//         
-//         Typical reasons for an error here include:
-//         * The persistent store is not accessible;
-//         * The schema for the persistent store is incompatible with current managed object model.
-//         Check the error message to determine what the actual problem was.
-//         
-//         
-//         If the persistent store is not accessible, there is typically something wrong with the file path. Often, a file URL is pointing into the application's resources directory instead of a writeable directory.
-//         
-//         If you encounter schema incompatibility errors during development, you can reduce their frequency by:
-//         * Simply deleting the existing store:
-//         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil]
-//         
-//         * Performing automatic lightweight migration by passing the following dictionary as the options parameter:
-//         [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption, [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];
-//         
-//         Lightweight migration will only work for a limited set of schema changes; consult "Core Data Model Versioning and Data Migration Programming Guide" for details.
-//         
-//         */
-//        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-//        abort();
-//    }
-//    
-//    return __persistentStoreCoordinator;
-//}
-//
-//#pragma mark - Application's Documents directory
-//
-//// Returns the URL to the application's Documents directory.
-//- (NSURL *)applicationDocumentsDirectory
-//{
-//    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-//}
-
-
 
 @end

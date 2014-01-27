@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LandingViewController.h"
 
 @interface SignUpViewController : UIViewController <UITextFieldDelegate>
 
@@ -16,5 +17,6 @@
 @property (weak, nonatomic) IBOutlet UITextField *password;
 @property (weak, nonatomic) IBOutlet UILabel *lblPrivacy;
 @property (weak, nonatomic) IBOutlet UILabel *lblTermsOfService;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *sinUpActivity;
 
 @end

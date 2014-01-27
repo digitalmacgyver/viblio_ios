@@ -27,6 +27,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
+    self.lblSignUpWith.font = [ViblioHelper viblio_Font_Italic_WithSize:14 isBold:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -37,6 +39,7 @@
 
 
 - (IBAction)LoginClick:(id)sender {
+    DLog(@"Log : Detecting login click");
     [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"LogInNav") sender:self];
 }
 

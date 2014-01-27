@@ -50,7 +50,7 @@
                  [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                      if (error == nil)
                      {
-                         [APPCLIENT authenticateUserWithFacebook:FBSession.activeSession.accessTokenData.accessToken type:@"facebook" success:^(User *user)
+                         [APPCLIENT authenticateUserWithFacebook:FBSession.activeSession.accessTokenData.accessToken type:@"facebook" success:^(NSString *msg)
                           {
                               
                           }failure:^(NSError *error)

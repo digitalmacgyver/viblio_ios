@@ -727,7 +727,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6X5-Wb-4OR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-138" y="1477"/>
+            <point key="canvasLocation" x="-138" y="1597"/>
         </scene>
         <!--Home View Controller-->
         <scene sceneID="nKZ-eg-f3o">
@@ -968,7 +968,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5XM-vc-IbL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="343" y="1477"/>
+            <point key="canvasLocation" x="343" y="1597"/>
         </scene>
         <!--In Progress View Controller-->
         <scene sceneID="Oqu-oJ-o5Q">
@@ -2351,6 +2351,44 @@
             </objects>
             <point key="canvasLocation" x="386" y="-232"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="vKR-bl-Drz">
+            <objects>
+                <viewController id="moP-uV-hOf" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Jae-Ye-lTF">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" id="Wm7-aF-Ibn">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="listCell" rowHeight="80" id="Fae-t2-V8c">
+                                        <rect key="frame" x="0.0" y="22" width="320" height="80"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Fae-t2-V8c" id="RuN-Re-PLv">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="79"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="WNO-CK-H7p">
+                                                    <rect key="frame" x="0.0" y="0.0" width="80" height="79"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                </imageView>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nu9-ml-SNE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="987" y="-232"/>
+        </scene>
         <!--Menu View Controller-->
         <scene sceneID="C08-bL-XzG">
             <objects>
@@ -2519,18 +2557,56 @@
     </scenes>
     <resources>
         <image name="back.png" width="29" height="29"/>
+        <image name="back.png" width="29" height="29"/>
+        <image name="back.png" width="29" height="29"/>
+        <image name="back.png" width="29" height="29"/>
+        <image name="bttn_grid_view_selected.png" width="40" height="28"/>
         <image name="bttn_grid_view_selected.png" width="40" height="28"/>
         <image name="bttn_list_view_normal.png" width="40" height="28"/>
+        <image name="bttn_list_view_normal.png" width="40" height="28"/>
+        <image name="bttn_off.png" width="77" height="27"/>
         <image name="bttn_off.png" width="77" height="27"/>
         <image name="bttn_on.png" width="77" height="27"/>
+        <image name="bttn_on.png" width="77" height="27"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
+        <image name="empty.png" width="15" height="15"/>
         <image name="empty.png" width="15" height="15"/>
         <image name="fill.png" width="15" height="15"/>
+        <image name="fill.png" width="15" height="15"/>
+        <image name="fill.png" width="15" height="15"/>
+        <image name="fill.png" width="15" height="15"/>
+        <image name="fill.png" width="15" height="15"/>
+        <image name="fill.png" width="15" height="15"/>
+        <image name="icon_cancel.png" width="32" height="32"/>
         <image name="icon_cancel.png" width="32" height="32"/>
         <image name="icon_options.png" width="22" height="14"/>
+        <image name="icon_options.png" width="22" height="14"/>
+        <image name="icon_pause.png" width="32" height="32"/>
+        <image name="icon_pause.png" width="32" height="32"/>
+        <image name="icon_pause.png" width="32" height="32"/>
         <image name="icon_pause.png" width="32" height="32"/>
         <image name="icon_play.png" width="32" height="32"/>
+        <image name="icon_play.png" width="32" height="32"/>
+        <image name="icon_play.png" width="32" height="32"/>
+        <image name="icon_play.png" width="32" height="32"/>
+        <image name="logo.png" width="98" height="144"/>
+        <image name="logo.png" width="98" height="144"/>
+        <image name="logo.png" width="98" height="144"/>
+        <image name="logo.png" width="98" height="144"/>
+        <image name="logo.png" width="98" height="144"/>
         <image name="logo.png" width="98" height="144"/>
         <image name="nav_bar_ios7.png" width="640" height="128"/>
+        <image name="nav_bar_ios7.png" width="640" height="128"/>
+        <image name="viblio.png" width="61" height="17"/>
         <image name="viblio.png" width="61" height="17"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

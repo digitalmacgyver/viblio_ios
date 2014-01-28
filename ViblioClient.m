@@ -580,7 +580,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [self.uploadTask suspend];
     
     NSError *error = nil;
-    _failure(error);
+    
+    if(_failure != nil)
+        _failure(error);
+    else
+        DLog(@"Log : No existing valid instance for failure....");
 }
 
 -(void)invalidateUploadTaskWithoutPausing
@@ -607,18 +611,19 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                  failure : (void (^) (NSError *error))failure
 {
     NSString *path = @"/mediafile/count";
-    NSDictionary *params = @{
-                             @"uuid": APPMANAGER.user.userID
-                             };
+//    NSDictionary *params = @{
+//                             @"uuid": APPMANAGER.user.userID
+//                             };
     
-    NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:params];
-    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:nil];
+    [request setValue: @"text/html"  forHTTPHeaderField:@"Content-Type"];
     [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
     
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
-                                              
+                                              success(2);
+                                              DLog(@"Log : %@", JSON);
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
                                               failure(error);

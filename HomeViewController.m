@@ -97,6 +97,15 @@
 
 - (IBAction)sharedWithMeClicked:(id)sender {
         [self setBackGroundColorsForButtons:NO];
+    
+    DLog(@"Log : Coming here at least");
+    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
+    {
+        DLog(@"Log : The count obtained is - %d", count);
+    }failure:^(NSError *error)
+    {
+        DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
+    }];
 }
 
 - (IBAction)MyViblioClicked:(id)sender {

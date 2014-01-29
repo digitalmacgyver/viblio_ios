@@ -2557,56 +2557,18 @@
     </scenes>
     <resources>
         <image name="back.png" width="29" height="29"/>
-        <image name="back.png" width="29" height="29"/>
-        <image name="back.png" width="29" height="29"/>
-        <image name="back.png" width="29" height="29"/>
-        <image name="bttn_grid_view_selected.png" width="40" height="28"/>
         <image name="bttn_grid_view_selected.png" width="40" height="28"/>
         <image name="bttn_list_view_normal.png" width="40" height="28"/>
-        <image name="bttn_list_view_normal.png" width="40" height="28"/>
-        <image name="bttn_off.png" width="77" height="27"/>
         <image name="bttn_off.png" width="77" height="27"/>
         <image name="bttn_on.png" width="77" height="27"/>
-        <image name="bttn_on.png" width="77" height="27"/>
         <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="empty.png" width="15" height="15"/>
-        <image name="fill.png" width="15" height="15"/>
-        <image name="fill.png" width="15" height="15"/>
-        <image name="fill.png" width="15" height="15"/>
-        <image name="fill.png" width="15" height="15"/>
-        <image name="fill.png" width="15" height="15"/>
         <image name="fill.png" width="15" height="15"/>
         <image name="icon_cancel.png" width="32" height="32"/>
-        <image name="icon_cancel.png" width="32" height="32"/>
-        <image name="icon_options.png" width="22" height="14"/>
         <image name="icon_options.png" width="22" height="14"/>
         <image name="icon_pause.png" width="32" height="32"/>
-        <image name="icon_pause.png" width="32" height="32"/>
-        <image name="icon_pause.png" width="32" height="32"/>
-        <image name="icon_pause.png" width="32" height="32"/>
         <image name="icon_play.png" width="32" height="32"/>
-        <image name="icon_play.png" width="32" height="32"/>
-        <image name="icon_play.png" width="32" height="32"/>
-        <image name="icon_play.png" width="32" height="32"/>
-        <image name="logo.png" width="98" height="144"/>
-        <image name="logo.png" width="98" height="144"/>
-        <image name="logo.png" width="98" height="144"/>
-        <image name="logo.png" width="98" height="144"/>
-        <image name="logo.png" width="98" height="144"/>
         <image name="logo.png" width="98" height="144"/>
         <image name="nav_bar_ios7.png" width="640" height="128"/>
-        <image name="nav_bar_ios7.png" width="640" height="128"/>
-        <image name="viblio.png" width="61" height="17"/>
         <image name="viblio.png" width="61" height="17"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

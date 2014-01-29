@@ -93,6 +93,8 @@
 		85ED80581891D8B200CEAE85 /* InProgressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85ED80571891D8B200CEAE85 /* InProgressViewController.m */; };
 		85ED805B1892862E00CEAE85 /* TermsOfUseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85ED805A1892862E00CEAE85 /* TermsOfUseViewController.m */; };
 		85F70A461897AC2400696E1E /* listTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F70A451897AC2400696E1E /* listTableCell.m */; };
+		85F70A4D1897B76300696E1E /* iCarousel.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F70A4A1897B76300696E1E /* iCarousel.m */; };
+		85F70A4F1897B76300696E1E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 85F70A4C1897B76300696E1E /* README.md */; };
 		85F8B47D188A5E2200E92380 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B47C188A5E2200E92380 /* AppManager.m */; };
 		85F8B484188AA89600E92380 /* share.png in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B482188AA89600E92380 /* share.png */; };
 		85F8B485188AA89600E92380 /* play_img.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B483188AA89600E92380 /* play_img.jpeg */; };
@@ -240,6 +242,9 @@
 		85ED805A1892862E00CEAE85 /* TermsOfUseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermsOfUseViewController.m; sourceTree = "<group>"; };
 		85F70A441897AC2400696E1E /* listTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = listTableCell.h; sourceTree = "<group>"; };
 		85F70A451897AC2400696E1E /* listTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = listTableCell.m; sourceTree = "<group>"; };
+		85F70A491897B76300696E1E /* iCarousel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iCarousel.h; sourceTree = "<group>"; };
+		85F70A4A1897B76300696E1E /* iCarousel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iCarousel.m; sourceTree = "<group>"; };
+		85F70A4C1897B76300696E1E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		85F8B47B188A5E2200E92380 /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppManager.h; sourceTree = "<group>"; };
 		85F8B47C188A5E2200E92380 /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppManager.m; sourceTree = "<group>"; };
 		85F8B482188AA89600E92380 /* share.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = share.png; sourceTree = "<group>"; };
@@ -284,6 +289,7 @@
 		2A22F3D6187AAD8E002F71F8 = {
 			isa = PBXGroup;
 			children = (
+				85F70A471897B76300696E1E /* iCarousel */,
 				85F8B47E188AA04B00E92380 /* Views */,
 				85DCB4FC188859740068E738 /* ECSlidingViewController */,
 				2A63158B187FDF2800D864FC /* Videos.xcdatamodeld */,
@@ -657,6 +663,24 @@
 			name = NonRetina;
 			sourceTree = "<group>";
 		};
+		85F70A471897B76300696E1E /* iCarousel */ = {
+			isa = PBXGroup;
+			children = (
+				85F70A481897B76300696E1E /* iCarousel */,
+				85F70A4C1897B76300696E1E /* README.md */,
+			);
+			path = iCarousel;
+			sourceTree = "<group>";
+		};
+		85F70A481897B76300696E1E /* iCarousel */ = {
+			isa = PBXGroup;
+			children = (
+				85F70A491897B76300696E1E /* iCarousel.h */,
+				85F70A4A1897B76300696E1E /* iCarousel.m */,
+			);
+			path = iCarousel;
+			sourceTree = "<group>";
+		};
 		85F8B47E188AA04B00E92380 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -764,6 +788,7 @@
 				85ED8001188EBB8C00CEAE85 /* Aleo-Italic.otf in Resources */,
 				85ED8002188EBB8C00CEAE85 /* Aleo-Light.otf in Resources */,
 				85ED80441891696000CEAE85 /* bttn_on@2x.png in Resources */,
+				85F70A4F1897B76300696E1E /* README.md in Resources */,
 				85ED8034189130E300CEAE85 /* icon_cancel@2x.png in Resources */,
 				85ED803918915CD900CEAE85 /* Default@2x.png in Resources */,
 				85ED80141890002A00CEAE85 /* nav_bar_ios7.png in Resources */,
@@ -876,6 +901,7 @@
 				85F8B47D188A5E2200E92380 /* AppManager.m in Sources */,
 				85D81D4A18897F0200F4BC44 /* InitialSlidingViewController.m in Sources */,
 				85F8B488188AAC9D00E92380 /* VideoCell.m in Sources */,
+				85F70A4D1897B76300696E1E /* iCarousel.m in Sources */,
 				85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */,
 				85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */,
 				2AD637D11886566A00012A86 /* Info.m in Sources */,

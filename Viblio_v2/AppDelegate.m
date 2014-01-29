@@ -48,6 +48,8 @@
 {
     // Override point for customization after application launch.
     
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    
     UIDevice *device = [UIDevice currentDevice];
     device.batteryMonitoringEnabled = YES;
     

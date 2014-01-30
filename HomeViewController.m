@@ -36,8 +36,14 @@
     
     self.btnMyViblio.titleLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     self.btnSharedWithMe.titleLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
+    self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")];
     
     [VCLIENT videoUploadIntelligence];
+}
+
+-(void)dealloc
+{
+    self.list = nil;
 }
 
 -(void)setSegmentImages:(BOOL)isThumbnail
@@ -74,7 +80,6 @@
     }
 }
 
-
 - (IBAction)valueOfSegmentChanged:(id)sender {
 
     UISegmentedControl *segmentView = (UISegmentedControl*)sender;
@@ -84,11 +89,20 @@
         case 0:
             DLog(@"Log : Thumbnail view");
             [self setSegmentImages:YES];
-            
+            [self.list.view removeFromSuperview];
             break;
         case 1:
             DLog(@"Log : List View");
             [self setSegmentImages:NO];
+            
+            if( self.list != nil )
+            {
+                DLog(@"Log : List object does not exist... Create it...");
+                self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")];
+                self.list.view.frame = CGRectMake(0, 35, 320, self.view.frame.size.height - 35);
+            }
+            
+            [self.view addSubview:self.list.view];
             break;
         default:
             break;
@@ -98,18 +112,32 @@
 - (IBAction)sharedWithMeClicked:(id)sender {
         [self setBackGroundColorsForButtons:NO];
     
-    DLog(@"Log : Coming here at least");
-    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
+    if( self.list != nil )
     {
-        DLog(@"Log : The count obtained is - %d", count);
-    }failure:^(NSError *error)
-    {
-        DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
-    }];
+        [self.list.view removeFromSuperview];
+    }
+    
+    [self.segment setHidden:YES];
+    //self.navigationItem.rightBarButtonItem = nil;
+    
+//    DLog(@"Log : Coming here at least for hoem view controller shared with me");
+//    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
+//    {
+//        DLog(@"Log : The count obtained is - %d", count);
+//    }failure:^(NSError *error)
+//    {
+//        DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
+//    }];
 }
 
 - (IBAction)MyViblioClicked:(id)sender {
     [self setBackGroundColorsForButtons:YES];
+    [self.segment setHidden:NO];
+//    if( self.navigationItem.rightBarButtonItem == nil )
+//    {
+//        DLog(@"Log : Entering into bar button nil condition");
+//        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.segment];
+//    }
 }
 
 - (IBAction)stopMe:(id)sender {

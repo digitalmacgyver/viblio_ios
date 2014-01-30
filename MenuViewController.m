@@ -50,6 +50,7 @@
     DLog(@"Log : Geting the information of video being uploaded to show in progress bar");
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoUploadDescretion) name:uploadVideoPaused object:nil];
     [self videoUploadDescretion];
 }
 
@@ -256,11 +257,15 @@
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Tell A Friend"])
     {
+        DLog(@"Log : Tell A Friend clicked");
         
+        [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"TAF")] animated:YES];
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Give Feedback"])
     {
+        DLog(@"Log : Feedback clicked");
         
+        [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"feedback")] animated:YES];
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Legal & Privacy"])
     {

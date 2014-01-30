@@ -33,11 +33,13 @@
     {
         DLog(@"Log : Pausing the uploading file..");
         [APPCLIENT invalidateFileUploadTask];
+        [[NSNotificationCenter defaultCenter] postNotificationName:uploadVideoPaused object:nil];
     }
     else
     {
-        [DBCLIENT updateIsPausedStatusOfFile:self.asset.defaultRepresentation.url forPausedState:0];
-        [ViblioHelper displayAlertWithTitle:@"Resume" messageBody:@"Video Upload paused" viewController:nil cancelBtnTitle:@"OK"];
+        DLog(@"Log : Some other video paused");
+        [DBCLIENT updateIsPausedStatusOfFile:self.asset.defaultRepresentation.url forPausedState:1];
+        //[ViblioHelper displayAlertWithTitle:@"Resume" messageBody:@"Video Upload paused" viewController:nil cancelBtnTitle:@"OK"];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:uploadComplete object:nil];
 }
@@ -47,8 +49,24 @@
     DLog(@"Log : resume at index %d clicked", self.btnPause.tag);
     
     [DBCLIENT updateIsPausedStatusOfFile:self.asset.defaultRepresentation.url forPausedState:0];
-    [ViblioHelper displayAlertWithTitle:@"Resume" messageBody:@"Video queued for resuming upload" viewController:nil cancelBtnTitle:@"OK"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:uploadComplete object:nil];
+    
+    if( VCLIENT.asset != nil )
+    {
+        // Just show an alert and update UI
+        [ViblioHelper displayAlertWithTitle:@"Resume" messageBody:@"Video queued for resuming upload" viewController:nil cancelBtnTitle:@"OK"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:uploadComplete object:nil];
+    }
+    else
+    {
+        // Refresh the sliding menu as well
+        [[NSNotificationCenter defaultCenter] postNotificationName:uploadVideoPaused object:nil];
+        
+        // Start uploading the file
+        [VCLIENT videoUploadIntelligence];
+        
+        // Refresh the in Progress screen
+        [[NSNotificationCenter defaultCenter] postNotificationName:uploadComplete object:nil];
+    }
 }
 
 

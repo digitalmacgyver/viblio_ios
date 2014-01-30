@@ -13,6 +13,7 @@
 
 extern NSString * const refreshProgress;
 extern NSString * const uploadComplete;
+extern NSString * const uploadVideoPaused;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 
@@ -35,12 +36,18 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 +(NSError*)getCustomErrorWithMessage:(NSString*)errMsg withCode:(NSUInteger)code;
 +(NSUInteger) DeviceSystemMajorVersion;
 +(UIImage*)setUpNavigationBarBackgroundImage;
+
+
 +(UIView *)vbl_navigationTitleView;
++(UIView *)vbl_navigationFeedbackTitleView;
++(UIView *)vbl_navigationTellAFriendTitleView;
+
 
 +(void)clearSessionVariables;
 +(void)setUpNavigationBarForController : (UIViewController*)vc withLeftBarButtonSelector : (SEL)leftSelector andRightBarButtonSelector : (SEL) rightSelector;
 
 +(UIColor*)getVblRedColor;
 +(UIColor*)getVblGrayColor;
++(UIColor*)getVblBlueColor;
 
 @end

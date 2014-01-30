@@ -10,6 +10,7 @@
 #import "ECSlidingViewController.h"
 #import "VideoCell.h"
 #import <AVFoundation/AVFoundation.h>
+#import "ListViewController.h"
 
 @interface HomeViewController : UIViewController
 
@@ -17,5 +18,6 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segment;
 @property (weak, nonatomic) IBOutlet UIButton *btnMyViblio;
 @property (weak, nonatomic) IBOutlet UIButton *btnSharedWithMe;
+@property (nonatomic, strong) ListViewController *list;
 
 @end

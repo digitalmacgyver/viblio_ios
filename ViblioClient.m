@@ -610,19 +610,19 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 -(void)getCountOfMediaFilesUploadedByUser:(void(^)(int count))success
                                  failure : (void (^) (NSError *error))failure
 {
-    NSString *path = @"/mediafile/count";
+    NSString *path = @"/services/mediafile/count";
 //    NSDictionary *params = @{
 //                             @"uuid": APPMANAGER.user.userID
 //                             };
     
     NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:nil];
-    [request setValue: @"text/html"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
     
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
-                                              success(2);
+                                              //success(2);
                                               DLog(@"Log : %@", JSON);
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
@@ -682,6 +682,33 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           }];
     [op start];
     
+}
+
+
+-(void)sendFeedbackToServerWithText:(NSString*)text
+                    success:(void(^)(NSString *msg))success
+                    failure:(void(^)(NSError *error))failure
+
+{
+    DLog(@"Log : Sending feedback to the server");
+    NSString *path = @"/services/na/form_feedback";
+    NSDictionary *params = @{ @"feedback" : text,
+                              @"feedback_email" : @"feedback@support.viblio.com",
+                              @"feedback_location" : @"Bangalore"};
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:params];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
 }
 
 

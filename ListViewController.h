@@ -13,7 +13,5 @@
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segment;
 @property (weak, nonatomic) IBOutlet UITableView *listView;
-@property (weak, nonatomic) IBOutlet UIButton *btnMyViblio;
-@property (weak, nonatomic) IBOutlet UIButton *btnSharedWithMe;
 
 @end

@@ -45,9 +45,29 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *cellIdentifier = @"listCell";
+    NSString *cellIdentifier = @"listCells";
     
     listTableCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    Videos *assetVideo = [DBCLIENT listTheDetailsOfObjectWithURL:[[VCLIENT.filteredVideoList[indexPath.row] defaultRepresentation] url].absoluteString];
+    ALAsset *asset = VCLIENT.filteredVideoList[indexPath.row];
+    cell.asset = asset;
+    cell.video = assetVideo;
+    
+    [cell.btnImage setImage:[UIImage imageWithCGImage:[asset thumbnail]] forState:UIControlStateNormal];
+    if( [assetVideo.sync_status  isEqual: @(1)] )
+    {
+        DLog(@"Log : Sync already in progress...");
+        [cell.lblShareNow setHidden:YES];
+        [cell.lblUploadNow setHidden:YES];
+    }
+    else
+    {
+        DLog(@"Log : Sync not initialised..");
+        [cell.lblUploadNow setHidden:NO];
+    }
     
     return cell;
 }

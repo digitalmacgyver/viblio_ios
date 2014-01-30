@@ -98,7 +98,7 @@
             if( self.list != nil )
             {
                 DLog(@"Log : List object does not exist... Create it...");
-                self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")];
+                self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"listDash")];
                 self.list.view.frame = CGRectMake(0, 35, 320, self.view.frame.size.height - 35);
             }
             

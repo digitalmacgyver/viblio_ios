@@ -112,6 +112,15 @@
 - (IBAction)sharedWithMeClicked:(id)sender {
         [self setBackGroundColorsForButtons:NO];
     
+    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
+     {
+         DLog(@"Log : The count obtained is - %d", count);
+     }failure:^(NSError *error)
+     {
+         DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
+     }];
+
+    
     if( self.list != nil )
     {
         [self.list.view removeFromSuperview];

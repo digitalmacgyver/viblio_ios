@@ -59,6 +59,17 @@
     DLog(@"Log : Check for the changes ---------");
     DLog(@"Log : Session settings now are - %@", [DBCLIENT getSessionSettings]);
     
+    // Store the latest values in DB in the Session Manager instance
+    
+    APPMANAGER.activeSession = [DBCLIENT getSessionSettings];
+    
+    // Set device idle time based on the latest values
+    
+    if( APPMANAGER.activeSession.autolockdisable.integerValue )
+        [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
+    else
+        [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+    
     [(DashBoardNavController*)self.slidingViewController.topViewController popViewControllerAnimated:YES];
 }
 

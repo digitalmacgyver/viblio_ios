@@ -45,6 +45,8 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+    DLog(@"Log : Video list is - %@", APPMANAGER.listVideos);
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadList) name:uploadComplete object:nil];
 }

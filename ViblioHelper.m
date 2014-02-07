@@ -13,6 +13,7 @@
 
 NSString *const refreshProgress = @"com.viblio.app : UplodProgressNotification";
 NSString *const uploadComplete = @"com.viblio.app : uploadComplete";
+NSString * const uploadVideoPaused = @"com.viblio.app : uploadVideoPaused";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {
@@ -150,6 +151,21 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     return (UIView *)imageView;
 }
 
++(UIView *)vbl_navigationTellAFriendTitleView
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 61, 17)];
+    [imageView setImage:[UIImage imageNamed:@"tell_friend"]];
+    return (UIView *)imageView;
+}
+
++(UIView *)vbl_navigationFeedbackTitleView
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 61, 17)];
+    [imageView setImage:[UIImage imageNamed:@"feedback"]];
+    return (UIView *)imageView;
+}
+
+
 +(UIImage*)setUpNavigationBarBackgroundImage
 {
     UIImage *gradientImage44;
@@ -180,6 +196,11 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 +(UIColor*)getVblGrayColor
 {
     return [UIColor colorWithRed:0.3725 green:0.3843 blue:0.4431 alpha:1];
+}
+
++(UIColor*)getVblBlueColor
+{
+    return [UIColor colorWithRed:0.2117 green:0.2196 blue:0.2784 alpha:1];
 }
 
 @end

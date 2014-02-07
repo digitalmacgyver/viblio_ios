@@ -85,4 +85,8 @@
 
 -(void)invalidateUploadTaskWithoutPausing;
 
+-(void)sendFeedbackToServerWithText:(NSString*)text
+                            success:(void(^)(NSString *msg))success
+                            failure:(void(^)(NSError *error))failure;
+
 @end

@@ -49,10 +49,6 @@
     }
 }
 
--(void)viewDidAppear:(BOOL)animated
-{
-    
-}
 
 - (void)didReceiveMemoryWarning
 {

@@ -56,17 +56,23 @@
     cell.asset = asset;
     cell.video = assetVideo;
     
+    cell.lblUploadNow.font = [ViblioHelper viblio_Font_Regular_WithSize:12 isBold:NO];
+    
     [cell.btnImage setImage:[UIImage imageWithCGImage:[asset thumbnail]] forState:UIControlStateNormal];
     if( [assetVideo.sync_status  isEqual: @(1)] )
     {
         DLog(@"Log : Sync already in progress...");
         [cell.lblShareNow setHidden:YES];
         [cell.lblUploadNow setHidden:YES];
+        [cell.btnPlay setHidden:YES];
+        [cell.btnShare setHidden:YES];
     }
     else
     {
         DLog(@"Log : Sync not initialised..");
         [cell.lblUploadNow setHidden:NO];
+        [cell.btnPlay setHidden:YES];
+        [cell.btnShare setHidden:YES];
     }
     
     return cell;

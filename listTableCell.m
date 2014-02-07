@@ -15,6 +15,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
+       // self.lblUploadNow.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     }
     return self;
 }

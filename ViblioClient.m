@@ -74,37 +74,55 @@ void(^_failure)(NSError *error);
     {
         NSLog(@"LOG : Reachability of the base URL changed to - %d",status);
         
-        if([APPMANAGER.user.userID isValid])
+        
+        // Check whether a valid user session exists. Then check whether wifi only upload has been set as the preference.
+        if( [APPMANAGER.user.userID isValid] )
         {
+            DLog(@"Log : Valid user session exists");
+            
+            // Check whether the reachability to the remote server exists or not
             if( status == 0 )
             {
-                APPMANAGER.turnOffUploads = YES;
-                [APPCLIENT invalidateFileUploadTask];
+                // Check whether an upload is going on. If so then show an alert to the user.
+                
+                if( VCLIENT.asset !=  nil )
+                {
+                    DLog(@"Log : Internet reachability went off.. Pausing the upload..");
+                    [ViblioHelper displayAlertWithTitle:@"Connection Lost" messageBody:@"The internet connection has been lost and the upload will be paused" viewController:nil cancelBtnTitle:@"OK"];
+                    APPMANAGER.turnOffUploads = YES;
+                    [APPCLIENT invalidateFileUploadTask];
+                }
             }
             else
             {
+                // Check if the wifi only upload setting has been enabled
                 if( APPMANAGER.activeSession.wifiupload.integerValue )
                 {
+                    // If wifi only upload has been enabled then check whether reachability is over wifi
                     if( status == 2 )
                     {
+                        DLog(@"Log : Reachable over wifi");
+                        
+                        [ViblioHelper displayAlertWithTitle:@"Connection Established" messageBody:@"WiFi Connection established.. Starting uploads" viewController:nil cancelBtnTitle:@"OK"];
+                        
                         APPMANAGER.turnOffUploads = NO;
                         [VCLIENT videoUploadIntelligence];
                     }
                     else
-                        DLog(@"Log : Need to wait for wifi connection");
+                        DLog(@"Log : Wifi only upload has been set.. Cannot initiate upload on cellular data");
                 }
                 else
                 {
+                    // Wifi only upload has not been set.. Initiate upload
+                    DLog(@"Log : Initating upload as no preference settings has been made..");
+                    
+                    [ViblioHelper displayAlertWithTitle:@"Connection Established" messageBody:@"Internet Connection established.. Starting uploads" viewController:nil cancelBtnTitle:@"OK"];
+                    
                     APPMANAGER.turnOffUploads = NO;
                     [VCLIENT videoUploadIntelligence];
                 }
             }
         }
-        else
-        {
-            DLog(@"Log : Wifi Upload - User session does not exist...");
-        }
-
     }];
     
     self.session = [self backgroundSession];
@@ -580,7 +598,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [self.uploadTask suspend];
     
     NSError *error = nil;
-    _failure(error);
+    
+    if(_failure != nil)
+        _failure(error);
+    else
+        DLog(@"Log : No existing valid instance for failure....");
 }
 
 -(void)invalidateUploadTaskWithoutPausing
@@ -606,19 +628,20 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 -(void)getCountOfMediaFilesUploadedByUser:(void(^)(int count))success
                                  failure : (void (^) (NSError *error))failure
 {
-    NSString *path = @"/mediafile/count";
-    NSDictionary *params = @{
-                             @"uuid": APPMANAGER.user.userID
-                             };
+    NSString *path = @"/services/mediafile/count";
+//    NSDictionary *params = @{
+//                             @"uuid": APPMANAGER.user.userID
+//                             };
     
-    NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:params];
+    NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:nil];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
     
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
-                                              
+                                              //success(2);
+                                              DLog(@"Log : %@", JSON);
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
                                               failure(error);
@@ -677,6 +700,33 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           }];
     [op start];
     
+}
+
+
+-(void)sendFeedbackToServerWithText:(NSString*)text
+                    success:(void(^)(NSString *msg))success
+                    failure:(void(^)(NSError *error))failure
+
+{
+    DLog(@"Log : Sending feedback to the server");
+    NSString *path = @"/services/na/form_feedback";
+    NSDictionary *params = @{ @"feedback" : text,
+                              @"feedback_email" : @"feedback@support.viblio.com",
+                              @"feedback_location" : @"Bangalore"};
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:params];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
 }
 
 

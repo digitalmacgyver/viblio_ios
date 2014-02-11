@@ -185,21 +185,8 @@ void(^_failure)(NSError *error);
                                           UserClient.emailId = emailID;
                                           UserClient.isFbUser = @(NO);
                                           UserClient.isNewUser = @(NO);
-                                          
-                                          if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
-                                          {
-                                              NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
-                                              for ( NSString *str in parsedSession )
-                                              {
-                                                  if( [str rangeOfString:@"va_session"].location != NSNotFound )
-                                                  {
-                                                      NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
-                                                      UserClient.sessionCookie = sessionParsed[1];
-                                                      break;
-                                                  }
-                                              }
-                                          }
-                                          
+                                          UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
+                                        
                                           success(@"Success");
                                       }
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
@@ -227,26 +214,23 @@ void(^_failure)(NSError *error);
                                       NSLog(@"LOG : result - %@",JSON);
                                       NSLog(@"LOG : response - %@", response);
                                       
-                                      UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
-                                      UserClient.emailId = nil;
-                                      UserClient.isFbUser = @(YES);
-                                      UserClient.isNewUser = @(NO);
-                                      UserClient.fbAccessToken = accessToken;
                                       
-                                      if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
+                                      if( [[JSON valueForKey:@"code"] integerValue] > 299 )
                                       {
-                                          NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
-                                          for ( NSString *str in parsedSession )
-                                          {
-                                              if( [str rangeOfString:@"va_session"].location != NSNotFound )
-                                              {
-                                                  NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
-                                                  UserClient.sessionCookie = sessionParsed[1];
-                                                  break;
-                                              }
-                                          }
+                                          DLog(@"Log : The server failed to service the login request...");
+                                          failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
                                       }
-                                      
+                                      else
+                                      {
+                                          UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
+                                          UserClient.emailId = nil;
+                                          UserClient.isFbUser = @(YES);
+                                          UserClient.isNewUser = @(NO);
+                                          UserClient.fbAccessToken = accessToken;
+                                          UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
+                                          
+                                          success(@"Success");
+                                      } 
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
@@ -289,20 +273,8 @@ void(^_failure)(NSError *error);
                                           UserClient.emailId = emailID;
                                           UserClient.isFbUser = @(NO);
                                           UserClient.isNewUser = @(YES);
-
-                                          if( [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] isValid] )
-                                          {
-                                              NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"] componentsSeparatedByString:@";"];
-                                              for ( NSString *str in parsedSession )
-                                              {
-                                                  if( [str rangeOfString:@"va_session"].location != NSNotFound )
-                                                  {
-                                                      NSArray *sessionParsed = [str componentsSeparatedByString:@"="];
-                                                      UserClient.sessionCookie = sessionParsed[1];
-                                                      break;
-                                                  }
-                                              }
-                                          }
+                                          UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
+                                          
                                           success(@"success");
                                       }
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
@@ -328,8 +300,14 @@ void(^_failure)(NSError *error);
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
-                                      //                                      NSString *msg = [JSON valueForKeyPath:@"payload.sys_message"];
-                                      //                                      success(msg);
+                                      UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
+                                      UserClient.emailId = nil;
+                                      UserClient.isFbUser = @(YES);
+                                      UserClient.isNewUser = @(NO);
+                                      UserClient.fbAccessToken = accessToken;
+                                      UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
+                                      
+                                      success(@"Success");
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);

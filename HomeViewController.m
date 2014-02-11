@@ -38,7 +38,14 @@
     self.btnSharedWithMe.titleLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")];
     
-    [VCLIENT videoUploadIntelligence];
+    if( [DBCLIENT getTheCountOfRecordsInDB] > 0 )
+    {
+        [VCLIENT videoUploadIntelligence];
+    }
+    else
+    {
+        [ViblioHelper displayAlertWithTitle:@"No Videos" messageBody:@"No videos found in the camera roll to upload" viewController:self cancelBtnTitle:@"OK"];
+    }
 }
 
 -(void)dealloc
@@ -99,7 +106,7 @@
             {
                 DLog(@"Log : List object does not exist... Create it...");
                 self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"listDash")];
-                self.list.view.frame = CGRectMake(0, 35, 320, self.view.frame.size.height - 35);
+                self.list.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 35);
             }
             
             [self.view addSubview:self.list.view];
@@ -112,19 +119,21 @@
 - (IBAction)sharedWithMeClicked:(id)sender {
         [self setBackGroundColorsForButtons:NO];
     
-    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
-     {
-         DLog(@"Log : The count obtained is - %d", count);
-     }failure:^(NSError *error)
-     {
-         DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
-     }];
-
+    //[ViblioHelper displayAlertWithTitle:@"Progress" messageBody:@"Developem" viewController:<#(UIViewController *)#> cancelBtnTitle:<#(NSString *)#>];
     
-    if( self.list != nil )
-    {
-        [self.list.view removeFromSuperview];
-    }
+//    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
+//     {
+//         DLog(@"Log : The count obtained is - %d", count);
+//     }failure:^(NSError *error)
+//     {
+//         DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
+//     }];
+//
+//    
+//    if( self.list != nil )
+//    {
+//        [self.list.view removeFromSuperview];
+//    }
     
     [self.segment setHidden:YES];
     //self.navigationItem.rightBarButtonItem = nil;
@@ -206,7 +215,7 @@
     cell.video = [DBCLIENT listTheDetailsOfObjectWithURL:[[VCLIENT.filteredVideoList[indexPath.row] defaultRepresentation] url].absoluteString];
     cell.asset = VCLIENT.filteredVideoList[indexPath.row];
     
-    if( [assetVideo.sync_status  isEqual: @(0)] )
+    if( [assetVideo.sync_status  isEqual: @(0)] && !APPMANAGER.activeSession.autoSyncEnabled.integerValue )
     {
         DLog(@"Log : Getting into this if condition");
         [cell.vwUpload setHidden:NO];

@@ -39,6 +39,14 @@
     self.moviePlayer.scalingMode= MPMovieScalingModeFill;
     self.moviePlayer.controlStyle =MPMovieControlStyleNone;
     
+    // Registering tap gesture on Movie Player
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(playInFullScreen)];
+    tapGestureRecognizer.numberOfTapsRequired = 1;
+    [self.moviePlayer.view addGestureRecognizer:tapGestureRecognizer];
+    self.moviePlayer.view.userInteractionEnabled = YES;
+    tapGestureRecognizer.delegate = self;
+    
+    
     // Register for the playback finished notification
     [[NSNotificationCenter defaultCenter] addObserver:self // the object listening / "observing" to the notification
                                              selector:@selector(myMovieFinishedCallback:) // method to call when the notification was pushed
@@ -50,6 +58,21 @@
     [self.btnPlay setHidden:YES];
     [self.btnStop setHidden:NO];
 }
+
+// this enables you to handle multiple recognizers on single view
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+
+-(void)playInFullScreen
+{
+    DLog(@"Log : The movie has to be played in full screen...");
+    self.moviePlayer.fullscreen = YES;
+    self.moviePlayer.scalingMode = MPMovieScalingModeNone;
+    self.moviePlayer.controlStyle = MPMovieControlStyleDefault;
+}
+
 
 -(void)myMovieFinishedCallback:(id)sender
 {
@@ -93,22 +116,6 @@
     
     [self.moviePlayer play];
 }
-
-//-(void)myMoviePlayerDoneClicked:(NSNotification*)notification
-//{
-//    DLog(@"Log : Done clicked -1");
-//    [self myMovieFinishedCallback:nil];
-//    
-////    NSNumber *reason = [notification.userInfo objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
-////    
-////    if ([reason intValue] == MPMovieFinishReasonUserExited) {
-////        
-////        // done button clicked!
-////        DLog(@"Log : Done button clicked");
-////        
-////    }
-//}
-
 
 - (IBAction)btnShareClicked:(id)sender {
 }

@@ -120,11 +120,17 @@
                                 <color key="textColor" red="0.20784313725490194" green="0.29411764705882354" blue="0.17254901960784313" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" id="6ye-yQ-M9E">
+                                <rect key="frame" x="141" y="231" width="37" height="37"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="color" red="0.071635584677419359" green="0.1204007056451613" blue="0.30169480846774194" alpha="1" colorSpace="calibratedRGB"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="T9j-JW-pas"/>
                     <connections>
+                        <outlet property="activity" destination="6ye-yQ-M9E" id="Qbk-gf-Srh"/>
                         <outlet property="lblSignUpWith" destination="jSD-S7-I7B" id="LiE-Vy-jBW"/>
                         <segue destination="fjU-Fy-YmH" kind="push" identifier="SignUpNavWide" id="YVR-iw-2AJ"/>
                         <segue destination="UR8-BJ-DAe" kind="push" identifier="LogInNavWide" id="SNj-s8-pHO"/>
@@ -1372,11 +1378,17 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" id="U7Z-lC-gOp">
+                                <rect key="frame" x="141" y="216" width="37" height="37"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="color" red="0.071635584680000003" green="0.1204007056" blue="0.30169480850000002" alpha="1" colorSpace="calibratedRGB"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="EDu-IH-qsu"/>
                     <connections>
+                        <outlet property="activity" destination="U7Z-lC-gOp" id="iuz-8l-Mwe"/>
                         <outlet property="lblSignUpWith" destination="mhw-YF-AUq" id="ogv-QI-d3U"/>
                         <segue destination="zMs-xX-UEL" kind="push" identifier="LogInNav" id="ckw-46-5Uf"/>
                         <segue destination="Mrn-mw-Cdh" kind="push" identifier="SignUpNav" id="f7E-UY-CW2"/>
@@ -2856,11 +2868,13 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="69"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <view contentMode="scaleToFill" id="Uwr-XT-TIr">
-                                                    <rect key="frame" x="70" y="7" width="250" height="55"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                                </view>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="PeZ-c3-LC6">
+                                                    <rect key="frame" x="90" y="17" width="159" height="35"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="pOd-QR-Dn5">
                                                     <rect key="frame" x="0.0" y="0.0" width="70" height="70"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -2934,6 +2948,7 @@
                                             <outlet property="btnPlay" destination="h7y-Dg-vu9" id="LOC-Gs-J3x"/>
                                             <outlet property="btnShare" destination="6mL-kU-Qgl" id="v5M-XX-khj"/>
                                             <outlet property="btnStop" destination="2oN-YE-EwN" id="2Sl-Rc-2ai"/>
+                                            <outlet property="lblInfo" destination="PeZ-c3-LC6" id="Zx6-n1-IrJ"/>
                                             <outlet property="lblShareNow" destination="agQ-j3-jOs" id="X8g-ro-2kM"/>
                                             <outlet property="lblUploadNow" destination="IKB-4F-0Tf" id="hdr-iL-D8J"/>
                                             <outlet property="scrlFaces" destination="V13-2O-UVt" id="IyV-0A-wHv"/>
@@ -3007,6 +3022,13 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="69"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="7Ug-R1-Ze7">
+                                                    <rect key="frame" x="90" y="17" width="159" height="35"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="blM-CG-VEc">
                                                     <rect key="frame" x="0.0" y="0.0" width="70" height="70"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -3080,6 +3102,7 @@
                                             <outlet property="btnPlay" destination="1K1-pO-nJH" id="DBG-pt-BxU"/>
                                             <outlet property="btnShare" destination="jUU-pc-ifU" id="txN-F5-Roq"/>
                                             <outlet property="btnStop" destination="Pwm-Lo-4ci" id="XiP-FE-VWR"/>
+                                            <outlet property="lblInfo" destination="7Ug-R1-Ze7" id="Md2-0G-k60"/>
                                             <outlet property="lblShareNow" destination="WFR-eo-08s" id="6nm-wT-djv"/>
                                             <outlet property="lblUploadNow" destination="jUG-7d-zjk" id="Jth-Sv-2QH"/>
                                             <outlet property="scrlFaces" destination="Esp-Zv-7zf" id="zVE-Wa-dLB"/>

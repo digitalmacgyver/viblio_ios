@@ -44,6 +44,12 @@
                                failure:(void(^)(NSError *error))failure;
 
 
+- (void)createNewUserAccountWithFB : (NSString *)accessToken
+                              type : (NSString*)loginType
+                            success:(void (^)(NSString *user))success
+                            failure:(void(^)(NSError *error))failure;
+
+
 - (void)getUserSessionDetails : (void (^)(NSString *user))success
                       failure : (void(^)(NSError *error))failure;
 

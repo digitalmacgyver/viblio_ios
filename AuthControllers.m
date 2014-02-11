@@ -28,16 +28,13 @@
 
 /*-------------------------------------------- FB Auth functions ---------------------------------------------------------------------------*/
 
-- (void)authorizeToGetInfoAboutMeWithCompleteBlock:(void(^)(NSError*))cblock inView:(UIView *)view
+
+- (void)authorizeToGetInfoAboutMeWithCompleteBlock:(void(^)(NSError*, NSString *fbAccessToken))cblock inView:(UIView *)view
 {
-    NSLog(@"LOG : In here");
-    
-    NSArray *permissions = @[ @"email" ];
-    
+    NSArray *permissions = @[ @"basic_info" ];
     
     if ([[FBSession activeSession] isOpen])
     {
-        
         [[FBRequest requestForMe] startWithCompletionHandler:
          ^(FBRequestConnection *connection,
            NSDictionary<FBGraphUser> *user,
@@ -50,13 +47,8 @@
                  [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                      if (error == nil)
                      {
-                         [APPCLIENT authenticateUserWithFacebook:FBSession.activeSession.accessTokenData.accessToken type:@"facebook" success:^(NSString *msg)
-                          {
-                              
-                          }failure:^(NSError *error)
-                          {
-                              
-                          }];
+                         DLog(@"Log : Session successfully established... ");
+                         cblock(error, FBSession.activeSession.accessTokenData.accessToken);
                      }
                  }];
              }
@@ -64,14 +56,14 @@
     }
     else
     {
-        [self fbSessionEsteblish:permissions :view :^(NSError* error)
+        [self fbSessionEsteblish:permissions :view :^(NSError* error, NSString* fbAccessToken)
          {
-             cblock(error);
+             cblock(error, fbAccessToken);
          }];
     }
 }
 
--(void)fbSessionEsteblish:(NSArray*)permissions :(UIView*)view :(void(^)(NSError* error))success
+-(void)fbSessionEsteblish:(NSArray*)permissions :(UIView*)view :(void(^)(NSError*, NSString*))success
 {
     [FBSession openActiveSessionWithReadPermissions:permissions
                                        allowLoginUI:YES
@@ -85,12 +77,12 @@
                                               break;
                                           case FBSessionStateClosed:
                                               if (success)
-                                                  success(error);
+                                                  success(error, nil);
                                               break;
                                           case FBSessionStateClosedLoginFailed:
                                           {
-                                              [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Facebook Session could not be established" viewController:nil cancelBtnTitle:@"OK"];
-                                              [[NSNotificationCenter defaultCenter] postNotificationName:@"FBSessionError" object:nil];
+                                              [ViblioHelper displayAlertWithTitle:@"Login" messageBody:@"Facebook Login failed. Could not establish session" viewController:nil cancelBtnTitle:@"OK"];
+                                              success(nil, nil);
                                           }
                                               break;
                                           default:
@@ -98,10 +90,5 @@
                                       }
                                   }];
 }
-
-/*------------------------------------------------------------- Email Auth Functions -------------------------------------------------------------*/
-
-
-
 
 @end

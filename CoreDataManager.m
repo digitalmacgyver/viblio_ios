@@ -177,6 +177,26 @@
     }];
 }
 
+
+// Fucntion for deletion descretion. All the entries in DB which are no more found in the camera roll should be deleted. URL is used for comparison
+
+-(void)deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound
+{
+    NSArray *DBEntries = [DBCLIENT listAllEntitiesinTheDB];
+    for( Videos *video in DBEntries )
+    {
+        DLog(@"Log : The video obtained is - %@", video);
+        ALAsset *asset = [VCLIENT getAssetFromFilteredVideosForUrl:video.fileURL];
+        if( asset == nil )
+        {
+            DLog(@"Log : There is no corresponding entry for the video in Camera roll.. Delete it from DB");
+            [DBCLIENT deleteOperationOnDB:video.fileURL];
+        }
+        else
+            DLog(@"Log : Video is found in the DB");
+    }
+}
+
 /*------------------------------------------------------------------------------------------- Syncing Date Related Functions --------------------------*/
 
 -(NSDate*)getDateOfLastSync
@@ -290,6 +310,27 @@
     
     return videoList;
 }
+
+-(Videos*)getWhetherAFileWithUUIDExistsInDB : (NSString*)uuid
+{
+    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
+    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileUUID == %@", uuid];
+    [videos setPredicate:predicate];
+    
+    NSError * error = nil;
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
+    videos = nil;
+    
+    if( videoList.count > 0 )
+        return [videoList firstObject];
+    else
+        return nil;
+}
+
+
 
 /*------------------------------------------------------------------------------------------*/
 
@@ -498,6 +539,27 @@
     request = nil;
 }
 
+
+-(void)updateFileUUIDForFile:(NSURL*)assetUrl withUUID : (NSString*)uuid
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", assetUrl];
+    [request setPredicate:predicate];
+    
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    NSLog(@"LOG : The results obtained are - %@", results);
+    
+    Videos *video = [results firstObject];
+    [video setValue:uuid forKey:@"fileUUID"];
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    request = nil;
+}
 
 /*************************************** Session Entity Related Functions ***************************************************/
 

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "UIButton+Additions.h"
+#import <SDWebImageManager.h>
 
 @interface ViblioHelper : NSObject
 
@@ -49,5 +50,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 +(UIColor*)getVblRedColor;
 +(UIColor*)getVblGrayColor;
 +(UIColor*)getVblBlueColor;
+
++ (void)downloadImageWithURLString:(NSString *)urlString completion:(void (^)(UIImage *image, NSError *error))completion;
 
 @end

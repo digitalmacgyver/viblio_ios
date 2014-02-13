@@ -197,8 +197,8 @@
             NSLog(@"LOG : Chunk data failure --- %d --- %@",chunkData.length,chunkData);
             NSLog(@"LOG : File transmission done");
             
-            DLog(@"Log : Remove the file record from DB ----");
-            [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
+//            DLog(@"Log : Remove the file record from DB ----");
+//            [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
             
             // Clean the video uploaded size
             APPCLIENT.uploadedSize = 0;

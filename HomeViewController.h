@@ -20,4 +20,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnSharedWithMe;
 @property (nonatomic, strong) ListViewController *list;
 
+@property (nonatomic, strong)VideoCell *cell;
+@property (nonatomic, assign) NSInteger indexClicked;
+
+@property (weak, nonatomic) IBOutlet UIView *vwShare;
 @end

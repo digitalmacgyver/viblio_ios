@@ -708,4 +708,107 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 
 
+// Web service to fetch the list of media files of the logged in user
+
+-(void)getTheListOfMediaFilesOwnedByUserWithOptions : (NSString*)vwStyle
+                                          pageCount : (NSString*)page
+                                               rows : (NSString*)rowsInAPage
+                                  success:(void(^)(NSString *terms))success
+                                  failure:(void(^)(NSError *error))failure
+{
+    
+    NSDictionary *queryParams = @{ @"page" : page,
+                                   @"rows" : rowsInAPage,
+                                  @"views[]": vwStyle };
+    
+    NSString *path = [NSString stringWithFormat:@"/services/mediafile/list?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              
+                                              NSArray *videoList = [JSON valueForKeyPath:@"media"];
+                                              if( VCLIENT.cloudVideoList != nil )
+                                              {
+                                                  [VCLIENT.cloudVideoList removeAllObjects];
+                                                  VCLIENT.cloudVideoList = nil;
+                                              }
+                                              VCLIENT.cloudVideoList = [[NSMutableArray alloc]init];
+                                              
+                                              for( int i=0; i < videoList.count; i++ )
+                                              {
+                                                  NSDictionary *videoObj = [videoList objectAtIndex:i];
+                                                  cloudVideos *video = [[cloudVideos alloc]init];
+                                                  video.uuid = [videoObj valueForKey:@"uuid"];
+                                                  video.url = [videoObj valueForKey:@"views"][@"poster"][@"url"];
+                                                  video.createdDate = [videoObj valueForKey:@"created_date"];
+                                                  [VCLIENT.cloudVideoList addObject:video];
+                                                  videoObj = nil; video = nil;
+                                              }
+                                              
+                                              videoList = nil;
+                                              DLog(@"Log : The cloud video list now is - %@", VCLIENT.cloudVideoList);
+                                              
+                                              success(@"");
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
+
+
+-(void)getTheCloudUrlForVideoStreamingForFileWithUUID : (NSString*)uuid
+                                               success:(void(^)(NSString *cloudURL))success
+                                               failure:(void(^)(NSError *error))failure
+{
+//    NSDictionary *queryParams = @{ @"page" : page,
+//                                   @"rows" : rowsInAPage,
+//                                   @"views[]": vwStyle };
+    
+    NSString *path = [NSString stringWithFormat:@"/services/mediafile/cf?mid=%@",uuid];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              success(JSON[@"url"]);
+//                                              NSArray *videoList = [JSON valueForKeyPath:@"media"];
+//                                              if( VCLIENT.cloudVideoList != nil )
+//                                              {
+//                                                  [VCLIENT.cloudVideoList removeAllObjects];
+//                                                  VCLIENT.cloudVideoList = nil;
+//                                              }
+//                                              VCLIENT.cloudVideoList = [[NSMutableArray alloc]init];
+//                                              
+//                                              for( int i=0; i < videoList.count; i++ )
+//                                              {
+//                                                  NSDictionary *videoObj = [videoList objectAtIndex:i];
+//                                                  cloudVideos *video = [[cloudVideos alloc]init];
+//                                                  video.uuid = [videoObj valueForKey:@"uuid"];
+//                                                  video.url = [videoObj valueForKey:@"views"][@"poster"][@"url"];
+//                                                  video.createdDate = [videoObj valueForKey:@"created_date"];
+//                                                  [VCLIENT.cloudVideoList addObject:video];
+//                                                  videoObj = nil; video = nil;
+//                                              }
+//                                              
+//                                              videoList = nil;
+//                                              DLog(@"Log : The cloud video list now is - %@", VCLIENT.cloudVideoList);
+                                              
+                                              //success(@"");
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
 @end

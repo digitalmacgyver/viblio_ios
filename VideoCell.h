@@ -11,17 +11,14 @@
 
 @interface VideoCell : UICollectionViewCell
 
-@property (nonatomic, strong) Videos *video;
-
 @property (weak, nonatomic) IBOutlet UIImageView *videoImage;
-
-@property (nonatomic, strong) ALAsset *asset;
 
 @property (weak, nonatomic) IBOutlet UIView *vwUpload;
 @property (weak, nonatomic) IBOutlet UIView *vwShareTag;
 @property (weak, nonatomic) IBOutlet UIView *vwPlayShare;
 @property (weak, nonatomic) IBOutlet UIView *vwShare;
 
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *spinningWheel;
 
 @property (weak, nonatomic) IBOutlet UIButton *btnFB;
 @property (weak, nonatomic) IBOutlet UIButton *btnGoogle;
@@ -31,5 +28,9 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *btnPlay;
 @property (weak, nonatomic) IBOutlet UIButton *btnShare;
+
+@property (nonatomic, strong) cloudVideos *video;
+
+@property (nonatomic, strong)MPMoviePlayerController *moviePlayer;
 
 @end

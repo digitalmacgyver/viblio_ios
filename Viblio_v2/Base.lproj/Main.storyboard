@@ -2306,7 +2306,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="160" height="142"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="ZYM-7W-GCQ">
+                                                <imageView userInteractionEnabled="NO" contentMode="redraw" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="ZYM-7W-GCQ">
                                                     <rect key="frame" x="0.0" y="0.0" width="160" height="142"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </imageView>
@@ -2343,79 +2343,89 @@
                                                     </subviews>
                                                     <color key="backgroundColor" red="1" green="0.88348198649999998" blue="0.19170135199999999" alpha="1" colorSpace="calibratedRGB"/>
                                                 </view>
-                                                <view hidden="YES" contentMode="scaleToFill" id="AYU-uy-SZ2">
-                                                    <rect key="frame" x="0.0" y="35" width="155" height="71"/>
+                                                <view alpha="0.69999999999999973" contentMode="scaleToFill" id="AYU-uy-SZ2">
+                                                    <rect key="frame" x="10" y="95" width="140" height="40"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <subviews>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="d2d-ej-cll">
-                                                            <rect key="frame" x="20" y="20" width="46" height="30"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="d2d-ej-cll">
+                                                            <rect key="frame" x="20" y="0.0" width="27" height="40"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <state key="normal" title="Play">
+                                                            <state key="normal" image="icon_play_grid.png">
                                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                             </state>
                                                             <connections>
-                                                                <action selector="playVideo:" destination="G7K-XY-dYo" eventType="touchUpInside" id="nta-kF-lta"/>
+                                                                <action selector="playVideo:" destination="G7K-XY-dYo" eventType="touchUpInside" id="t1Z-4T-tQv"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="wdL-4O-fU9">
-                                                            <rect key="frame" x="80" y="21" width="46" height="30"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="wdL-4O-fU9">
+                                                            <rect key="frame" x="95" y="0.0" width="25" height="40"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <state key="normal" title="Share">
+                                                            <state key="normal" image="icon_share_grid.png">
                                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                             </state>
                                                             <connections>
-                                                                <action selector="shareVideo:" destination="G7K-XY-dYo" eventType="touchUpInside" id="eBF-zw-oj3"/>
+                                                                <action selector="shareClicked:" destination="5aM-K1-O6z" eventType="touchUpInside" id="en0-yo-uwk"/>
                                                             </connections>
                                                         </button>
                                                     </subviews>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 </view>
-                                                <view hidden="YES" contentMode="scaleToFill" id="cau-ye-oDC">
-                                                    <rect key="frame" x="0.0" y="0.0" width="155" height="142"/>
+                                                <view hidden="YES" alpha="0.74999999999999978" contentMode="scaleToFill" id="cau-ye-oDC">
+                                                    <rect key="frame" x="0.0" y="0.0" width="160" height="142"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <subviews>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="tYX-Pq-uWf">
-                                                            <rect key="frame" x="6" y="20" width="74" height="30"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="tYX-Pq-uWf">
+                                                            <rect key="frame" x="11" y="2" width="65" height="65"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <state key="normal" title="ShareFB">
+                                                            <state key="normal" image="bttn_twitter.png">
                                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                             </state>
                                                             <connections>
                                                                 <action selector="shareViaFB:" destination="G7K-XY-dYo" eventType="touchUpInside" id="itb-uy-uWr"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="w6b-RX-XTn">
-                                                            <rect key="frame" x="96" y="20" width="46" height="30"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="w6b-RX-XTn">
+                                                            <rect key="frame" x="82" y="10" width="75" height="50"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <state key="normal" title="G+">
+                                                            <state key="normal" image="bttn_facebook.png">
                                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                             </state>
                                                             <connections>
                                                                 <action selector="shareViaGoogle:" destination="G7K-XY-dYo" eventType="touchUpInside" id="5b3-Lr-coi"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="kVC-5T-vm7">
-                                                            <rect key="frame" x="20" y="85" width="46" height="30"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="kVC-5T-vm7">
+                                                            <rect key="frame" x="18" y="75" width="50" height="50"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <state key="normal" title="Twitter">
+                                                            <state key="normal" image="bttn_google_plus.png">
                                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                             </state>
                                                             <connections>
                                                                 <action selector="shareViaTwitter:" destination="G7K-XY-dYo" eventType="touchUpInside" id="UwJ-QH-8yS"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="SjO-bs-oTP">
-                                                            <rect key="frame" x="96" y="85" width="46" height="30"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="SjO-bs-oTP">
+                                                            <rect key="frame" x="94" y="75" width="50" height="50"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <state key="normal" title="Mail">
+                                                            <state key="normal" image="bttn_mail.png">
                                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                             </state>
                                                             <connections>
                                                                 <action selector="shareViaMail:" destination="G7K-XY-dYo" eventType="touchUpInside" id="Gtz-3a-UO4"/>
                                                             </connections>
                                                         </button>
+                                                        <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" id="ySn-go-byN">
+                                                            <rect key="frame" x="71" y="52" width="20" height="20"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <color key="color" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </activityIndicatorView>
                                                     </subviews>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <gestureRecognizers/>
+                                                    <connections>
+                                                        <outletCollection property="gestureRecognizers" destination="BVU-lD-zKS" appends="YES" id="EHe-lx-Jvc"/>
+                                                        <outletCollection property="gestureRecognizers" destination="8IO-1x-I6c" appends="YES" id="mLb-4j-Ouo"/>
+                                                    </connections>
                                                 </view>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -2428,6 +2438,7 @@
                                             <outlet property="btnPlay" destination="d2d-ej-cll" id="3La-Zy-bdo"/>
                                             <outlet property="btnShare" destination="wdL-4O-fU9" id="aTb-Bu-qX7"/>
                                             <outlet property="btnTwitter" destination="kVC-5T-vm7" id="KlO-0U-ibr"/>
+                                            <outlet property="spinningWheel" destination="ySn-go-byN" id="VZE-bM-Kl9"/>
                                             <outlet property="videoImage" destination="ZYM-7W-GCQ" id="QdZ-yj-3eN"/>
                                             <outlet property="vwPlayShare" destination="AYU-uy-SZ2" id="oYL-Bk-Nk2"/>
                                             <outlet property="vwShare" destination="cau-ye-oDC" id="Cpy-95-O03"/>
@@ -2520,6 +2531,18 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Aw8-PZ-ajd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="BVU-lD-zKS">
+                    <connections>
+                        <action selector="rightSwipeDetected:" destination="5aM-K1-O6z" id="Mee-8P-R8i"/>
+                        <outlet property="delegate" destination="5aM-K1-O6z" id="aKx-Xj-fiM"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="8IO-1x-I6c">
+                    <connections>
+                        <action selector="leftSwipeDetected:" destination="5aM-K1-O6z" id="EK9-2V-uZv"/>
+                        <outlet property="delegate" destination="5aM-K1-O6z" id="sfS-Z0-vlj"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="386" y="-232"/>
         </scene>
@@ -3160,13 +3183,17 @@
     </scenes>
     <resources>
         <image name="back.png" width="29" height="29"/>
+        <image name="bttn_facebook.png" width="50" height="50"/>
         <image name="bttn_facebook_normal.png" width="51" height="51"/>
+        <image name="bttn_google_plus.png" width="50" height="50"/>
         <image name="bttn_google_plus_normal.png" width="51" height="51"/>
         <image name="bttn_grid_view_selected.png" width="40" height="28"/>
         <image name="bttn_list_view_normal.png" width="40" height="28"/>
+        <image name="bttn_mail.png" width="50" height="50"/>
         <image name="bttn_mail_normal.png" width="51" height="51"/>
         <image name="bttn_off.png" width="77" height="27"/>
         <image name="bttn_on.png" width="77" height="27"/>
+        <image name="bttn_twitter.png" width="50" height="50"/>
         <image name="bttn_twitter_normal.png" width="51" height="51"/>
         <image name="empty.png" width="15" height="15"/>
         <image name="fill.png" width="15" height="15"/>
@@ -3174,7 +3201,9 @@
         <image name="icon_options.png" width="22" height="14"/>
         <image name="icon_pause.png" width="32" height="32"/>
         <image name="icon_play.png" width="32" height="32"/>
+        <image name="icon_play_grid.png" width="27" height="27"/>
         <image name="icon_play_list.png" width="27" height="27"/>
+        <image name="icon_share_grid.png" width="26" height="26"/>
         <image name="icon_share_list.png" width="26" height="26"/>
         <image name="icon_stop_list.png" width="27" height="27"/>
         <image name="logo.png" width="98" height="144"/>

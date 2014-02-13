@@ -18,7 +18,7 @@
     __block int i, videosCount;
     double offset;
 }
-@property(nonatomic,retain)NSMutableArray *filteredVideoList;
+@property(nonatomic,retain)NSMutableArray *filteredVideoList, *cloudVideoList;
 
 @property(nonatomic, retain)NSMutableArray *chunks;
 @property(nonatomic,strong)ALAsset *asset;

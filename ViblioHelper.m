@@ -203,4 +203,18 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     return [UIColor colorWithRed:0.2117 green:0.2196 blue:0.2784 alpha:1];
 }
 
+
++ (void)downloadImageWithURLString:(NSString *)urlString completion:(void (^)(UIImage *image, NSError *error))completion
+{
+    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+    
+    [manager downloadWithURL:[NSURL URLWithString:urlString]
+                     options:SDWebImageCacheMemoryOnly
+                    progress:nil
+                   completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished) {
+                       
+                       completion(image, error);
+                   }];
+}
+
 @end

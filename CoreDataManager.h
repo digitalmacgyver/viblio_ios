@@ -39,6 +39,9 @@
 -(void)updateFailStatusOfFile:(NSURL*)assetUrl toStatus:(NSNumber*)status;
 -(void)updateUploadedBytesForFile:(NSURL*)assetUrl toBytes:(NSNumber*)bytes;
 -(NSArray*)getTheListOfPausedVideos;
+-(Videos*)getWhetherAFileWithUUIDExistsInDB : (NSString*)uuid;
+-(void)updateFileUUIDForFile:(NSURL*)assetUrl withUUID : (NSString*)uuid;
+-(void)deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound;
 
 // Session setting functions
 -(Session*)getSessionSettings;

@@ -68,6 +68,7 @@
 #import "Info.h"
 #import "Videos.h"
 #import "Session.h"
+#import "cloudVideos.h"
 
 //Addtions
 #import "UITextField+Additions.h"

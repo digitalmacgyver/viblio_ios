@@ -95,4 +95,14 @@
                             success:(void(^)(NSString *msg))success
                             failure:(void(^)(NSError *error))failure;
 
+-(void)getTheListOfMediaFilesOwnedByUserWithOptions : (NSString*)vwStyle
+                                          pageCount : (NSString*)page
+                                               rows : (NSString*)rowsInAPage
+                                             success:(void(^)(NSString *terms))success
+                                             failure:(void(^)(NSError *error))failure;
+
+-(void)getTheCloudUrlForVideoStreamingForFileWithUUID : (NSString*)uuid
+                                               success:(void(^)(NSString *cloudURL))success
+                                               failure:(void(^)(NSError *error))failure;
+
 @end

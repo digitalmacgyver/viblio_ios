@@ -13,5 +13,7 @@
 @property(nonatomic, retain)NSString *createdDate;
 @property(nonatomic, retain)NSString *uuid;
 @property(nonatomic, retain)NSString *url;
+@property(nonatomic, retain)NSString *lat;
+@property(nonatomic, retain)NSString *longitude;
 
 @end

@@ -48,7 +48,7 @@
         self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
         self.moviePlayer.view.frame = self.vwShare.frame;
         [self addSubview:self.moviePlayer.view];
-        [self.moviePlayer.view addSubview:self.spinningWheel];
+        [self addSubview:self.spinningWheel];
         
         [self.spinningWheel startAnimating];
         //[self bringSubviewToFront:self.moviePlayer.view];
@@ -86,6 +86,7 @@
 -(void)myMovieFinishedCallback:(id)sender
 {
     DLog(@"Log : Movie finished...");
+    [self.spinningWheel stopAnimating];
     [self.moviePlayer.view removeFromSuperview];
     self.moviePlayer = nil;
     
@@ -110,7 +111,7 @@
 
 
 - (void)moviePlayerLoadStateChanged:(NSNotification*)notification {
-    NSLog(@"load state changed");
+    DLog(@"load state changed");
     
     //unless state is unknown, start playback
     if ([self.moviePlayer loadState] != MPMovieLoadStateUnknown) {
@@ -128,31 +129,24 @@
 
 
 - (void) moviePlayerPlaybackStateDidChange:(NSNotification*)notification {
-    NSLog(@"playbackDidChanged");
+    DLog(@"playbackDidChanged");
     MPMoviePlayerController *moviePlayer = notification.object;
     MPMoviePlaybackState playbackState = moviePlayer.playbackState;
     if(playbackState == MPMoviePlaybackStateStopped) {
-        NSLog(@"MPMoviePlaybackStateStopped");
+        DLog(@"MPMoviePlaybackStateStopped");
     } else if(playbackState == MPMoviePlaybackStatePlaying) {
-        NSLog(@"MPMoviePlaybackStatePlaying");
+        DLog(@"MPMoviePlaybackStatePlaying");
     } else if(playbackState == MPMoviePlaybackStatePaused) {
         [self.spinningWheel startAnimating];
-        NSLog(@"MPMoviePlaybackStatePaused");
+        DLog(@"MPMoviePlaybackStatePaused");
     } else if(playbackState == MPMoviePlaybackStateInterrupted) {
-        NSLog(@"MPMoviePlaybackStateInterrupted");
+        DLog(@"MPMoviePlaybackStateInterrupted");
     } else if(playbackState == MPMoviePlaybackStateSeekingForward) {
-        NSLog(@"MPMoviePlaybackStateSeekingForward");
+        DLog(@"MPMoviePlaybackStateSeekingForward");
     } else if(playbackState == MPMoviePlaybackStateSeekingBackward) {
-        NSLog(@"MPMoviePlaybackStateSeekingBackward");
+        DLog(@"MPMoviePlaybackStateSeekingBackward");
     }
 }
-
-
-
-
-
-
-
 
 
 - (void) moviePlayerLoadStateDidChange:(NSNotification *)notification
@@ -179,7 +173,7 @@
     }
         //[loadState appendString:@" | Stalled"];
     
-    NSLog(@"Load State: %@", loadState.length > 0 ? [loadState substringFromIndex:3] : @"N/A");
+    DLog(@"Load State: %@", loadState.length > 0 ? [loadState substringFromIndex:3] : @"N/A");
 }
 
 
@@ -236,7 +230,7 @@
 //    NSError *err = NULL;
 //    CMTime time = CMTimeMake(1, 60);
 //    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-//    NSLog(@"err==%@, imageRef==%@", err, imgRef);
+//    DLog(@"err==%@, imageRef==%@", err, imgRef);
 //    
 //    return [[UIImage alloc] initWithCGImage:imgRef];
 //    

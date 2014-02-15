@@ -8,7 +8,7 @@
 
 #import "HomeViewController.h"
 
-#define PAGE_COUNT @"01"
+//#define PAGE_COUNT @"01"
 #define ROW_COUNT @"12"
 
 @interface HomeViewController ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
@@ -59,13 +59,33 @@
     // Get the list of videos in cloud and render them in the UI
     // The fetched list of videos are mapped to the cloudVideoList model and are stored in an cloudList array in VCLIENT
     
-    [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:PAGE_COUNT rows:ROW_COUNT success:^(NSString* msg)
+    [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d", VCLIENT.pageCount] rows:ROW_COUNT success:^(NSMutableArray *result)
      {
+         if( VCLIENT.cloudVideoList != nil )
+         {
+             DLog(@"Flushing the objects from cloud...");
+             [VCLIENT.cloudVideoList removeAllObjects];
+             VCLIENT.cloudVideoList = nil;
+         }
+         
+         VCLIENT.cloudVideoList = result;
          [self.videoList reloadData];
      }failure:^(NSError *error)
      {
          
      }];
+
+    
+    // Get the count of media files uploaded by the user as a reference to create the records and lazy load..
+    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
+     {
+         DLog(@"Log : The count obtained is - %d", count);
+         VCLIENT.totalRecordsCount = count;
+     }failure:^(NSError *error)
+     {
+         
+     }];
+
 }
 
 -(void)dealloc
@@ -103,7 +123,9 @@
         self.btnSharedWithMe.backgroundColor = [ViblioHelper getVblRedColor];
         
         self.btnMyViblio.titleLabel.textColor = [ViblioHelper getVblGrayColor];
-        self.btnSharedWithMe.titleLabel.textColor = [UIColor whiteColor];
+        [self.btnSharedWithMe setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.btnSharedWithMe setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        //self.btnSharedWithMe.titleLabel.textColor = [UIColor greenColor];
     }
 }
 
@@ -122,12 +144,17 @@
             DLog(@"Log : List View");
             [self setSegmentImages:NO];
             
-            if( self.list != nil )
+            if(self.list != nil)
             {
+                self.list = nil;
+            }
+            
+//            if( self.list == nil )
+//            {
                 DLog(@"Log : List object does not exist... Create it...");
                 self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"listDash")];
-                self.list.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 35);
-            }
+                self.list.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
+//            }
             
             [self.view addSubview:self.list.view];
             break;
@@ -138,6 +165,13 @@
 
 - (IBAction)sharedWithMeClicked:(id)sender {
         [self setBackGroundColorsForButtons:NO];
+    
+    if( self.sharedList == nil )
+    {
+        self.sharedList = (SharedViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"sharedList")];
+        self.sharedList.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
+    }
+    [self.view addSubview:self.sharedList.view];
     
     //[ViblioHelper displayAlertWithTitle:@"Progress" messageBody:@"Developem" viewController:<#(UIViewController *)#> cancelBtnTitle:<#(NSString *)#>];
     
@@ -171,6 +205,12 @@
 - (IBAction)MyViblioClicked:(id)sender {
     [self setBackGroundColorsForButtons:YES];
     [self.segment setHidden:NO];
+    
+    if( self.sharedList != nil )
+    {
+        [self.sharedList.view removeFromSuperview];
+        self.sharedList = nil;
+    }
 //    if( self.navigationItem.rightBarButtonItem == nil )
 //    {
 //        DLog(@"Log : Entering into bar button nil condition");
@@ -227,7 +267,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 
     VideoCell *cell = (VideoCell*)[cv dequeueReusableCellWithReuseIdentifier:@"VideoStaticCell" forIndexPath:indexPath];
-    
+//    cell.videoImage.image = nil;
 //   // DLog(@"LOG : filteredVideoList - %@", VCLIENT.filteredVideoList);
 //    DLog(@"Log : Asst details are - %@", VCLIENT.filteredVideoList[indexPath.row]);
 //    
@@ -265,9 +305,7 @@
         
         [cell.videoImage setImageWithURL:[NSURL URLWithString:cell.video.url]];
         //cell.videoImage = [self getScaledImage:cell.videoImage.image];
-        [cell addSubview:[self getScaledImage:cell.videoImage.image]];
-        
-        DLog(@"Log : The image sizes are  - %f - %f", cell.videoImage.image.size.height, cell.videoImage.image.size.width);
+        //[cell addSubview:[self getScaledImage:cell.videoImage.image]];
         
         if( self.cell != nil &&  (self.indexClicked == indexPath.row) )
         {
@@ -280,6 +318,20 @@
             [cell.vwShare setHidden:YES];
             [cell.vwPlayShare setHidden:NO];
         }
+    }
+    
+    if( (indexPath.row == VCLIENT.cloudVideoList.count-1) && VCLIENT.totalRecordsCount > VCLIENT.cloudVideoList.count )
+    {
+        DLog(@"Log : Lazy load next set of records...");
+        [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d",(int)((indexPath.row+1)/ROW_COUNT.integerValue)+1] rows:ROW_COUNT success:^(NSMutableArray *result)
+         {
+             //NSArray *res = [NSArray arrayWithArray:result];
+             VCLIENT.cloudVideoList = [[VCLIENT.cloudVideoList arrayByAddingObjectsFromArray:result ] mutableCopy];
+             [self.videoList reloadData];
+         }failure:^(NSError *error)
+         {
+             
+         }];
     }
     
     return cell;
@@ -425,7 +477,7 @@
 ////    NSError *err = NULL;
 ////    CMTime time = CMTimeMake(1, 60);
 ////    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-////    NSLog(@"err==%@, imageRef==%@", err, imgRef);
+////    DLog(@"err==%@, imageRef==%@", err, imgRef);
 ////    
 ////    return [[UIImage alloc] initWithCGImage:imgRef];
 //

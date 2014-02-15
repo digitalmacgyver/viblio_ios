@@ -13,10 +13,12 @@
 @synthesize uuid;
 @synthesize url;
 @synthesize createdDate;
+@synthesize lat;
+@synthesize longitude;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"uuid: %@, url: %@, createdDate : %@", self.uuid, self.url, self.createdDate];
+    return [NSString stringWithFormat:@"uuid: %@, url: %@, createdDate : %@, latitude : %@, longitude : %@", self.uuid, self.url, self.createdDate, self.lat, self.longitude];
 }
 
 @end

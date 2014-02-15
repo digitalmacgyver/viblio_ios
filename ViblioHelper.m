@@ -14,6 +14,8 @@
 NSString *const refreshProgress = @"com.viblio.app : UplodProgressNotification";
 NSString *const uploadComplete = @"com.viblio.app : uploadComplete";
 NSString * const uploadVideoPaused = @"com.viblio.app : uploadVideoPaused";
+NSString *const playVideo = @"com.viblio.app : playVideo";
+NSString * const stopVideo = @"com.viblio.app : stopVideo";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {

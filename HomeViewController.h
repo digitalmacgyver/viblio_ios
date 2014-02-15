@@ -11,6 +11,7 @@
 #import "VideoCell.h"
 #import <AVFoundation/AVFoundation.h>
 #import "ListViewController.h"
+#import "SharedViewController.h"
 
 @interface HomeViewController : UIViewController
 
@@ -19,6 +20,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnMyViblio;
 @property (weak, nonatomic) IBOutlet UIButton *btnSharedWithMe;
 @property (nonatomic, strong) ListViewController *list;
+@property (nonatomic, strong) SharedViewController *sharedList;
 
 @property (nonatomic, strong)VideoCell *cell;
 @property (nonatomic, assign) NSInteger indexClicked;

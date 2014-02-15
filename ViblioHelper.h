@@ -8,13 +8,15 @@
 
 #import <Foundation/Foundation.h>
 #import "UIButton+Additions.h"
-#import <SDWebImageManager.h>
+#import "SDWebImageManager.h"
 
 @interface ViblioHelper : NSObject
 
 extern NSString * const refreshProgress;
 extern NSString * const uploadComplete;
 extern NSString * const uploadVideoPaused;
+extern NSString * const playVideo;
+extern NSString * const stopVideo;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 

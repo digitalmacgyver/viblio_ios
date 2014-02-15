@@ -139,7 +139,6 @@
         {
             self.lblSyncNotInProgress.text = @"No videos found to upload !!";
         }
-        //        }
     }
 }
 

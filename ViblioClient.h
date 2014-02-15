@@ -98,11 +98,27 @@
 -(void)getTheListOfMediaFilesOwnedByUserWithOptions : (NSString*)vwStyle
                                           pageCount : (NSString*)page
                                                rows : (NSString*)rowsInAPage
-                                             success:(void(^)(NSString *terms))success
+                                             success:(void(^)(NSMutableArray *result))success
                                              failure:(void(^)(NSError *error))failure;
 
 -(void)getTheCloudUrlForVideoStreamingForFileWithUUID : (NSString*)uuid
                                                success:(void(^)(NSString *cloudURL))success
                                                failure:(void(^)(NSError *error))failure;
 
+
+-(void)getListOfSharedWithMeVideos :(void(^)(NSArray *sharedList))success
+                            failure:(void(^)(NSError *error))failure;
+
+-(void)streamAvatarsImageForUUID : (NSString*)uuid
+                          success:(void(^)(UIImage *profileImage))success
+                          failure:(void(^)(NSError *error))failure;
+
+
+-(void)getFacesInAMediaFileWithUUID : (NSString*)uuid
+                             success:(void(^)(NSArray *faceList))success
+                             failure:(void(^)(NSError *error))failure;
+
+-(void)getAddressWithLat : (NSString*)latitude andLong : (NSString*)longitude
+                  success:(void(^)(NSString *formattedAddress))success
+                  failure:(void(^)(NSError *error))failure;
 @end

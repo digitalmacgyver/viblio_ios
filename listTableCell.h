@@ -20,8 +20,15 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblInfo;
 
 @property (nonatomic, strong)MPMoviePlayerController *moviePlayer;
+@property (nonatomic, strong)cloudVideos *video;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *spinningWheel;
+@property (weak, nonatomic) IBOutlet UIImageView *imgVwThumbnail;
 
-@property(nonatomic, strong)ALAsset *asset;
-@property(nonatomic, strong)Videos *video;
+//@property(nonatomic, strong)ALAsset *asset;
+//@property(nonatomic, strong)Videos *video;
+@property (weak, nonatomic) IBOutlet UIImageView *face1;
+@property (weak, nonatomic) IBOutlet UIImageView *face2;
+@property (weak, nonatomic) IBOutlet UIImageView *face3;
+@property (weak, nonatomic) IBOutlet UIImageView *face4;
 
 @end

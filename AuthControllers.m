@@ -40,9 +40,9 @@
            NSDictionary<FBGraphUser> *user,
            NSError *error) {
              if (!error) {
-                 NSLog(@"%@",user);//Displayed with the gender
-                 NSLog(@"%@",user.name);//Name only displayed
-                 NSLog(@"%@",[user objectForKey:@"gender"]);//Build error
+                 DLog(@"%@",user);//Displayed with the gender
+                 DLog(@"%@",user.name);//Name only displayed
+                 DLog(@"%@",[user objectForKey:@"gender"]);//Build error
                  
                  [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                      if (error == nil)

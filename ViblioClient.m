@@ -30,7 +30,7 @@ void(^_failure)(NSError *error);
 - (void)batteryChanged:(NSNotification *)notification
 {
     UIDevice *device = [UIDevice currentDevice];
-    NSLog(@"state: %i | charge: %f", device.batteryState, device.batteryLevel);
+    DLog(@"state: %i | charge: %f", device.batteryState, device.batteryLevel);
     
     if( APPMANAGER.activeSession.batterSaving.integerValue )
     {
@@ -72,7 +72,7 @@ void(^_failure)(NSError *error);
     
     [self setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status)
     {
-        NSLog(@"LOG : Reachability of the base URL changed to - %d",status);
+        DLog(@"LOG : Reachability of the base URL changed to - %d",status);
         
         
         // Check whether a valid user session exists. Then check whether wifi only upload has been set as the preference.
@@ -211,8 +211,8 @@ void(^_failure)(NSError *error);
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
-                                      NSLog(@"LOG : result - %@",JSON);
-                                      NSLog(@"LOG : response - %@", response);
+                                      DLog(@"LOG : result - %@",JSON);
+                                      DLog(@"LOG : response - %@", response);
                                       
                                       
                                       if( [[JSON valueForKey:@"code"] integerValue] > 299 )
@@ -333,7 +333,7 @@ void(^_failure)(NSError *error);
         __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                               ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                               {
-                                                  NSLog(@"LOG : The response obtained is - %@",op.responseString);
+                                                  DLog(@"LOG : The response obtained is - %@",op.responseString);
                                               } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                               {
                                                   failure(error);
@@ -356,7 +356,7 @@ void(^_failure)(NSError *error);
 //                                      NSString *msg = [JSON valueForKeyPath:@"payload.sys_message"];
 //                                      success(msg);
                                       
-                                      NSLog(@"LOG : The response obtained is - %@",op.responseString);
+                                      DLog(@"LOG : The response obtained is - %@",op.responseString);
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
@@ -388,14 +388,14 @@ void(^_failure)(NSError *error);
     
     NSData * data = [NSPropertyListSerialization dataFromPropertyList:params
                                                                format:NSPropertyListBinaryFormat_v1_0 errorDescription:NULL];
-    NSLog(@"size: %lu --- fileSize - %@", (unsigned long)[data length], fileSize);
+    DLog(@"size: %lu --- fileSize - %@", (unsigned long)[data length], fileSize);
     
     [request setValue: fileSize  forHTTPHeaderField:@"Final-Length"];
     [request setValue: [NSString stringWithFormat:@"%lu", (unsigned long)data.length]  forHTTPHeaderField:@"Content-Length"];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     
     
-//    NSLog(@"LOG : REquest that was sent - %@ --- %@",request, );
+//    DLog(@"LOG : REquest that was sent - %@ --- %@",request, );
 
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
@@ -407,8 +407,8 @@ void(^_failure)(NSError *error);
                                               success([parsedSession lastObject]);
                                       }
                                       
-                                      NSLog(@"LOG : Response Headers - %@",response);
-                                      NSLog(@"LOG : Response Body - %@",op.responseString);
+                                      DLog(@"LOG : Response Headers - %@",response);
+                                      DLog(@"LOG : Response Body - %@",op.responseString);
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
@@ -436,8 +436,8 @@ void(^_failure)(NSError *error);
                                           
                                       success([((NSDictionary*)response.allHeaderFields)[@"Offset"] doubleValue]);
                                       
-                                      NSLog(@"LOG : The response headers is - %@", response);
-                                      NSLog(@"LOG : The response body - %@",op.responseString);
+                                      DLog(@"LOG : The response headers is - %@", response);
+                                      DLog(@"LOG : The response body - %@",op.responseString);
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
@@ -541,7 +541,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         DLog(@"Log : Not entering if");
         if (error == nil) {
             
-            NSLog(@"Task: %@ completed successfully", task);
+            DLog(@"Task: %@ completed successfully", task);
             
             if([[NSFileManager defaultManager] fileExistsAtPath:self.filePath])
                 [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:&error];
@@ -550,7 +550,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                 _success(@"");
             
         } else {
-            NSLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
+            DLog(@"Task: %@ completed with error: %@", task, [error localizedDescription]);
             if(self.uploadTask != nil)
                 _failure(error);
         }
@@ -563,7 +563,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         appDelegate.backgroundSessionCompletionHandler = nil;
         completionHandler();
     }
-    NSLog(@"All tasks are finished");
+    DLog(@"All tasks are finished");
 }
 
 -(void)invalidateFileUploadTask
@@ -620,6 +620,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           {
                                               //success(2);
                                               DLog(@"Log : %@", JSON);
+                                              success(((NSString*)([JSON valueForKeyPath:@"count"])).integerValue);
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
                                               failure(error);
@@ -713,7 +714,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 -(void)getTheListOfMediaFilesOwnedByUserWithOptions : (NSString*)vwStyle
                                           pageCount : (NSString*)page
                                                rows : (NSString*)rowsInAPage
-                                  success:(void(^)(NSString *terms))success
+                                  success:(void(^)(NSMutableArray *result))success
                                   failure:(void(^)(NSError *error))failure
 {
     
@@ -733,12 +734,14 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                               DLog(@"Log : In success response callback - Feedback - %@", JSON);
                                               
                                               NSArray *videoList = [JSON valueForKeyPath:@"media"];
-                                              if( VCLIENT.cloudVideoList != nil )
-                                              {
-                                                  [VCLIENT.cloudVideoList removeAllObjects];
-                                                  VCLIENT.cloudVideoList = nil;
-                                              }
-                                              VCLIENT.cloudVideoList = [[NSMutableArray alloc]init];
+                                              NSMutableArray *result = [NSMutableArray new];
+                                              
+//                                              if( VCLIENT.cloudVideoList != nil )
+//                                              {
+//                                                  [VCLIENT.cloudVideoList removeAllObjects];
+//                                                  VCLIENT.cloudVideoList = nil;
+//                                              }
+//                                              VCLIENT.cloudVideoList = [[NSMutableArray alloc]init];
                                               
                                               for( int i=0; i < videoList.count; i++ )
                                               {
@@ -747,14 +750,25 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                   video.uuid = [videoObj valueForKey:@"uuid"];
                                                   video.url = [videoObj valueForKey:@"views"][@"poster"][@"url"];
                                                   video.createdDate = [videoObj valueForKey:@"created_date"];
-                                                  [VCLIENT.cloudVideoList addObject:video];
+                                                  
+                                                  NSString *lat = [videoObj valueForKey:@"lat"];
+                                                  NSString *longitude = [videoObj valueForKey:@"lng"];
+                                                  
+                                                  if( ![lat isEqual:[NSNull null]] && [lat isValid] )
+                                                      video.lat = lat;
+                                                  
+                                                  if( ![lat isEqual:[NSNull null]] && [longitude isValid] )
+                                                      video.longitude = longitude;
+                                                  
+                                                  [result addObject:video];
                                                   videoObj = nil; video = nil;
+                                                  lat = longitude = nil;
                                               }
                                               
                                               videoList = nil;
                                               DLog(@"Log : The cloud video list now is - %@", VCLIENT.cloudVideoList);
                                               
-                                              success(@"");
+                                              success(result);
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
                                               failure(error);
@@ -767,10 +781,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                success:(void(^)(NSString *cloudURL))success
                                                failure:(void(^)(NSError *error))failure
 {
-//    NSDictionary *queryParams = @{ @"page" : page,
-//                                   @"rows" : rowsInAPage,
-//                                   @"views[]": vwStyle };
-    
     NSString *path = [NSString stringWithFormat:@"/services/mediafile/cf?mid=%@",uuid];
     
     NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
@@ -782,33 +792,187 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           {
                                               DLog(@"Log : In success response callback - Feedback - %@", JSON);
                                               success(JSON[@"url"]);
-//                                              NSArray *videoList = [JSON valueForKeyPath:@"media"];
-//                                              if( VCLIENT.cloudVideoList != nil )
-//                                              {
-//                                                  [VCLIENT.cloudVideoList removeAllObjects];
-//                                                  VCLIENT.cloudVideoList = nil;
-//                                              }
-//                                              VCLIENT.cloudVideoList = [[NSMutableArray alloc]init];
-//                                              
-//                                              for( int i=0; i < videoList.count; i++ )
-//                                              {
-//                                                  NSDictionary *videoObj = [videoList objectAtIndex:i];
-//                                                  cloudVideos *video = [[cloudVideos alloc]init];
-//                                                  video.uuid = [videoObj valueForKey:@"uuid"];
-//                                                  video.url = [videoObj valueForKey:@"views"][@"poster"][@"url"];
-//                                                  video.createdDate = [videoObj valueForKey:@"created_date"];
-//                                                  [VCLIENT.cloudVideoList addObject:video];
-//                                                  videoObj = nil; video = nil;
-//                                              }
-//                                              
-//                                              videoList = nil;
-//                                              DLog(@"Log : The cloud video list now is - %@", VCLIENT.cloudVideoList);
-                                              
-                                              //success(@"");
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
                                               failure(error);
                                           }];
     [op start];
 }
+
+
+-(void)getListOfSharedWithMeVideos :(void(^)(NSArray *sharedList))success
+                            failure:(void(^)(NSError *error))failure
+{
+    
+    NSString *path = @"/services/mediafile/all_shared";
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              
+                                              // Create an array that holds the resultant parsed sharedVideo Objects to be sent as success response
+                                              NSMutableArray *sharedVideoList = [NSMutableArray new];
+                                              
+                                              // List of all shared
+                                              NSArray *array = (NSArray*)[JSON valueForKeyPath:@"shared"] ;
+                                              
+                                              // Iterating through list of all shared
+                                              for( int i = 0; i < array.count; i++ )
+                                              {
+                                                  NSDictionary *videoValues = [array objectAtIndex:i];
+                                                  NSArray *videoBySpecificOwner = videoValues[@"media"];
+                                                  
+                                                  NSString *ownerName = videoValues[@"owner"][@"displayname"];
+                                                  NSString *ownerUUID = videoValues[@"owner"][@"uuid"];
+                                                  
+                                                  // Media list of the specific owner
+                                                  for( int i = 0; i < videoBySpecificOwner.count; i++ )
+                                                  {
+                                                      SharedVideos *video = [[SharedVideos alloc]init];
+                                                      NSDictionary *mediaObj = (NSDictionary*)[videoBySpecificOwner objectAtIndex:i];
+                                                      video.createdDate = mediaObj[@"created_date"];
+                                                      video.mediaUUID = mediaObj[@"uuid"];
+                                                      video.viewCount = mediaObj[@"view_count"] ;
+                                                      video.posterURL = mediaObj[@"views"][@"poster"][@"url"];
+                                                      video.ownerName = ownerName;
+                                                      video.ownerUUID = ownerUUID;
+                                                      
+                                                      // Add the video object to the resultant array list
+                                                      [sharedVideoList addObject:video];
+                                                      video = nil;
+                                                      mediaObj = nil;
+                                                  }
+                                              }
+                                              
+                                              // Send the list of result objects back in the success response
+                                              success(sharedVideoList);
+                                              
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
+
+
+-(void)streamAvatarsImageForUUID : (NSString*)uuid
+                          success:(void(^)(UIImage *profileImage))success
+                          failure:(void(^)(NSError *error))failure
+{
+    
+    NSDictionary *queryParams = @{@"uid" : uuid,
+                                  @"x" : @"-",
+                                   @"y" : @"60"
+                                   };
+
+    NSString *path = [NSString stringWithFormat:@"/services/na/avatar?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]]; //@"/services/na/avatar?uuid=%@",uuid];  //@"/services/user/avatar?uuid=%@",uuid];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:nil];
+    [request setValue: @"image/png"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: @"image/png"  forHTTPHeaderField:@"Accept"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *err){
+        if (!err && data) {
+            DLog(@"Log : The data obtained is - %@", data);
+            success([UIImage imageWithData:data]);
+//            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//            NSString *documents = [paths objectAtIndex:0];
+//            NSString *finalPath = [documents stringByAppendingPathComponent:@"myImageName.png"];
+//            [data writeToFile:finalPath atomically:YES];
+        }
+    }];
+    
+//    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+//                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+//                                          {
+//                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+//                                              success(JSON[@"url"]);
+//                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+//                                          {
+//                                              failure(error);
+//                                          }];
+//    [op start];
+}
+
+
+// API call for getting the list of faces in a media file
+
+-(void)getFacesInAMediaFileWithUUID : (NSString*)uuid
+                             success:(void(^)(NSArray *faceList))success
+                             failure:(void(^)(NSError *error))failure
+{
+    DLog(@"Log : Gettin the Faces from non authenticated web service...");
+    
+    NSString *path = [NSString stringWithFormat:@"/services/na/faces_in_mediafile?mid=%@",uuid];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              NSMutableArray *faces = [[NSMutableArray alloc]init];
+                                              NSArray *result = JSON[@"faces"];
+                                              if( JSON[@"faces"] == nil || ((NSArray*)JSON[@"faces"]).count <= 0 )
+                                              {
+                                                  DLog(@"Log : Returning array as it is..");
+                                                  faces = nil; result = nil;
+                                                  success(JSON[@"faces"]);
+                                              }
+                                              else
+                                              {
+                                                  // There are faces identified.. Parse them to get the URL
+                                                  
+                                                  DLog(@"Log : Parsing faces");
+                                                  for( NSDictionary *faceValues in result )
+                                                  {
+                                                      if( [faceValues[@"url"] isValid] )
+                                                         [faces addObject:faceValues[@"url"]];
+                                                  }
+                                                  success(faces);
+                                              }
+                                              
+                                              
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+    
+}
+
+
+// API call for getting the address with given lat and long
+
+-(void)getAddressWithLat : (NSString*)latitude andLong : (NSString*)longitude
+                  success:(void(^)(NSString *formattedAddress))success
+                  failure:(void(^)(NSError *error))failure
+{
+    NSString *path = [NSString stringWithFormat:@"/services/na/geo_loc?lat=%@&lng=%@",latitude, longitude];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              success([JSON firstObject][@"formatted_address"]);
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
+
+
 @end

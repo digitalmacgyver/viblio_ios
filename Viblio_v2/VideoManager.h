@@ -24,6 +24,7 @@
 @property(nonatomic,strong)ALAsset *asset;
 @property(nonatomic, strong)Videos *videoUploading;
 @property(nonatomic, assign)BOOL shouldProceedWithNextFile;
+@property(nonatomic, assign)NSInteger totalRecordsCount, pageCount;
 
 + (VideoManager *)sharedClient;
 -(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success

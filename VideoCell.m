@@ -33,53 +33,75 @@
 */
 
 - (IBAction)playVideo:(id)sender {
-    
-    DLog(@"Log : Play clicked");
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(moviePlayerPlaybackStateDidChange:)  name:MPMoviePlayerPlaybackStateDidChangeNotification  object:nil];
+    [self playMovieinFullScreen:NO];
+}
 
+- (IBAction)stopVideo:(id)sender {
+}
+
+-(void)playMovieinFullScreen:(BOOL)fullScreen
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(myMovieFinishedCallback:) name:stopVideo object:nil] ;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerLoadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
+    [self registerForMovieNotifications];
     
     [APPCLIENT getTheCloudUrlForVideoStreamingForFileWithUUID:self.video.uuid success:^(NSString *cloudURL)
-    {
-        DLog(@"Log : Cloud url obtained is - %@", cloudURL);
-        self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]]; //self.asset.defaultRepresentation.url];
-        self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
-        self.moviePlayer.view.frame = self.vwShare.frame;
-        [self addSubview:self.moviePlayer.view];
-        [self addSubview:self.spinningWheel];
-        
-        [self.spinningWheel startAnimating];
-        //[self bringSubviewToFront:self.moviePlayer.view];
-        
-//        self.moviePlayer.controlStyle = MPMovieControlStyleDefault;
-//        self.moviePlayer.shouldAutoplay = YES;
-//        self.moviePlayer.scalingMode= MPMovieScalingModeFill;
-//        self.moviePlayer.controlStyle =MPMovieControlStyleNone;
-        
-//        // Registering tap gesture on Movie Player
-//        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(playInFullScreen)];
-//        tapGestureRecognizer.numberOfTapsRequired = 1;
-//        [self.moviePlayer.view addGestureRecognizer:tapGestureRecognizer];
-//        self.moviePlayer.view.userInteractionEnabled = YES;
-//        tapGestureRecognizer.delegate = self;
-        
-        
-        // Register for the playback finished notification
-        [[NSNotificationCenter defaultCenter] addObserver:self // the object listening / "observing" to the notification
-                                                 selector:@selector(myMovieFinishedCallback:) // method to call when the notification was pushed
-                                                     name:MPMoviePlayerPlaybackDidFinishNotification // notification the observer should listen to
-                                                   object:self.moviePlayer];
-        
-        [self.moviePlayer play];
-        
-        [self.btnPlay setHidden:YES];
-        //    [self.btnStop setHidden:NO];
-    }failure:^(NSError *error)
-    {
-        DLog(@"Log : Error in streaming the video....");
-    }];
+     {
+         self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]];
+         self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
+         self.moviePlayer.view.frame = self.vwShare.frame;
+         
+         [self insertSubview:self.moviePlayer.view belowSubview:self.vwPlayShare];
+         [self addSubview:self.spinningWheel];
+         [self bringSubviewToFront:self.vwPlayShare];
+         
+         [[NSNotificationCenter defaultCenter] postNotificationName:playVideo object:self];
+         [self.spinningWheel startAnimating];
+         
+         self.moviePlayer.shouldAutoplay = YES;
+         
+         if( fullScreen )
+         {
+             [self playInFullScreen];
+         }
+         else
+         {
+             self.moviePlayer.controlStyle = MPMovieControlStyleDefault;
+             self.moviePlayer.scalingMode= MPMovieScalingModeNone;
+         }
+         
+         // Registering tap gesture on Movie Player
+//         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(playInFullScreen)];
+//         tapGestureRecognizer.numberOfTapsRequired = 1;
+//         [self.moviePlayer.view addGestureRecognizer:tapGestureRecognizer];
+//         self.moviePlayer.view.userInteractionEnabled = YES;
+//         tapGestureRecognizer.delegate = self;
+         
+         
+         // Register for the playback finished notification
+         [[NSNotificationCenter defaultCenter] addObserver:self // the object listening / "observing" to the notification
+                                                  selector:@selector(myMovieFinishedCallback:) // method to call when the notification was pushed
+                                                      name:MPMoviePlayerPlaybackDidFinishNotification // notification the observer should listen to
+                                                    object:self.moviePlayer];
+         
+         [self.moviePlayer play];
+         
+         [self.btnPlay setHidden:YES];
+         [self.btnStop setHidden:NO];
+         
+     }failure:^(NSError *error)
+     {
+         DLog(@"Log : Error in streaming the video....");
+     }];
+}
+
+
+-(void)playInFullScreen
+{
+    DLog(@"Log : The movie has to be played in full screen...");
+    self.moviePlayer.fullscreen = YES;
+    self.moviePlayer.scalingMode = MPMovieScalingModeNone;
+    self.moviePlayer.controlStyle = MPMovieControlStyleDefault;
 }
 
 
@@ -91,9 +113,10 @@
     self.moviePlayer = nil;
     
     [self.btnPlay setHidden:NO];
-    //[self.btnStop setHidden:YES];
+    [self.btnStop setHidden:YES];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
 
 
 - (void)registerForMovieNotifications {
@@ -123,28 +146,6 @@
 //        [self addSubview:self.moviePlayer.view];
         self.moviePlayer.fullscreen = NO;
         [self.moviePlayer play];
-    }
-}
-
-
-
-- (void) moviePlayerPlaybackStateDidChange:(NSNotification*)notification {
-    DLog(@"playbackDidChanged");
-    MPMoviePlayerController *moviePlayer = notification.object;
-    MPMoviePlaybackState playbackState = moviePlayer.playbackState;
-    if(playbackState == MPMoviePlaybackStateStopped) {
-        DLog(@"MPMoviePlaybackStateStopped");
-    } else if(playbackState == MPMoviePlaybackStatePlaying) {
-        DLog(@"MPMoviePlaybackStatePlaying");
-    } else if(playbackState == MPMoviePlaybackStatePaused) {
-        [self.spinningWheel startAnimating];
-        DLog(@"MPMoviePlaybackStatePaused");
-    } else if(playbackState == MPMoviePlaybackStateInterrupted) {
-        DLog(@"MPMoviePlaybackStateInterrupted");
-    } else if(playbackState == MPMoviePlaybackStateSeekingForward) {
-        DLog(@"MPMoviePlaybackStateSeekingForward");
-    } else if(playbackState == MPMoviePlaybackStateSeekingBackward) {
-        DLog(@"MPMoviePlaybackStateSeekingBackward");
     }
 }
 
@@ -214,26 +215,5 @@
 }
 - (IBAction)shareViaMail:(id)sender {
 }
-
-//-(void)prepareForReuse {
-//    
-//    DLog(@"LOg : reuse cells");
-//    self.videoImage.image = nil;
-//    [self.videoImage setImageWithURL:[NSURL URLWithString:self.video.url]];
-//}
-
-
-//- (UIImage*)loadImage : (ALAsset *)videoAsset {
-//    
-//    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoAsset.defaultRepresentation.url options:nil];
-//    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-//    NSError *err = NULL;
-//    CMTime time = CMTimeMake(1, 60);
-//    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-//    DLog(@"err==%@, imageRef==%@", err, imgRef);
-//    
-//    return [[UIImage alloc] initWithCGImage:imgRef];
-//    
-//}
 
 @end

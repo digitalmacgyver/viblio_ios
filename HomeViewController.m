@@ -139,6 +139,7 @@
             DLog(@"Log : Thumbnail view");
             [self setSegmentImages:YES];
             [self.list.view removeFromSuperview];
+            [self.videoList reloadData];
             break;
         case 1:
             DLog(@"Log : List View");
@@ -302,6 +303,26 @@
 //            cell.videoImage.image = image;
 //            cell.videoImage.contentMode = UIViewContentModeScaleAspectFill;
 //        }];
+        
+        // If scrolled stop movie player in thumbnail mode
+//        if( cell.moviePlayer != nil )
+//        {
+//            [cell.moviePlayer.view removeFromSuperview];
+//            cell.moviePlayer = nil;
+//            
+            [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
+//        }
+        
+        [APPCLIENT hasAMediaFileBeenSharedByTheUSerWithUUID:cell.video.uuid success:^(BOOL isShared)
+        {
+           if( isShared )
+               [cell.vwShareTag setHidden:YES];
+            else
+                [cell.vwShareTag setHidden:NO];
+        }failure:^(NSError *error)
+        {
+            
+        }];
         
         [cell.videoImage setImageWithURL:[NSURL URLWithString:cell.video.url]];
         //cell.videoImage = [self getScaledImage:cell.videoImage.image];

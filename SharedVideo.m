@@ -36,6 +36,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(moviePlayerPlaybackStateDidChange:)  name:MPMoviePlayerPlaybackStateDidChangeNotification  object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(myMovieFinishedCallback:) name:stopVideo object:nil];
+    
     [self registerForMovieNotifications];
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerLoadStateDidChange:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
     
@@ -86,6 +88,8 @@
     DLog(@"Log : Movie finished...");
     [self.moviePlayer.view removeFromSuperview];
     self.moviePlayer = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [self.btnPlay setHidden:NO];
     //[self.btnStop setHidden:YES];

@@ -15,5 +15,6 @@
 @property(nonatomic, retain)NSString *url;
 @property(nonatomic, retain)NSString *lat;
 @property(nonatomic, retain)NSString *longitude;
+@property(nonatomic, retain)NSString *isShared;
 
 @end

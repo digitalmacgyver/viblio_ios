@@ -735,14 +735,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                               
                                               NSArray *videoList = [JSON valueForKeyPath:@"media"];
                                               NSMutableArray *result = [NSMutableArray new];
-                                              
-//                                              if( VCLIENT.cloudVideoList != nil )
-//                                              {
-//                                                  [VCLIENT.cloudVideoList removeAllObjects];
-//                                                  VCLIENT.cloudVideoList = nil;
-//                                              }
-//                                              VCLIENT.cloudVideoList = [[NSMutableArray alloc]init];
-                                              
+
                                               for( int i=0; i < videoList.count; i++ )
                                               {
                                                   NSDictionary *videoObj = [videoList objectAtIndex:i];
@@ -918,7 +911,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
-                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                             // DLog(@"Log : In success response callback - Feedback - %@", JSON);
                                               NSMutableArray *faces = [[NSMutableArray alloc]init];
                                               NSArray *result = JSON[@"faces"];
                                               if( JSON[@"faces"] == nil || ((NSArray*)JSON[@"faces"]).count <= 0 )
@@ -965,7 +958,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
-                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              //DLog(@"Log : In success response callback - Feedback - %@", JSON);
                                               success([JSON firstObject][@"formatted_address"]);
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
@@ -974,5 +967,34 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [op start];
 }
 
+
+// API call to know whether a media file has ever been shared by the user
+
+-(void)hasAMediaFileBeenSharedByTheUSerWithUUID : (NSString*)uuid
+                                         success:(void(^)(BOOL hasBeenShared))success
+                                         failure:(void(^)(NSError *error))failure
+{
+    NSString *path = [NSString stringWithFormat:@"/services/mediafile/has_been_shared?mid=%@",uuid];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              //BOOL isShared = NO;
+                                              
+                                              if( ((NSString*)[JSON valueForKeyPath:@"count"]).integerValue )
+                                                  success(YES);
+                                              else
+                                                  success(NO);
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
 
 @end

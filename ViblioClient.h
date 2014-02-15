@@ -121,4 +121,8 @@
 -(void)getAddressWithLat : (NSString*)latitude andLong : (NSString*)longitude
                   success:(void(^)(NSString *formattedAddress))success
                   failure:(void(^)(NSError *error))failure;
+
+-(void)hasAMediaFileBeenSharedByTheUSerWithUUID : (NSString*)uuid
+                                         success:(void(^)(BOOL hasBeenShared))success
+                                         failure:(void(^)(NSError *error))failure;
 @end

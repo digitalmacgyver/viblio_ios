@@ -13,12 +13,6 @@
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segment;
 @property (weak, nonatomic) IBOutlet UITableView *listView;
-@property (weak, nonatomic) IBOutlet UIButton *btnStop;
-
-@property (nonatomic, strong)MPMoviePlayerController *moviePlayer;
-
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *spinningWheel;
-@property (weak, nonatomic) IBOutlet UIButton *btnPlay;
 
 @property (nonatomic, strong) NSMutableDictionary *address,*dateStamp, *faceIndexes;
 

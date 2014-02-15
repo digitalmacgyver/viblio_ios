@@ -68,6 +68,10 @@
     cell.lblOwnerName.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     cell.lblVwCount.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     
+    // If movie is being played stop it as the focus shifts on scrolling
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
+    
     if( indexPath.row < self.sharedList.count )
     {
         SharedVideos *video = self.sharedList[indexPath.row];

@@ -92,6 +92,7 @@
 -(void)invalidateUploadTaskWithoutPausing;
 
 -(void)sendFeedbackToServerWithText:(NSString*)text
+                          category : (NSString*)categorySelected
                             success:(void(^)(NSString *msg))success
                             failure:(void(^)(NSError *error))failure;
 

@@ -219,4 +219,42 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
                    }];
 }
 
++(NSArray*)getDateTimeStampToReadableFormat : (NSString*)dateStamp
+{
+    DLog(@"Log : dateStamp received is - %@", dateStamp);
+    NSArray *dateTimeSep = [dateStamp componentsSeparatedByString:@" "];
+    NSArray *dateComps = [dateTimeSep[0] componentsSeparatedByString:@"-"];
+    //NSArray *timeComps = [dateTimeSep[1] componentsSeparatedByString:@":"];
+    NSString *displayString = [self getMonthInWords:dateComps[1]];
+    //dateTimeSep = nil;
+    displayString = [displayString stringByAppendingString:@" "];
+    displayString = [displayString stringByAppendingString:dateComps[2]];
+    displayString = [displayString stringByAppendingString:@", "];
+    displayString  = [displayString stringByAppendingString:dateComps[0]];
+    
+    //NSString *time = [time string];
+    DLog(@"Log : String being sent back is - %@", displayString);
+    return @[displayString, dateTimeSep[1]];
+}
+
++(NSString*)getMonthInWords : (NSString*)month
+{
+    DLog(@"Log : The value received is - %@", month);
+    NSDictionary *months = @{ @"01" : @"Jan",
+                              @"02" : @"Feb",
+                              @"03" : @"Mar",
+                              @"04" : @"April",
+                              @"05" : @"May",
+                              @"06" : @"June",
+                              @"07" : @"July",
+                              @"08" : @"Aug",
+                              @"09" : @"Sep",
+                              @"10" : @"Oct",
+                              @"11" : @"Nov",
+                              @"12" : @"Dec"};
+    
+    DLog(@"Log : Value being returned is - %@", [months valueForKey:month]);
+    return [months valueForKey:month];
+}
+
 @end

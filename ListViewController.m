@@ -200,8 +200,15 @@
                  else
                  {
                      DLog(@"Log : No Faces and No lat and Long found.. Displaying the created date field now...");
+                     [cell.lblUploadNow setHidden:NO];
                      cell.lblInfo.font = [ViblioHelper viblio_Font_Regular_WithSize:16 isBold:NO];
-                     cell.lblInfo.text = cell.video.createdDate;
+                     NSArray *displayResultForDateTime = [ViblioHelper getDateTimeStampToReadableFormat:cell.video.createdDate];
+                     cell.lblInfo.text = [displayResultForDateTime firstObject];
+                     //cell.lblUploadNow.font = [ViblioHelper viblio_Font_Italic_WithSize:12 isBold:NO];
+                     //cell.lblUploadNow.text = [displayResultForDateTime lastObject];
+                     //cell.lblUploadNow.backgroundColor = [UIColor redColor];
+                     displayResultForDateTime = nil;
+                     //cell.video.createdDate;
                      [self.dateStamp setValue:cell.video.createdDate forKey:[NSString stringWithFormat:@"%d", indexPath.row]];
                  }
              }

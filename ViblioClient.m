@@ -88,7 +88,7 @@ void(^_failure)(NSError *error);
                 if( VCLIENT.asset !=  nil )
                 {
                     DLog(@"Log : Internet reachability went off.. Pausing the upload..");
-                    [ViblioHelper displayAlertWithTitle:@"Connection Lost" messageBody:@"The internet connection has been lost and the upload will be paused" viewController:nil cancelBtnTitle:@"OK"];
+                    [ViblioHelper displayAlertWithTitle:@"Not on WiFi" messageBody:@"Uploading paused until WiFi connection established" viewController:nil cancelBtnTitle:@"OK"];
                     APPMANAGER.turnOffUploads = YES;
                     [APPCLIENT invalidateFileUploadTask];
                 }
@@ -103,7 +103,7 @@ void(^_failure)(NSError *error);
                     {
                         DLog(@"Log : Reachable over wifi");
                         
-                        [ViblioHelper displayAlertWithTitle:@"Connection Established" messageBody:@"WiFi Connection established.. Starting uploads" viewController:nil cancelBtnTitle:@"OK"];
+                       // [ViblioHelper displayAlertWithTitle:@"Connection Established" messageBody:@"WiFi Connection established.. Starting uploads" viewController:nil cancelBtnTitle:@"OK"];
                         
                         APPMANAGER.turnOffUploads = NO;
                         [VCLIENT videoUploadIntelligence];
@@ -116,7 +116,7 @@ void(^_failure)(NSError *error);
                     // Wifi only upload has not been set.. Initiate upload
                     DLog(@"Log : Initating upload as no preference settings has been made..");
                     
-                    [ViblioHelper displayAlertWithTitle:@"Connection Established" messageBody:@"Internet Connection established.. Starting uploads" viewController:nil cancelBtnTitle:@"OK"];
+//                    [ViblioHelper displayAlertWithTitle:@"Connection Established" messageBody:@"Internet Connection established.. Starting uploads" viewController:nil cancelBtnTitle:@"OK"];
                     
                     APPMANAGER.turnOffUploads = NO;
                     [VCLIENT videoUploadIntelligence];
@@ -683,24 +683,27 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 
 -(void)sendFeedbackToServerWithText:(NSString*)text
+                          category : (NSString*)categorySelected
                     success:(void(^)(NSString *msg))success
                     failure:(void(^)(NSError *error))failure
 
 {
     DLog(@"Log : Sending feedback to the server");
-    NSString *path = @"/services/na/form_feedback";
+   
     NSDictionary *params = @{ @"feedback" : text,
                               @"feedback_email" : @"feedback@support.viblio.com",
-                              @"feedback_location" : @"Bangalore"};
-    
-    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:params];
+                              @"feedback_location" : [NSString stringWithFormat:@"Dashboard : %@", categorySelected]};
+    NSString *path = [NSString stringWithFormat:@"/services/na/form_feedback?%@", [ViblioHelper stringBySerializingQueryParameters:params]];
+    params = nil;
+
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
     
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
-                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              success(@"");
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
                                               failure(error);

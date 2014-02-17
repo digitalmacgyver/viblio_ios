@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "ECSlidingViewController.h"
 
-@interface FeedBackViewController : UIViewController<UITextViewDelegate>
+@interface FeedBackViewController : UIViewController<UITextViewDelegate, UIAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *btnBravo;
 @property (weak, nonatomic) IBOutlet UIButton *btnBug;

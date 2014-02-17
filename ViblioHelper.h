@@ -54,5 +54,6 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 +(UIColor*)getVblBlueColor;
 
 + (void)downloadImageWithURLString:(NSString *)urlString completion:(void (^)(UIImage *image, NSError *error))completion;
++(NSArray*)getDateTimeStampToReadableFormat : (NSString*)dateStamp;
 
 @end

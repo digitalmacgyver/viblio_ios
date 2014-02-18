@@ -36,6 +36,18 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOtherSharingViews:) name:showListSharingVw object:nil];
+}
+
+-(void)removeOtherSharingViews : (NSNotification*)notification
+{
+    listTableCell *list = (listTableCell*)notification.object;
+    
+    if( self.listCell != nil && (self.listCell.btnShare.tag != list.btnShare.tag) )
+       [self.listCell removeShareVw]; //[[NSNotificationCenter defaultCenter] postNotificationName:removeListSharinVw object:nil];
+    
+    self.listCell = list;
+    list = nil;
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -74,15 +86,22 @@
         cloudVideos *video = [VCLIENT.cloudVideoList objectAtIndex:indexPath.row];
         cell.video = video;
         [cell.imgVwThumbnail setImageWithURL:[NSURL URLWithString:video.url]];
-        cell.btnPlay.tag = indexPath.row;
+        cell.btnPlay.tag = cell.btnShare.tag = indexPath.row;
     }
     
     [cell.lblUploadNow setHidden:YES];
     [cell.lblShareNow setHidden:YES];
     [cell.btnPlay setHidden:NO];
-    [cell.btnShare setHidden:NO];
+    //[cell.btnShare setHidden:NO];
     cell.lblInfo.text = nil;
 
+    if( self.listCell != nil && self.listCell.btnShare.tag == indexPath.row )
+        [cell.vwShareBtns setHidden:NO];
+    else
+        [cell.vwShareBtns setHidden:YES];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:cell selector:@selector(removeShareVw) name:removeListSharinVw object:nil];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
     if( (indexPath.row == VCLIENT.cloudVideoList.count-1) && VCLIENT.totalRecordsCount > VCLIENT.cloudVideoList.count )
     {
@@ -111,7 +130,7 @@
     {
         
     }];
-
+    
     // Logic for filling the information data in list view here
     NSArray *faceImgList = @[cell.face1, cell.face2, cell.face3, cell.face4];
     for( UIImageView *face in faceImgList )
@@ -226,7 +245,5 @@
 {
     return 70;
 }
-
-
 
 @end

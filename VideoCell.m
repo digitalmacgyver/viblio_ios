@@ -179,15 +179,115 @@
 
 
 - (IBAction)shareVideo:(id)sender {
-    
+
     DLog(@"Log : Share video fired...");
-    [self.vwShare setHidden:NO];
-    [UIView animateWithDuration:1 animations:^
+    
+    
+    self.shareVw = [[UIView alloc]initWithFrame:CGRectMake(self.frame.size.width + self.frame.origin.x, self.frame.origin.y, 0, self.frame.size.height)];
+    self.shareVw.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.75];
+    [self.superview addSubview:self.shareVw];
+    self.shareVw.tag = 1;
+    
+    UISwipeGestureRecognizer *recognizer;
+    
+    recognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleRightSwipe:)];
+    [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
+    [self.shareVw addGestureRecognizer:recognizer];
+    
+    self.btnTwitter = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.btnTwitter setImage:[UIImage imageNamed:@"bttn_twitter"] forState:UIControlStateNormal];
+    [self.btnTwitter setFrame:CGRectMake(0, 3, 0, 65)];
+    [self.btnTwitter addTarget:self action:@selector(shareViaTwitter:) forControlEvents:UIControlEventTouchUpInside];
+    [self.shareVw addSubview:self.btnTwitter];
+    
+    self.btnFB = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.btnFB setImage:[UIImage imageNamed:@"bttn_facebook"] forState:UIControlStateNormal];
+    [self.btnFB addTarget:self action:@selector(shareViaFB:) forControlEvents:UIControlEventTouchUpInside];
+    [self.btnFB setFrame:CGRectMake(0, 3, 0, 65)];
+    [self.shareVw addSubview:self.btnFB];
+    
+    
+    self.btnGoogle = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.btnGoogle setImage:[UIImage imageNamed:@"bttn_google_plus"] forState:UIControlStateNormal];
+    [self.btnGoogle addTarget:self action:@selector(shareViaGoogle:) forControlEvents:UIControlEventTouchUpInside];
+    [self.btnGoogle setFrame:CGRectMake(0, 85, 0, 65)];
+    [self.shareVw addSubview:self.btnGoogle];
+    
+    
+    self.btnMail = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.btnMail setImage:[UIImage imageNamed:@"bttn_mail"] forState:UIControlStateNormal];
+    [self.btnMail addTarget:self action:@selector(shareViaMail:) forControlEvents:UIControlEventTouchUpInside];
+    [self.btnMail setFrame:CGRectMake(0, 85, 0, 65)];
+    [self.shareVw addSubview:self.btnMail];
+    
+    
+    [UIView animateWithDuration:0.4 animations:^
     {
-        CGRect shareFrame = self.vwShare.frame;
+        CGRect shareFrame = self.shareVw.frame;
         shareFrame.origin.x = self.frame.origin.x;
-        self.vwShare.frame = shareFrame;
+        shareFrame.size.width = self.frame.size.width;
+        self.shareVw.frame = shareFrame;
+        
+        CGRect btnTwitterFrame = self.btnTwitter.frame;
+        btnTwitterFrame.origin.x = 3;
+        btnTwitterFrame.size.width = 65;
+        self.btnTwitter.frame = btnTwitterFrame;
+        
+        CGRect btnFBFrame = self.btnFB.frame;
+        btnFBFrame.origin.x = 85;
+        btnFBFrame.size.width = 65;
+        self.btnFB.frame = btnFBFrame;
+        
+        CGRect btnGFrame = self.btnGoogle.frame;
+        btnGFrame.origin.x = 3;
+        btnGFrame.size.width = 65;
+        self.btnGoogle.frame = btnGFrame;
+        
+        CGRect btnMailFrame = self.btnMail.frame;
+        btnMailFrame.origin.x = 85;
+        btnMailFrame.size.width = 65;
+        self.btnMail.frame = btnMailFrame;
     }];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:showingSharingView object:self];
+}
+
+-(void)removeShareView
+{
+    [UIView animateWithDuration:0.4 animations:^
+     {
+         CGRect shareFrame = self.shareVw.frame;
+         shareFrame.origin.x = self.frame.origin.x + self.frame.size.width;
+         shareFrame.size.width = 0;
+         self.shareVw.frame = shareFrame;
+         
+         CGRect btnTwitterFrame = self.btnTwitter.frame;
+         btnTwitterFrame.origin.x = 0;//self.frame.origin.x + self.frame.size.width;
+         btnTwitterFrame.size.width = 0;
+         self.btnTwitter.frame = btnTwitterFrame;
+         
+         CGRect btnFBFrame = self.btnFB.frame;
+         btnFBFrame.origin.x = 0;//self.frame.origin.x + self.frame.size.width;
+         btnFBFrame.size.width = 0;
+         self.btnFB.frame = btnFBFrame;
+         
+         CGRect btnGFrame = self.btnGoogle.frame;
+         btnGFrame.origin.x = 0;//self.frame.origin.x  + self.frame.size.width;
+         btnGFrame.size.width = 0;
+         self.btnGoogle.frame = btnGFrame;
+         
+         CGRect btnMailFrame = self.btnMail.frame;
+         btnMailFrame.origin.x = 0;//self.frame.origin.x  + self.frame.size.width;
+         btnMailFrame.size.width = 0;
+         self.btnMail.frame = btnMailFrame;
+     }];
+}
+
+-(void)handleRightSwipe : (id)sender
+{
+    DLog(@"Log : Right Swipe detected");
+    [self removeShareView];
+//    
 }
 
 //- (IBAction)uploadClicked:(id)sender {
@@ -208,12 +308,14 @@
 //}
 
 - (IBAction)shareViaFB:(id)sender {
+    DLog(@"Log : Share via FB clicked - index - %d", self.btnShare.tag);
 }
 - (IBAction)shareViaGoogle:(id)sender {
 }
 - (IBAction)shareViaTwitter:(id)sender {
 }
 - (IBAction)shareViaMail:(id)sender {
+    DLog(@"Log : Share via Mail clicked");
 }
 
 @end

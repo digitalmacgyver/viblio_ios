@@ -16,6 +16,10 @@ NSString *const uploadComplete = @"com.viblio.app : uploadComplete";
 NSString * const uploadVideoPaused = @"com.viblio.app : uploadVideoPaused";
 NSString *const playVideo = @"com.viblio.app : playVideo";
 NSString * const stopVideo = @"com.viblio.app : stopVideo";
+NSString * const showingSharingView = @"com.viblio.app : showSharingView";
+NSString * const removeSharingView = @"com.viblio.app : removeSharingView";
+NSString * const showListSharingVw = @"com.viblio.app : showListSharingView";
+NSString * const removeListSharinVw = @"com.viblio.app : removeListSharingView";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {

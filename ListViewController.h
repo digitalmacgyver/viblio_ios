@@ -14,6 +14,7 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segment;
 @property (weak, nonatomic) IBOutlet UITableView *listView;
 
+@property (nonatomic, strong) listTableCell *listCell;
 @property (nonatomic, strong) NSMutableDictionary *address,*dateStamp, *faceIndexes;
 
 @end

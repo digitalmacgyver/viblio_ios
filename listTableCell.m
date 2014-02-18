@@ -27,9 +27,23 @@
     // Configure the view for the selected state
 }
 
+
+- (IBAction)TwitterSharingClicked:(id)sender {
+}
+
+- (IBAction)FBSharingClicked:(id)sender {
+}
+
+- (IBAction)GoogleSharingClicked:(id)sender {
+}
+
 - (IBAction)btnPlayClicked:(id)sender {
     [self playMovieinFullScreen:NO];
 }
+
+- (IBAction)MailSharingClicked:(id)sender {
+}
+
 
 // this enables you to handle multiple recognizers on single view
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -166,16 +180,46 @@
     DLog(@"Load State: %@", loadState.length > 0 ? [loadState substringFromIndex:3] : @"N/A");
 }
 
+- (IBAction)sharingVideoClicked:(id)sender {
+    DLog(@"Log : Sharing button clicked...");
+    
+    UISwipeGestureRecognizer *recognizer;
+    recognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(removeShareVw)];
+    [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
+    [self.vwShareBtns addGestureRecognizer:recognizer];
+    recognizer = nil;
+    
+    [self.vwShareBtns setHidden:NO];
+    [UIView animateWithDuration:0.5 animations:^{
+        CGRect shareFrame = self.vwShareBtns.frame;
+        shareFrame.origin.x = 88;
+        shareFrame.size.width = 232;
+        self.vwShareBtns.frame = shareFrame;
+    }];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:showListSharingVw object:self];
+}
 
 - (IBAction)imfThumbTapped:(id)sender {
     [self playMovieinFullScreen:YES];
-}
-
-- (IBAction)btnShareClicked:(id)sender {
 }
 
 - (IBAction)btnStopClicked:(id)sender {
     DLog(@"Log : Movie is to be stopped");
     [self myMovieFinishedCallback:nil];
 }
+
+
+-(void)removeShareVw
+{
+    DLog(@"Log : Removing list vw share");
+    [UIView animateWithDuration:0.5 animations:^{
+        
+        CGRect shareFrame = self.vwShareBtns.frame;
+        shareFrame.origin.x = 320;
+        shareFrame.size.width = 0;
+        self.vwShareBtns.frame = shareFrame;
+    }];
+}
+
 @end

@@ -17,6 +17,11 @@ extern NSString * const uploadComplete;
 extern NSString * const uploadVideoPaused;
 extern NSString * const playVideo;
 extern NSString * const stopVideo;
+extern NSString * const showingSharingView;
+extern NSString * const removeSharingView;
+
+extern NSString * const showListSharingVw;
+extern NSString * const removeListSharinVw;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 

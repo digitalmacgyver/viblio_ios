@@ -85,8 +85,34 @@
      {
          
      }];
-
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSharingScreen:) name:showingSharingView object:nil];
 }
+
+-(void)showSharingScreen : (NSNotification*)notification
+{
+    DLog(@"Log : Showing sharing screen...");
+    
+//    if( self.cell != nil )
+//    {
+//        [self.cell.shareVw removeFromSuperview];
+//        self.cell.shareVw = nil;
+//        
+//        
+//    }
+    
+    VideoCell *cell = (VideoCell*)notification.object;
+    if( self.cell.btnShare.tag != cell.btnShare.tag )
+    {
+        DLog(@"Log : Remove the previous sharing screen");
+        [self.cell handleRightSwipe:self.cell];
+       // [[NSNotificationCenter defaultCenter] postNotificationName:removeSharingView object:nil];
+//        [self.cell.shareVw removeFromSuperview];
+//        self.cell.shareVw = nil;
+    }
+    self.cell = cell; //(VideoCell*)notification.object;
+}
+
 
 -(void)dealloc
 {
@@ -242,6 +268,11 @@
 //    }];
 }
 
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -268,50 +299,13 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 
     VideoCell *cell = (VideoCell*)[cv dequeueReusableCellWithReuseIdentifier:@"VideoStaticCell" forIndexPath:indexPath];
-//    cell.videoImage.image = nil;
-//   // DLog(@"LOG : filteredVideoList - %@", VCLIENT.filteredVideoList);
-//    DLog(@"Log : Asst details are - %@", VCLIENT.filteredVideoList[indexPath.row]);
-//    
-//    Videos *assetVideo = [DBCLIENT listTheDetailsOfObjectWithURL:[[VCLIENT.filteredVideoList[indexPath.row] defaultRepresentation] url].absoluteString];
-//    cell.videoImage.image =  [UIImage imageWithCGImage:[VCLIENT.filteredVideoList[indexPath.row] thumbnail]];
-//    cell.video = [DBCLIENT listTheDetailsOfObjectWithURL:[[VCLIENT.filteredVideoList[indexPath.row] defaultRepresentation] url].absoluteString];
-//    cell.asset = VCLIENT.filteredVideoList[indexPath.row];
-//    
-//    if( [assetVideo.sync_status  isEqual: @(0)] && !APPMANAGER.activeSession.autoSyncEnabled.integerValue )
-//    {
-//        DLog(@"Log : Getting into this if condition");
-//        [cell.vwUpload setHidden:NO];
-//    }
-//    else
-//    {
-//        DLog(@"Log : Getting into else condition");
-//        [cell.vwUpload setHidden:YES];
-//    }
-    //
     cell.btnShare.tag = indexPath.row;
-    
-//    CGRect shareFrame = cell.vwShare.frame;
-//    shareFrame.origin.x = cell.frame.origin.x + cell.frame.size.width;
-//    cell.vwShare.frame = shareFrame;
     
     if( indexPath.row < VCLIENT.cloudVideoList.count )
     {
         cell.video = [VCLIENT.cloudVideoList objectAtIndex:indexPath.row];
-
-//        [ViblioHelper downloadImageWithURLString:cell.video.url completion:^(UIImage *image, NSError *error)
-//        {
-//            cell.videoImage.image = image;
-//            cell.videoImage.contentMode = UIViewContentModeScaleAspectFill;
-//        }];
-        
-        // If scrolled stop movie player in thumbnail mode
-//        if( cell.moviePlayer != nil )
-//        {
-//            [cell.moviePlayer.view removeFromSuperview];
-//            cell.moviePlayer = nil;
-//            
-            [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
-//        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:cell selector:@selector(handleRightSwipe:) name:removeSharingView object:nil];
         
         [APPCLIENT hasAMediaFileBeenSharedByTheUSerWithUUID:cell.video.uuid success:^(BOOL isShared)
         {
@@ -325,20 +319,16 @@
         }];
         
         [cell.videoImage setImageWithURL:[NSURL URLWithString:cell.video.url]];
-        //cell.videoImage = [self getScaledImage:cell.videoImage.image];
-        //[cell addSubview:[self getScaledImage:cell.videoImage.image]];
         
-        if( self.cell != nil &&  (self.indexClicked == indexPath.row) )
-        {
-            DLog(@"Log : Getting in... %ld -- %ld", (long)self.cell.btnShare.tag, (long)indexPath.row);
-            [cell.vwShare setHidden:NO];
-            [cell.vwPlayShare setHidden:YES];
-        }
-        else
-        {
-            [cell.vwShare setHidden:YES];
-            [cell.vwPlayShare setHidden:NO];
-        }
+//        if( self.cell != nil &&  (self.indexClicked == indexPath.row) )
+//        {
+//            DLog(@"Log : Getting in... %ld -- %ld", (long)self.cell.btnShare.tag, (long)indexPath.row);
+//            [cell.vwPlayShare setHidden:YES];
+//        }
+//        else
+//        {
+//            [cell.vwPlayShare setHidden:NO];
+//        }
     }
     
     if( (indexPath.row == VCLIENT.cloudVideoList.count-1) && VCLIENT.totalRecordsCount > VCLIENT.cloudVideoList.count )
@@ -346,7 +336,6 @@
         DLog(@"Log : Lazy load next set of records...");
         [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d",(int)((indexPath.row+1)/ROW_COUNT.integerValue)+1] rows:ROW_COUNT success:^(NSMutableArray *result)
          {
-             //NSArray *res = [NSArray arrayWithArray:result];
              VCLIENT.cloudVideoList = [[VCLIENT.cloudVideoList arrayByAddingObjectsFromArray:result ] mutableCopy];
              [self.videoList reloadData];
          }failure:^(NSError *error)
@@ -358,175 +347,21 @@
     return cell;
 }
 
-//
-//-(void)prepa
-//
-
-//- (UIImage *)image:(UIImage*)originalImage scaledToSize:(CGSize)size
-//{
-//    //avoid redundant drawing
-//    if (CGSizeEqualToSize(originalImage.size, size))
-//    {
-//        return originalImage;
-//    }
-//    
-//    //create drawing context
-//    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0f);
-//    
-//    //draw
-//    [originalImage drawInRect:CGRectMake(0.0f, 0.0f, size.width, size.height)];
-//    
-//    //capture resultant image
-//    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-//    UIGraphicsEndImageContext();
-//    
-//    //return image
-//    return image;
-//}
-
-
--(UIImageView*)getScaledImage :(UIImage*)image
-{
-    @try {
-        UIImageView *scaledImageView = [[UIImageView alloc] init];
-        CGRect scaledImageFrame;
-        scaledImageFrame.origin.x = 0;
-        scaledImageFrame.origin.y = 0;
-        
-//        if( image.size.width < 160 )
-//        {
-            scaledImageFrame.size.width = 160;
-            scaledImageFrame.size.height = ( (160 - image.size.width) * (9/16) ) + image.size.height;
-//        }
-//        else
-//        {
-//            scaledImageFrame.size.width = 320;
-//            scaledImageFrame.size.height = ( 320 * ( image.size.height  / image.size.width ) );
-//        }
-        scaledImageView.image = image;
-        scaledImageView.frame = scaledImageFrame;
-        return scaledImageView;
-    }
-    @catch (NSException *exception) {
-        return nil;
-    }
-    @finally {
-    }
-}
-
-
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-//    DLog(@"Item selected at index path - %d", indexPath.row);
-//    DLog(@"item at index path is - %@", VCLIENT.filteredVideoList[indexPath.row]);
-}
-//
-
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return YES;
 }
 
-- (IBAction)leftSwipeDetected:(id)sender {
-    
-    VideoCell *cell = (VideoCell*)sender;
-    DLog(@"Log : Left swipe detected on cell at index - %d", cell.btnShare.tag);
-}
-
-
-- (IBAction)rightSwipeDetected:(id)sender {
-    
-    VideoCell *cell = (VideoCell*)sender;
-    DLog(@"Log : Right swipe detected on cell at index - %d", cell.btnShare.tag);
-}
-
-
-- (IBAction)playClicked:(id)sender {
-}
-
-
-- (IBAction)shareClicked:(id)sender {
-
-    UIButton *btnClicked = (UIButton*)sender;
-    DLog(@"Log : The item clicked is at index - %d", btnClicked.tag);
-    NSIndexPath *path = [NSIndexPath indexPathForRow:btnClicked.tag   inSection:0];
-    
-    
-    if( self.cell == nil )
-    {
-        self.indexClicked = btnClicked.tag;
-        self.cell = (VideoCell*)[self.videoList cellForItemAtIndexPath:path];
-        [self.cell.vwShare setHidden:NO];
-        [self.cell.vwPlayShare setHidden:YES];
-    }
-    else
-        DLog(@"Log : Focus already exists on a different cell...");
-    
-    
-//    int origin = 160;
-//    if( (btnClicked.tag % 2) != 0 )
-//    {
-//        origin = 320;
-//    }
-//        
-//    UIView *shareView = [[UIView alloc]initWithFrame:CGRectMake(origin , cell.frame.origin.y, 160, cell.frame.size.height)];
-//    shareView.backgroundColor = [UIColor redColor]; //[UIColor colorWithRed:0 green:0 blue:0 alpha:0.75];
-//    [cell addSubview:shareView];
-    
-//    CGRect shareFrame = cell.vwShare.frame;
-//    shareFrame.origin.x = cell.frame.origin.x + cell.frame.size.width;
-//    DLog(@"Log : The origin of share frame is - %lf", shareFrame.origin.x);
-//    cell.vwShare.frame = shareFrame;
-    
+//- (IBAction)leftSwipeDetected:(id)sender {
 //    
-//    [UIView animateWithDuration:1 animations:^{
-//    
-//        CGRect shareFrame = cell.vwShare.frame;
-//        shareFrame.origin.x = cell.frame.origin.x;
-//        cell.vwShare.frame = shareFrame;
-//        
-//    }];
-    
-}
-
-
-
-//- (UIImage*)loadImage : (ALAsset *)videoAsset {
-//    
-//    DLog(@"Log : URL obtained is - %@", videoAsset.defaultRepresentation.url.absoluteString);
-////    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoAsset.defaultRepresentation.url options:nil];
-////    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-////    NSError *err = NULL;
-////    CMTime time = CMTimeMake(1, 60);
-////    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-////    DLog(@"err==%@, imageRef==%@", err, imgRef);
-////    
-////    return [[UIImage alloc] initWithCGImage:imgRef];
+//    VideoCell *cell = (VideoCell*)sender;
+//    DLog(@"Log : Left swipe detected on cell at index - %d", cell.btnShare.tag);
+//}
 //
-//    return [UIImage imageNamed:@"share.png"];
+//
+//- (IBAction)rightSwipeDetected:(id)sender {
 //    
-//}
-
-
-//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-//    
-//    DLog(@"Being called now");
-//    // 2
-////    CGSize retval = photo.thumbnail.size.width > 0 ? photo.thumbnail.size : CGSizeMake(100, 100);
-////    retval.height += 35; retval.width += 35; return retval;
-//    CGSize retVal = CGSizeMake(155, 142);
-//    return retVal;
-//}
-
-//- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-//{
-//    return 10; // This is the minimum inter item spacing, can be more
-//}
-
-
-//// 3
-//- (UIEdgeInsets)collectionView:
-//(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-//    return UIEdgeInsetsMake(50, 20, 50, 20);
+//    VideoCell *cell = (VideoCell*)sender;
+//    DLog(@"Log : Right swipe detected on cell at index - %d", cell.btnShare.tag);
 //}
 
 @end

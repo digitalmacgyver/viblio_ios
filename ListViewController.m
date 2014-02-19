@@ -32,15 +32,31 @@
     self.address = [[NSMutableDictionary alloc]init];
     self.dateStamp = [[NSMutableDictionary alloc]init];
     self.faceIndexes = [[NSMutableDictionary alloc]init];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOtherSharingViews:) name:showListSharingVw object:nil];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOtherSharingViews:) name:showListSharingVw object:nil];
+    
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showContacts:) name:showContactsScreen object:nil];
+    
+    if( APPMANAGER.listVideos != nil && APPMANAGER.listVideos.count > 0 )
+    {
+        [APPCLIENT getListOfSharedWithMeVideos:^(NSArray *sharedList)
+        {
+            APPMANAGER.listVideos = sharedList;
+            [self.listView reloadData];
+        }failure:^(NSError *error)
+        {
+            DLog(@"Log : Could not load list of videos.. ");
+        }];
+    }
 }
 
 -(void)removeOtherSharingViews : (NSNotification*)notification
 {
+    DLog(@"Log : Obtaning the list...");
     listTableCell *list = (listTableCell*)notification.object;
     
     if( self.listCell != nil && (self.listCell.btnShare.tag != list.btnShare.tag) )
@@ -56,7 +72,7 @@
     self.address = nil;
     self.dateStamp = nil;
     self.faceIndexes = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    //[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -95,14 +111,17 @@
     //[cell.btnShare setHidden:NO];
     cell.lblInfo.text = nil;
 
-    if( self.listCell != nil && self.listCell.btnShare.tag == indexPath.row )
-        [cell.vwShareBtns setHidden:NO];
-    else
-        [cell.vwShareBtns setHidden:YES];
+//    DLog(@"Log : The values are - %d - %d", self.listCell.btnShare.tag, indexPath.row);
+//    if( self.listCell != nil && self.listCell.btnShare.tag == indexPath.row )
+//    {
+//        [cell.vwShareBtns setHidden:NO];
+//    }
+//    else
+//        [cell.vwShareBtns setHidden:YES];
     
     [[NSNotificationCenter defaultCenter] addObserver:cell selector:@selector(removeShareVw) name:removeListSharinVw object:nil];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
+   // [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
     if( (indexPath.row == VCLIENT.cloudVideoList.count-1) && VCLIENT.totalRecordsCount > VCLIENT.cloudVideoList.count )
     {
         DLog(@"Log : Lazy load next set of records...");

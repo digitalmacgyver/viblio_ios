@@ -20,6 +20,8 @@ NSString * const showingSharingView = @"com.viblio.app : showSharingView";
 NSString * const removeSharingView = @"com.viblio.app : removeSharingView";
 NSString * const showListSharingVw = @"com.viblio.app : showListSharingView";
 NSString * const removeListSharinVw = @"com.viblio.app : removeListSharingView";
+NSString * const showContactsScreen = @"com.viblio.app : showContactsScreen";
+NSString * const removeContactsScreen = @"com.viblio.app : removeContactsScreen";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {

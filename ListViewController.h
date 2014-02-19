@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "listTableCell.h"
+#import "ECSlidingViewController.h"
 
 @interface ListViewController : UIViewController
 

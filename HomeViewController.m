@@ -49,6 +49,7 @@
     {
         [ViblioHelper displayAlertWithTitle:@"No Videos" messageBody:@"No videos found in the camera roll to upload" viewController:self cancelBtnTitle:@"OK"];
     }
+   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restoreListView) name:removeContactsScreen object:nil];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -87,6 +88,36 @@
      }];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSharingScreen:) name:showingSharingView object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showContacts:) name:showContactsScreen object:nil];
+}
+
+//-(void)restoreListView
+//{
+//    DLog(@"Log : Notification received.. for restoring list view..");
+//    [self setSegmentImages:NO];
+//    
+//    if(self.list != nil)
+//    {
+//        self.list = nil;
+//    }
+//    
+//    DLog(@"Log : List object does not exist... Create it...");
+//    self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"listDash")];
+//    self.list.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
+//    
+//    [self.view addSubview:self.list.view];
+//}
+
+-(void)showContacts:(NSNotification*)notification
+{
+    DLog(@"Log : Have to show the contacts screen now..");
+    
+    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+    DLog(@"Log : The parent class is - %@", NSStringFromClass([self.slidingViewController.topViewController class]));
+    
+ //   [self.list.view removeFromSuperview];
+    
+   // [self.navigationController presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES completion:nil];
 }
 
 -(void)showSharingScreen : (NSNotification*)notification
@@ -175,13 +206,10 @@
             {
                 self.list = nil;
             }
-            
-//            if( self.list == nil )
-//            {
+
                 DLog(@"Log : List object does not exist... Create it...");
                 self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"listDash")];
                 self.list.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
-//            }
             
             [self.view addSubview:self.list.view];
             break;
@@ -199,34 +227,7 @@
         self.sharedList.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
     }
     [self.view addSubview:self.sharedList.view];
-    
-    //[ViblioHelper displayAlertWithTitle:@"Progress" messageBody:@"Developem" viewController:<#(UIViewController *)#> cancelBtnTitle:<#(NSString *)#>];
-    
-//    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
-//     {
-//         DLog(@"Log : The count obtained is - %d", count);
-//     }failure:^(NSError *error)
-//     {
-//         DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
-//     }];
-//
-//    
-//    if( self.list != nil )
-//    {
-//        [self.list.view removeFromSuperview];
-//    }
-    
     [self.segment setHidden:YES];
-    //self.navigationItem.rightBarButtonItem = nil;
-    
-//    DLog(@"Log : Coming here at least for hoem view controller shared with me");
-//    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
-//    {
-//        DLog(@"Log : The count obtained is - %d", count);
-//    }failure:^(NSError *error)
-//    {
-//        DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
-//    }];
 }
 
 - (IBAction)MyViblioClicked:(id)sender {
@@ -238,39 +239,12 @@
         [self.sharedList.view removeFromSuperview];
         self.sharedList = nil;
     }
-//    if( self.navigationItem.rightBarButtonItem == nil )
-//    {
-//        DLog(@"Log : Entering into bar button nil condition");
-//        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.segment];
-//    }
-}
-
-- (IBAction)stopMe:(id)sender {
-    [APPCLIENT invalidateFileUploadTask];
-}
-
-- (IBAction)touchMeClicked:(id)sender {
-    
-    DLog(@"LOG : Touch Me detected");
-  
-//    [APPCLIENT invalidateFileUploadTask];
-//    [DBCLIENT updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=81A618BF-5E75-4EB9-B186-F247CF0EB4B8&ext=MOV" syncStatus:0];
-//    [DBCLIENT updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=3CB0B4EA-D6E0-4454-942D-4FAD79660304&ext=MOV" syncStatus:0];
-    
-    [DBCLIENT listAllEntitiesinTheDB];
-//    [VCLIENT videoUploadIntelligence];
-//    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
-//    {
-//        DLog(@"Log : The count obtained is - %d", count);
-//    }failure:^(NSError *error)
-//    {
-//        
-//    }];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restoreListView) name:removeContactsScreen object:nil];
 }
 
 - (void)didReceiveMemoryWarning

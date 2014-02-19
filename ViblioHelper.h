@@ -23,6 +23,9 @@ extern NSString * const removeSharingView;
 extern NSString * const showListSharingVw;
 extern NSString * const removeListSharinVw;
 
+extern NSString * const showContactsScreen;
+extern NSString * const removeContactsScreen;
+
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 
 +(void)displayAlertWithTitle:(NSString*)titleString

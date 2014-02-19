@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AddressBook/AddressBook.h>
 
 @interface listTableCell : UITableViewCell
 
@@ -37,6 +38,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnGoogle;
 @property (weak, nonatomic) IBOutlet UIButton *btnMail;
 
+@property NSString * addressBookNum;
 
 -(void)removeShareVw;
 - (IBAction)sharingVideoClicked:(id)sender;

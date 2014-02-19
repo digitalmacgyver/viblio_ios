@@ -123,6 +123,9 @@
 		85F8B485188AA89600E92380 /* play_img.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 85F8B483188AA89600E92380 /* play_img.jpeg */; };
 		85F8B488188AAC9D00E92380 /* VideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B487188AAC9D00E92380 /* VideoCell.m */; };
 		85F8B48A188ABD9E00E92380 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85F8B489188ABD9E00E92380 /* AVFoundation.framework */; };
+		CB65D4B718B3A7A000A69B95 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */; };
+		CB65D4B918B3EA7800A69B95 /* selected_old@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB65D4B818B3EA7800A69B95 /* selected_old@2x.png */; };
+		CB65D4BB18B3ECFA00A69B95 /* selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB65D4BA18B3ECFA00A69B95 /* selected@2x.png */; };
 		CB9AF88F18AA442900E83A7F /* cloudVideos.m in Sources */ = {isa = PBXBuildFile; fileRef = CB9AF88E18AA442900E83A7F /* cloudVideos.m */; };
 		CB9F191918ACD516009398F6 /* SharedVideos.m in Sources */ = {isa = PBXBuildFile; fileRef = CB9F191818ACD516009398F6 /* SharedVideos.m */; };
 		CB9F191B18ACF037009398F6 /* icon_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9F191A18ACF037009398F6 /* icon_arrow@2x.png */; };
@@ -317,6 +320,10 @@
 		85F8B486188AAC9D00E92380 /* VideoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoCell.h; sourceTree = "<group>"; };
 		85F8B487188AAC9D00E92380 /* VideoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoCell.m; sourceTree = "<group>"; };
 		85F8B489188ABD9E00E92380 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		CB65D4B518B3A7A000A69B95 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
+		CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsViewController.m; sourceTree = "<group>"; };
+		CB65D4B818B3EA7800A69B95 /* selected_old@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selected_old@2x.png"; sourceTree = "<group>"; };
+		CB65D4BA18B3ECFA00A69B95 /* selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selected@2x.png"; sourceTree = "<group>"; };
 		CB9AF88D18AA442900E83A7F /* cloudVideos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cloudVideos.h; sourceTree = "<group>"; };
 		CB9AF88E18AA442900E83A7F /* cloudVideos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cloudVideos.m; sourceTree = "<group>"; };
 		CB9F191718ACD516009398F6 /* SharedVideos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedVideos.h; sourceTree = "<group>"; };
@@ -525,6 +532,8 @@
 				85F70A951898E79900696E1E /* FeedBackViewController.m */,
 				85F70AB8189930A900696E1E /* TellAFriendViewController.h */,
 				85F70AB9189930A900696E1E /* TellAFriendViewController.m */,
+				CB65D4B518B3A7A000A69B95 /* ContactsViewController.h */,
+				CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */,
 			);
 			name = Controllers;
 			path = ..;
@@ -574,6 +583,8 @@
 		2AD637F41886CAB400012A86 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				CB65D4B818B3EA7800A69B95 /* selected_old@2x.png */,
+				CB65D4BA18B3ECFA00A69B95 /* selected@2x.png */,
 				85ED800E188FA2E500CEAE85 /* Commons */,
 				2AD637F71886CAFF00012A86 /* iPhone3.5inch */,
 				2AD637F51886CABB00012A86 /* iPhone4inch */,
@@ -993,12 +1004,14 @@
 			files = (
 				85ED7FFF188EBB8C00CEAE85 /* Aleo-Bold.otf in Resources */,
 				85ED8007188EEBC500CEAE85 /* Default-568h@2x.png in Resources */,
+				CB65D4B918B3EA7800A69B95 /* selected_old@2x.png in Resources */,
 				85F70AC2189A56F700696E1E /* icon_share_grid@2x.png in Resources */,
 				85ED8000188EBB8C00CEAE85 /* Aleo-BoldItalic.otf in Resources */,
 				CBA770F518AE56DD00240D49 /* LICENSE in Resources */,
 				85ED8001188EBB8C00CEAE85 /* Aleo-Italic.otf in Resources */,
 				85F70A9A18992B6C00696E1E /* feedback@2x.png in Resources */,
 				85ED8002188EBB8C00CEAE85 /* Aleo-Light.otf in Resources */,
+				CB65D4BB18B3ECFA00A69B95 /* selected@2x.png in Resources */,
 				85ED80441891696000CEAE85 /* bttn_on@2x.png in Resources */,
 				85F70A4F1897B76300696E1E /* README.md in Resources */,
 				85ED8034189130E300CEAE85 /* icon_cancel@2x.png in Resources */,
@@ -1150,6 +1163,7 @@
 				85F70A4D1897B76300696E1E /* iCarousel.m in Sources */,
 				CB9F192018ACF386009398F6 /* SharedViewController.m in Sources */,
 				85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */,
+				CB65D4B718B3A7A000A69B95 /* ContactsViewController.m in Sources */,
 				85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */,
 				2AD637D11886566A00012A86 /* Info.m in Sources */,
 				2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */,

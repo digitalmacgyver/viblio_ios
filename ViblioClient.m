@@ -866,7 +866,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                    @"y" : @"60"
                                    };
 
-    NSString *path = [NSString stringWithFormat:@"/services/na/avatar?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]]; //@"/services/na/avatar?uuid=%@",uuid];  //@"/services/user/avatar?uuid=%@",uuid];
+    NSString *path = [NSString stringWithFormat:@"/services/na/avatar?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
     
     NSMutableURLRequest* request = [self requestWithMethod:@"GET" path:path parameters:nil];
     [request setValue: @"image/png"  forHTTPHeaderField:@"Content-Type"];
@@ -877,23 +877,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         if (!err && data) {
             DLog(@"Log : The data obtained is - %@", data);
             success([UIImage imageWithData:data]);
-//            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//            NSString *documents = [paths objectAtIndex:0];
-//            NSString *finalPath = [documents stringByAppendingPathComponent:@"myImageName.png"];
-//            [data writeToFile:finalPath atomically:YES];
         }
     }];
-    
-//    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
-//                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
-//                                          {
-//                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
-//                                              success(JSON[@"url"]);
-//                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
-//                                          {
-//                                              failure(error);
-//                                          }];
-//    [op start];
 }
 
 
@@ -1000,4 +985,43 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [op start];
 }
 
+
+-(AFJSONRequestOperation*)sharingToUsersWithSubject : (NSString*)subject
+                            body : (NSString*)body
+                          fileId : (NSString*)mid
+                            success : (void(^)(BOOL hasBeenShared))success
+               failure:(void(^)(NSError *error))failure
+{
+    NSString *emailList = [APPMANAGER.contacts componentsJoinedByString:@","]; //[[NSString alloc]init];
+    //emailList = [emailList str];
+    __block AFJSONRequestOperation *op;
+    if( APPMANAGER.contacts != nil && APPMANAGER.contacts.count > 0 )
+    {
+        NSDictionary *queryParams = @{
+                                        @"mid" : mid,
+                                        @"subject" : subject,
+                                        @"body" : body,
+                                        @"list" : emailList
+                                     };
+        
+        NSString *path = [NSString stringWithFormat:@"/services/mediafile/add_share?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
+        NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+        [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+        [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+        
+        op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                              ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                              {
+                                                  DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                                  failure(nil); //success(YES);
+                                              } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                              {
+                                                  failure(error);
+                                              }];
+        [op start];
+    }
+    else
+        failure([ViblioHelper getCustomErrorWithMessage:@"No contacts found in Address Book" withCode:1003]);
+    return op;
+}
 @end

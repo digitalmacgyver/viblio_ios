@@ -36,7 +36,7 @@
     self.lblEmailId.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     
     self.lblSyncNotInProgress.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
-    _menuSections = @[@"Home", @"Settings", @"Help/FAQ", @"Tell A Friend", @"Give Feedback", @"Legal & Privacy", @"Rate Us In App Store"];
+    _menuSections = @[@"Home", @"Settings", @"Tell A Friend", @"Give Feedback", @"Terms of use", @"Rate Us In App Store"];
 	// Do any additional setup after loading the view.
 }
 

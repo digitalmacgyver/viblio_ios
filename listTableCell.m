@@ -32,6 +32,7 @@
 }
 
 - (IBAction)FBSharingClicked:(id)sender {
+    DLog(@"Log : Sharing via FB clicked..");
 }
 
 - (IBAction)GoogleSharingClicked:(id)sender {

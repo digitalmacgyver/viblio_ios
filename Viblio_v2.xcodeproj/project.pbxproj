@@ -966,7 +966,6 @@
 				ORGANIZATIONNAME = "Dunty Vinay Raj";
 				TargetAttributes = {
 					2A22F3DE187AAD8E002F71F8 = {
-						DevelopmentTeam = LN3X5X4K3W;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 0;
@@ -1304,8 +1303,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Prasanna Gopinath (WCYTD2ZTKZ)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Prasanna Gopinath (WCYTD2ZTKZ)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Matthew Hayward (C9FAXL3LGX)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Matthew Hayward (C9FAXL3LGX)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Viblio_v2/Viblio_v2-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1348,7 +1347,7 @@
 					Social,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "579071FB-E480-4D6F-97C0-9E759ECE9630";
+				PROVISIONING_PROFILE = "85113D8E-F94A-47F0-BBA2-1996B8C44800";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
@@ -1362,8 +1361,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Prasanna Gopinath (WCYTD2ZTKZ)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Prasanna Gopinath (WCYTD2ZTKZ)";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Matthew Hayward (C9FAXL3LGX)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Matthew Hayward (C9FAXL3LGX)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Viblio_v2/Viblio_v2-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1405,7 +1404,7 @@
 					Social,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "579071FB-E480-4D6F-97C0-9E759ECE9630";
+				PROVISIONING_PROFILE = "85113D8E-F94A-47F0-BBA2-1996B8C44800";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;

@@ -63,5 +63,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 
 + (void)downloadImageWithURLString:(NSString *)urlString completion:(void (^)(UIImage *image, NSError *error))completion;
 +(NSArray*)getDateTimeStampToReadableFormat : (NSString*)dateStamp;
++ (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2;
++(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList;
 
 @end

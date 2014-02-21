@@ -21,9 +21,11 @@
 @property (nonatomic) BOOL turnOffUploads;
 @property (nonatomic, strong) NSMutableArray *contacts;
 @property (nonatomic, strong) cloudVideos *video;
+@property (nonatomic, strong) NSDictionary *resultCategorized;
 
 + (AppManager *)sharedClient;
 -(NSArray*)getSettings;
 -(NSDictionary*)getSessionKeysAndValues;
+-(NSArray*)getSectionsList;
 
 @end

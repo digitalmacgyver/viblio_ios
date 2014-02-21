@@ -70,10 +70,12 @@
          }
          
          VCLIENT.cloudVideoList = result;
+         VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
+         
          [self.videoList reloadData];
      }failure:^(NSError *error)
      {
-         
+         [ViblioHelper displayAlertWithTitle:@"Error" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
      }];
 
     
@@ -91,57 +93,18 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showContacts:) name:showContactsScreen object:nil];
 }
 
-//-(void)restoreListView
-//{
-//    DLog(@"Log : Notification received.. for restoring list view..");
-//    [self setSegmentImages:NO];
-//    
-//    if(self.list != nil)
-//    {
-//        self.list = nil;
-//    }
-//    
-//    DLog(@"Log : List object does not exist... Create it...");
-//    self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"listDash")];
-//    self.list.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
-//    
-//    [self.view addSubview:self.list.view];
-//}
-
 -(void)showContacts:(NSNotification*)notification
 {
-    DLog(@"Log : Have to show the contacts screen now..");
-    
     [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
     DLog(@"Log : The parent class is - %@", NSStringFromClass([self.slidingViewController.topViewController class]));
-    
- //   [self.list.view removeFromSuperview];
-    
-   // [self.navigationController presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES completion:nil];
 }
 
 -(void)showSharingScreen : (NSNotification*)notification
 {
-    DLog(@"Log : Showing sharing screen...");
-    
-//    if( self.cell != nil )
-//    {
-//        [self.cell.shareVw removeFromSuperview];
-//        self.cell.shareVw = nil;
-//        
-//        
-//    }
-    
     VideoCell *cell = (VideoCell*)notification.object;
     if( self.cell.btnShare.tag != cell.btnShare.tag )
-    {
-        DLog(@"Log : Remove the previous sharing screen");
         [self.cell handleRightSwipe:self.cell];
-       // [[NSNotificationCenter defaultCenter] postNotificationName:removeSharingView object:nil];
-//        [self.cell.shareVw removeFromSuperview];
-//        self.cell.shareVw = nil;
-    }
-    self.cell = cell; //(VideoCell*)notification.object;
+    self.cell = cell;
 }
 
 
@@ -262,7 +225,7 @@
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
 
     DLog(@"LOG : Count being returned is - %d", VCLIENT.filteredVideoList.count);
-    return VCLIENT.cloudVideoList.count;
+    return VCLIENT.totalRecordsCount;
 }
 
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -293,16 +256,6 @@
         }];
         
         [cell.videoImage setImageWithURL:[NSURL URLWithString:cell.video.url]];
-        
-//        if( self.cell != nil &&  (self.indexClicked == indexPath.row) )
-//        {
-//            DLog(@"Log : Getting in... %ld -- %ld", (long)self.cell.btnShare.tag, (long)indexPath.row);
-//            [cell.vwPlayShare setHidden:YES];
-//        }
-//        else
-//        {
-//            [cell.vwPlayShare setHidden:NO];
-//        }
     }
     
     if( (indexPath.row == VCLIENT.cloudVideoList.count-1) && VCLIENT.totalRecordsCount > VCLIENT.cloudVideoList.count )
@@ -324,18 +277,5 @@
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return YES;
 }
-
-//- (IBAction)leftSwipeDetected:(id)sender {
-//    
-//    VideoCell *cell = (VideoCell*)sender;
-//    DLog(@"Log : Left swipe detected on cell at index - %d", cell.btnShare.tag);
-//}
-//
-//
-//- (IBAction)rightSwipeDetected:(id)sender {
-//    
-//    VideoCell *cell = (VideoCell*)sender;
-//    DLog(@"Log : Right swipe detected on cell at index - %d", cell.btnShare.tag);
-//}
 
 @end

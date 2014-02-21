@@ -13,5 +13,6 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tblSharedList;
 @property (nonatomic, strong) NSArray *sharedList;
+@property (nonatomic, strong) NSDictionary *resCategorizedList;
 
 @end

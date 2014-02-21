@@ -1892,20 +1892,21 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="center" id="Xsk-eT-xvK">
-                                <rect key="frame" x="10" y="0.0" width="300" height="568"/>
+                            <webView contentMode="scaleToFill" id="ViF-aL-9rH">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="textColor" red="0.87843137250000003" green="0.87843137250000003" blue="0.87843137250000003" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES"/>
+                                <connections>
+                                    <outlet property="delegate" destination="F0z-0W-ffh" id="Qmn-Hu-Svn"/>
+                                </connections>
+                            </webView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
-                        <outlet property="termsView" destination="Xsk-eT-xvK" id="gfC-RM-Xr0"/>
+                        <outlet property="wvTerms" destination="ViF-aL-9rH" id="WVc-8J-cOM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qxz-MF-gMz" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2010,35 +2011,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RSI-Ay-ZYb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1175" y="679"/>
-        </scene>
-        <!--Terms Of Use View Controller-->
-        <scene sceneID="qwc-VK-x1o">
-            <objects>
-                <viewController storyboardIdentifier="terms" id="9U5-aF-Oeg" customClass="TermsOfUseViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Ptj-i3-8rT">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="center" id="pQ5-xs-1N7">
-                                <rect key="frame" x="10" y="0.0" width="300" height="480"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <color key="textColor" red="0.87843137250000003" green="0.87843137250000003" blue="0.87843137250000003" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
-                        </subviews>
-                        <color key="backgroundColor" red="0.19215686269999999" green="0.20784313730000001" blue="0.26274509800000001" alpha="1" colorSpace="calibratedRGB"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
-                    <connections>
-                        <outlet property="termsView" destination="pQ5-xs-1N7" id="1dV-ff-zHJ"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ida-pX-EwS" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3173" y="679"/>
         </scene>
         <!--Home View Controller-->
         <scene sceneID="JBj-Y3-tnc">
@@ -3585,6 +3557,36 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sAf-zu-nSV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1545" y="-232"/>
+        </scene>
+        <!--Terms Of Use View Controller-->
+        <scene sceneID="t1t-br-kWS">
+            <objects>
+                <viewController storyboardIdentifier="terms" id="PeI-pm-pCy" customClass="TermsOfUseViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qzQ-mN-Egz">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="Qcb-xr-rFl">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <dataDetectorType key="dataDetectorTypes" phoneNumber="YES" link="YES"/>
+                                <connections>
+                                    <outlet property="delegate" destination="PeI-pm-pCy" id="HOw-6n-pdw"/>
+                                </connections>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
+                    <connections>
+                        <outlet property="wvTerms" destination="Qcb-xr-rFl" id="LyP-YN-hxv"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XNG-Eu-AEY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3188" y="679"/>
         </scene>
     </scenes>
     <resources>

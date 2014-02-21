@@ -16,5 +16,6 @@
 @property(nonatomic, strong) NSString *createdDate;
 @property(nonatomic, strong) NSString *ownerName;
 @property(nonatomic, strong) NSString *posterURL;
+@property(nonatomic, strong) NSString *sharedDate;
 
 @end

@@ -263,4 +263,120 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     return [months valueForKey:month];
 }
 
+// Function to find differece between two dates
+
++ (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2 {
+    NSUInteger unitFlags = NSDayCalendarUnit;
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *components = [calendar components:unitFlags fromDate:dt1 toDate:dt2 options:0];
+    return (int)([components day]);
+}
+
++(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList
+{
+    NSDate *curDate = [NSDate date];
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    
+    [result setValue:@[@"Today"] forKey:@"SectionA"];
+    [result setValue:@[@"This Week"] forKey:@"SectionB"];
+    [result setValue:@[@"This Month"] forKey:@"SectionC"];
+    [result setValue:@[@"This Year"] forKey:@"SectionD"];
+    [result setValue:@[@"Older"] forKey:@"SectionE"];
+    
+    for( int i=0; i < videoList.count; i++ )
+    {
+        DLog(@"Log : Result dictionary is - %@", result);
+        
+        id video = videoList[i];
+        NSDate *videoDate;
+        NSString *dateStr;
+
+        // 2014-02-07 14:21:00
+        // 2014-01-30 18:20:34
+        
+        DLog(@"Log : The class of object is - %@", NSStringFromClass([video class]));
+        if( [video isKindOfClass:[cloudVideos class]] )
+            dateStr = ((cloudVideos*)video).createdDate;
+        else
+            dateStr = ((SharedVideos*)video).sharedDate;
+        
+        NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+        [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        videoDate = [dateFormat dateFromString:dateStr];
+        dateFormat = nil;
+        dateStr = nil;
+        
+        NSDateComponents *videoDateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitWeekOfMonth | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:videoDate];
+        
+        NSDateComponents *currentDateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitWeekOfMonth |NSCalendarUnitMonth | NSCalendarUnitYear fromDate:curDate];
+        
+        DLog(@"Log : Video week - %d, current week - %d", videoDateComponents.weekOfMonth, currentDateComponents.weekOfMonth);
+        
+        if( videoDateComponents.year == currentDateComponents.year )
+        {
+            if( videoDateComponents.month == currentDateComponents.month )
+            {
+                if( videoDateComponents.weekOfMonth == currentDateComponents.weekOfMonth )
+                {
+                    if( videoDateComponents.day == currentDateComponents.day )
+                        result = [self addObjectToArray:@"SectionA" :video toRsult:result];
+                    else
+                        result = [self addObjectToArray:@"SectionB" :video toRsult:result];
+                }
+                else
+                    result = [self addObjectToArray:@"SectionC" :video toRsult:result];
+            }
+            else
+                result = [self addObjectToArray:@"SectionD" :video toRsult:result];
+        }
+        else
+            result = [self addObjectToArray:@"SectionE" :video toRsult:result];
+        
+//        if( videoDateComponents.day == currentDateComponents.day )
+//            result = [self addObjectToArray:@"Today" :video toRsult:result];
+//        else if (videoDateComponents.weekOfMonth == currentDateComponents.weekOfMonth)
+//            result = [self addObjectToArray:@"This Week" :video toRsult:result];
+//        else if (videoDateComponents.month == currentDateComponents.month)
+//            result = [self addObjectToArray:@"This Month" :video toRsult:result];
+//        else if (videoDateComponents.year == currentDateComponents.year)
+//            result = [self addObjectToArray:@"This Year" :video toRsult:result];
+//        else
+        
+        
+        videoDateComponents = nil;
+        currentDateComponents = nil;
+        
+        videoDate = nil;
+        video = nil;
+    }
+    
+    NSMutableArray *array = [NSMutableArray new];
+    for ( NSString *category in result )
+    {
+        if( ((NSArray*)result[category]).count <= 1 )
+           [array addObject:category]; //[result removeObjectForKey:category];
+    }
+    
+    DLog(@"Log : The result before for loop is - %@", result);
+    for( int i=0; i<array.count; i++ )
+    {
+        [result removeObjectForKey:array[i]];
+    }
+    
+    DLog(@"Log : The result is - %@", result);
+    
+    return result;
+}
+
++(NSMutableDictionary*)addObjectToArray : (NSString*)key :(id)obj toRsult : (NSMutableDictionary*)result
+{
+    NSMutableArray *arr = [[result valueForKey:key] mutableCopy];
+    DLog(@"Log : The object to be added is - %@", obj);
+    [arr addObject:obj];
+    [result setValue:arr forKey:key];
+//    [arr removeAllObjects];
+//    arr = nil;
+    return result;
+}
+
 @end

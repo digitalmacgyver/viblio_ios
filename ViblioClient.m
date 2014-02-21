@@ -673,6 +673,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
                                               DLog(@"Log : In success response callback - Terms and Conditions - %@", JSON);
+                                              success([JSON valueForKey:@"terms"]);
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
                                               failure(error);
@@ -832,6 +833,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                       SharedVideos *video = [[SharedVideos alloc]init];
                                                       NSDictionary *mediaObj = (NSDictionary*)[videoBySpecificOwner objectAtIndex:i];
                                                       video.createdDate = mediaObj[@"created_date"];
+                                                      video.sharedDate = mediaObj[@"shared_date"];
                                                       video.mediaUUID = mediaObj[@"uuid"];
                                                       video.viewCount = mediaObj[@"view_count"] ;
                                                       video.posterURL = mediaObj[@"views"][@"poster"][@"url"];

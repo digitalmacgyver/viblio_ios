@@ -26,8 +26,36 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+
+    
     [self performSelector:@selector(navigateToSignIn) withObject:nil afterDelay:1];
 	// Do any additional setup after loading the view.
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+//    __block NSArray *userResults; //= [DBCLIENT getUserDataFromDB];
+//    
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        userResults = [DBCLIENT getUserDataFromDB];
+//    });
+//    
+//    
+//    if( userResults != nil && userResults.count > 0 )
+//    {
+//        APPMANAGER.user = [userResults firstObject];
+//        [self performSegueWithIdentifier:(@"dashboardNav") sender:self];
+//        
+//        DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
+//        if([APPMANAGER.user.userID isValid])
+//            [VCLIENT videoUploadIntelligence];
+//    }
+//    else
+//    {
+//        DLog(@"Log : User session does not exist..");
+//        [self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"signInNav") sender:self];
+//    }
 }
 
 -(void)navigateToSignIn

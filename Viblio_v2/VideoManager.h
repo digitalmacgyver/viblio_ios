@@ -18,12 +18,14 @@
     __block int i, videosCount;
     double offset;
 }
-@property(nonatomic,retain)NSMutableArray *filteredVideoList;
+@property(nonatomic,retain)NSMutableArray *filteredVideoList, *cloudVideoList;
 
 @property(nonatomic, retain)NSMutableArray *chunks;
 @property(nonatomic,strong)ALAsset *asset;
 @property(nonatomic, strong)Videos *videoUploading;
 @property(nonatomic, assign)BOOL shouldProceedWithNextFile;
+@property(nonatomic, assign)NSInteger totalRecordsCount, pageCount;
+@property (nonatomic, retain)NSDictionary *resCategorized;
 
 + (VideoManager *)sharedClient;
 -(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success

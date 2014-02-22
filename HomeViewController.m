@@ -8,6 +8,9 @@
 
 #import "HomeViewController.h"
 
+//#define PAGE_COUNT @"01"
+#define ROW_COUNT @"100"
+
 @interface HomeViewController ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @end
@@ -38,8 +41,72 @@
     self.btnSharedWithMe.titleLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"list")];
     
-    [VCLIENT videoUploadIntelligence];
+    if( [DBCLIENT getTheCountOfRecordsInDB] > 0 )
+    {
+        [VCLIENT videoUploadIntelligence];
+    }
+    else
+    {
+        [ViblioHelper displayAlertWithTitle:@"No Videos" messageBody:@"No videos found in the camera roll to upload" viewController:self cancelBtnTitle:@"OK"];
+    }
+   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restoreListView) name:removeContactsScreen object:nil];
 }
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    
+    self.indexClicked = -1;
+    
+    // Get the list of videos in cloud and render them in the UI
+    // The fetched list of videos are mapped to the cloudVideoList model and are stored in an cloudList array in VCLIENT
+    
+    [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d", VCLIENT.pageCount] rows:ROW_COUNT success:^(NSMutableArray *result)
+     {
+         if( VCLIENT.cloudVideoList != nil )
+         {
+             DLog(@"Flushing the objects from cloud...");
+             [VCLIENT.cloudVideoList removeAllObjects];
+             VCLIENT.cloudVideoList = nil;
+         }
+         
+         VCLIENT.cloudVideoList = result;
+         VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
+         
+         [self.videoList reloadData];
+     }failure:^(NSError *error)
+     {
+         [ViblioHelper displayAlertWithTitle:@"Error" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
+     }];
+
+    
+    // Get the count of media files uploaded by the user as a reference to create the records and lazy load..
+    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
+     {
+         DLog(@"Log : The count obtained is - %d", count);
+         VCLIENT.totalRecordsCount = count;
+     }failure:^(NSError *error)
+     {
+         
+     }];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSharingScreen:) name:showingSharingView object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showContacts:) name:showContactsScreen object:nil];
+}
+
+-(void)showContacts:(NSNotification*)notification
+{
+    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+    DLog(@"Log : The parent class is - %@", NSStringFromClass([self.slidingViewController.topViewController class]));
+}
+
+-(void)showSharingScreen : (NSNotification*)notification
+{
+    VideoCell *cell = (VideoCell*)notification.object;
+    if( self.cell.btnShare.tag != cell.btnShare.tag )
+        [self.cell handleRightSwipe:self.cell];
+    self.cell = cell;
+}
+
 
 -(void)dealloc
 {
@@ -76,7 +143,9 @@
         self.btnSharedWithMe.backgroundColor = [ViblioHelper getVblRedColor];
         
         self.btnMyViblio.titleLabel.textColor = [ViblioHelper getVblGrayColor];
-        self.btnSharedWithMe.titleLabel.textColor = [UIColor whiteColor];
+        [self.btnSharedWithMe setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [self.btnSharedWithMe setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        //self.btnSharedWithMe.titleLabel.textColor = [UIColor greenColor];
     }
 }
 
@@ -90,17 +159,20 @@
             DLog(@"Log : Thumbnail view");
             [self setSegmentImages:YES];
             [self.list.view removeFromSuperview];
+            [self.videoList reloadData];
             break;
         case 1:
             DLog(@"Log : List View");
             [self setSegmentImages:NO];
             
-            if( self.list != nil )
+            if(self.list != nil)
             {
+                self.list = nil;
+            }
+
                 DLog(@"Log : List object does not exist... Create it...");
                 self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"listDash")];
-                self.list.view.frame = CGRectMake(0, 35, 320, self.view.frame.size.height - 35);
-            }
+                self.list.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
             
             [self.view addSubview:self.list.view];
             break;
@@ -112,64 +184,30 @@
 - (IBAction)sharedWithMeClicked:(id)sender {
         [self setBackGroundColorsForButtons:NO];
     
-    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
-     {
-         DLog(@"Log : The count obtained is - %d", count);
-     }failure:^(NSError *error)
-     {
-         DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
-     }];
-
-    
-    if( self.list != nil )
+    if( self.sharedList == nil )
     {
-        [self.list.view removeFromSuperview];
+        self.sharedList = (SharedViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"sharedList")];
+        self.sharedList.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
     }
-    
+    [self.view addSubview:self.sharedList.view];
     [self.segment setHidden:YES];
-    //self.navigationItem.rightBarButtonItem = nil;
-    
-//    DLog(@"Log : Coming here at least for hoem view controller shared with me");
-//    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
-//    {
-//        DLog(@"Log : The count obtained is - %d", count);
-//    }failure:^(NSError *error)
-//    {
-//        DLog(@"Log : Error call back with error - %@", [error localizedDescription]);
-//    }];
 }
 
 - (IBAction)MyViblioClicked:(id)sender {
     [self setBackGroundColorsForButtons:YES];
     [self.segment setHidden:NO];
-//    if( self.navigationItem.rightBarButtonItem == nil )
-//    {
-//        DLog(@"Log : Entering into bar button nil condition");
-//        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.segment];
-//    }
+    
+    if( self.sharedList != nil )
+    {
+        [self.sharedList.view removeFromSuperview];
+        self.sharedList = nil;
+    }
 }
 
-- (IBAction)stopMe:(id)sender {
-    [APPCLIENT invalidateFileUploadTask];
-}
-
-- (IBAction)touchMeClicked:(id)sender {
-    
-    DLog(@"LOG : Touch Me detected");
-  
-//    [APPCLIENT invalidateFileUploadTask];
-//    [DBCLIENT updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=81A618BF-5E75-4EB9-B186-F247CF0EB4B8&ext=MOV" syncStatus:0];
-//    [DBCLIENT updateSynStatusOfFile:@"assets-library://asset/asset.MOV?id=3CB0B4EA-D6E0-4454-942D-4FAD79660304&ext=MOV" syncStatus:0];
-    
-    [DBCLIENT listAllEntitiesinTheDB];
-//    [VCLIENT videoUploadIntelligence];
-//    [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
-//    {
-//        DLog(@"Log : The count obtained is - %d", count);
-//    }failure:^(NSError *error)
-//    {
-//        
-//    }];
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+   // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restoreListView) name:removeContactsScreen object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -187,7 +225,7 @@
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
 
     DLog(@"LOG : Count being returned is - %d", VCLIENT.filteredVideoList.count);
-    return VCLIENT.filteredVideoList.count;
+    return VCLIENT.totalRecordsCount;
 }
 
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -196,74 +234,48 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+
     VideoCell *cell = (VideoCell*)[cv dequeueReusableCellWithReuseIdentifier:@"VideoStaticCell" forIndexPath:indexPath];
+    cell.btnShare.tag = indexPath.row;
     
-   // DLog(@"LOG : filteredVideoList - %@", VCLIENT.filteredVideoList);
-    DLog(@"Log : Asst details are - %@", VCLIENT.filteredVideoList[indexPath.row]);
-    
-    Videos *assetVideo = [DBCLIENT listTheDetailsOfObjectWithURL:[[VCLIENT.filteredVideoList[indexPath.row] defaultRepresentation] url].absoluteString];
-    cell.videoImage.image =  [UIImage imageWithCGImage:[VCLIENT.filteredVideoList[indexPath.row] thumbnail]];
-    cell.video = [DBCLIENT listTheDetailsOfObjectWithURL:[[VCLIENT.filteredVideoList[indexPath.row] defaultRepresentation] url].absoluteString];
-    cell.asset = VCLIENT.filteredVideoList[indexPath.row];
-    
-    if( [assetVideo.sync_status  isEqual: @(0)] )
+    if( indexPath.row < VCLIENT.cloudVideoList.count )
     {
-        DLog(@"Log : Getting into this if condition");
-        [cell.vwUpload setHidden:NO];
+        cell.video = [VCLIENT.cloudVideoList objectAtIndex:indexPath.row];
+        [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:cell selector:@selector(handleRightSwipe:) name:removeSharingView object:nil];
+        
+        [APPCLIENT hasAMediaFileBeenSharedByTheUSerWithUUID:cell.video.uuid success:^(BOOL isShared)
+        {
+           if( isShared )
+               [cell.vwShareTag setHidden:YES];
+            else
+                [cell.vwShareTag setHidden:NO];
+        }failure:^(NSError *error)
+        {
+            
+        }];
+        
+        [cell.videoImage setImageWithURL:[NSURL URLWithString:cell.video.url]];
     }
-    else
+    
+    if( (indexPath.row == VCLIENT.cloudVideoList.count-1) && VCLIENT.totalRecordsCount > VCLIENT.cloudVideoList.count )
     {
-        DLog(@"Log : Getting into else condition");
-        [cell.vwUpload setHidden:YES];
+        DLog(@"Log : Lazy load next set of records...");
+        [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d",(int)((indexPath.row+1)/ROW_COUNT.integerValue)+1] rows:ROW_COUNT success:^(NSMutableArray *result)
+         {
+             VCLIENT.cloudVideoList = [[VCLIENT.cloudVideoList arrayByAddingObjectsFromArray:result ] mutableCopy];
+             [self.videoList reloadData];
+         }failure:^(NSError *error)
+         {
+             
+         }];
     }
+    
     return cell;
 }
 
-
--(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    DLog(@"Item selected at index path - %d", indexPath.row);
-    DLog(@"item at index path is - %@", VCLIENT.filteredVideoList[indexPath.row]);
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
-//
-
-//- (UIImage*)loadImage : (ALAsset *)videoAsset {
-//    
-//    DLog(@"Log : URL obtained is - %@", videoAsset.defaultRepresentation.url.absoluteString);
-////    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:videoAsset.defaultRepresentation.url options:nil];
-////    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-////    NSError *err = NULL;
-////    CMTime time = CMTimeMake(1, 60);
-////    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-////    NSLog(@"err==%@, imageRef==%@", err, imgRef);
-////    
-////    return [[UIImage alloc] initWithCGImage:imgRef];
-//    
-//    return [UIImage imageNamed:@"share.png"];
-//    
-//}
-
-
-//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-//    
-//    DLog(@"Being called now");
-//    // 2
-////    CGSize retval = photo.thumbnail.size.width > 0 ? photo.thumbnail.size : CGSizeMake(100, 100);
-////    retval.height += 35; retval.width += 35; return retval;
-//    CGSize retVal = CGSizeMake(155, 142);
-//    return retVal;
-//}
-
-//- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-//{
-//    return 10; // This is the minimum inter item spacing, can be more
-//}
-
-
-//// 3
-//- (UIEdgeInsets)collectionView:
-//(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-//    return UIEdgeInsetsMake(50, 20, 50, 20);
-//}
 
 @end

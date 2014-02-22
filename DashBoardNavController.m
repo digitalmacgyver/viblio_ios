@@ -32,8 +32,6 @@
     DLog(@"LOG : under view controller is being set now");
     if (![self.slidingViewController.underLeftViewController isKindOfClass:[MenuViewController class]])
         self.slidingViewController.underLeftViewController = [self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"menu")];
-    
-    APPDEL.navController = self;
 }
 
 

@@ -19,5 +19,6 @@
 @property (nonatomic, retain) NSNumber * sync_status;
 @property (nonatomic, retain) NSNumber * sync_time;
 @property (nonatomic, retain) NSNumber * uploadedBytes;
+@property (nonatomic, retain) NSString * fileUUID;
 
 @end

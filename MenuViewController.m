@@ -36,7 +36,7 @@
     self.lblEmailId.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     
     self.lblSyncNotInProgress.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
-    _menuSections = @[@"Home", @"Settings", @"Help/FAQ", @"Tell A Friend", @"Give Feedback", @"Legal & Privacy", @"Rate Us In App Store"];
+    _menuSections = @[@"Home", @"Settings", @"Tell A Friend", @"Give Feedback", @"Terms Of Use", @"Rate Us In App Store"];
 	// Do any additional setup after loading the view.
 }
 
@@ -139,7 +139,6 @@
         {
             self.lblSyncNotInProgress.text = @"No videos found to upload !!";
         }
-        //        }
     }
 }
 
@@ -267,11 +266,11 @@
         
         [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"feedback")] animated:YES];
     }
-    else if ([_menuSections[indexPath.row] isEqualToString:@"Legal & Privacy"])
+    else if ([_menuSections[indexPath.row] isEqualToString:@"Terms Of Use"])
     {
         DLog(@"Log : Terms clicked");
         
-      //  [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"terms")] animated:YES];
+        [(DashBoardNavController*)self.slidingViewController.topViewController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"terms")] animated:YES];
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Rate Us In App Store"])
     {

@@ -44,6 +44,12 @@
                                failure:(void(^)(NSError *error))failure;
 
 
+- (void)createNewUserAccountWithFB : (NSString *)accessToken
+                              type : (NSString*)loginType
+                            success:(void (^)(NSString *user))success
+                            failure:(void(^)(NSError *error))failure;
+
+
 - (void)getUserSessionDetails : (void (^)(NSString *user))success
                       failure : (void(^)(NSError *error))failure;
 
@@ -86,7 +92,44 @@
 -(void)invalidateUploadTaskWithoutPausing;
 
 -(void)sendFeedbackToServerWithText:(NSString*)text
+                          category : (NSString*)categorySelected
                             success:(void(^)(NSString *msg))success
                             failure:(void(^)(NSError *error))failure;
 
+-(void)getTheListOfMediaFilesOwnedByUserWithOptions : (NSString*)vwStyle
+                                          pageCount : (NSString*)page
+                                               rows : (NSString*)rowsInAPage
+                                             success:(void(^)(NSMutableArray *result))success
+                                             failure:(void(^)(NSError *error))failure;
+
+-(void)getTheCloudUrlForVideoStreamingForFileWithUUID : (NSString*)uuid
+                                               success:(void(^)(NSString *cloudURL))success
+                                               failure:(void(^)(NSError *error))failure;
+
+
+-(void)getListOfSharedWithMeVideos :(void(^)(NSArray *sharedList))success
+                            failure:(void(^)(NSError *error))failure;
+
+-(void)streamAvatarsImageForUUID : (NSString*)uuid
+                          success:(void(^)(UIImage *profileImage))success
+                          failure:(void(^)(NSError *error))failure;
+
+
+-(void)getFacesInAMediaFileWithUUID : (NSString*)uuid
+                             success:(void(^)(NSArray *faceList))success
+                             failure:(void(^)(NSError *error))failure;
+
+-(void)getAddressWithLat : (NSString*)latitude andLong : (NSString*)longitude
+                  success:(void(^)(NSString *formattedAddress))success
+                  failure:(void(^)(NSError *error))failure;
+
+-(void)hasAMediaFileBeenSharedByTheUSerWithUUID : (NSString*)uuid
+                                         success:(void(^)(BOOL hasBeenShared))success
+                                         failure:(void(^)(NSError *error))failure;
+
+-(AFJSONRequestOperation*)sharingToUsersWithSubject : (NSString*)subject
+                            body : (NSString*)body
+                          fileId : (NSString*)mid
+                         success : (void(^)(BOOL hasBeenShared))success
+                          failure:(void(^)(NSError *error))failure;
 @end

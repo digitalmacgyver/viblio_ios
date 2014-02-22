@@ -98,10 +98,7 @@
                  {
                      DLog(@"Log : Error is - %@", error);
                      [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"cameradenial")] animated:YES];
-                 }];
-                 
-
-                 
+                 }];    
              }failure:^(NSError *error)
              {
                  [self.sinUpActivity stopAnimating];

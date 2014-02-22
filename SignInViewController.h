@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LandingViewController.h"
 
 @interface SignInViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UILabel *lblSignUpWith;
 @property (weak, nonatomic) IBOutlet UILabel *lblTrial;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activity;
 
 @end

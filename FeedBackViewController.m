@@ -48,13 +48,56 @@
 -(void)sendFeedback
 {
     DLog(@"Log : About to send feedback");
-    [APPCLIENT sendFeedbackToServerWithText:self.fdbckTxtVw.text success:^(NSString *msg)
+    
+    if( [self.fdbckTxtVw.text isValid] && [self.fdbckTxtVw.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0 )
     {
-        DLog(@"Log : Sending feedback to server....");
-    }failure:^(NSError *error)
-    {
+        NSString *categorySelected = [[NSString alloc]init];
+        if( self.btnBravo.tag )
+            categorySelected = @"Bravo";
+        else
+            categorySelected = self.btnBug.tag ? @"Bug" : @"Idea";
         
-    }];
+        [APPCLIENT sendFeedbackToServerWithText:self.fdbckTxtVw.text category:categorySelected success:^(NSString *msg)
+         {
+             self.fdbckTxtVw.tag = 1;
+             [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Feedback successfully sent" viewController:self cancelBtnTitle:@"OK"];
+         }failure:^(NSError *error)
+         {
+             self.fdbckTxtVw.tag = 0;
+             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                             message:@"Feedback could not be sent. Try sending again ?"
+                                                            delegate:self
+                                                   cancelButtonTitle:@"OK"
+                                                   otherButtonTitles:@"Cancel",nil];
+             [alert show];
+             alert = nil;
+         }];
+    }
+    else
+    {
+        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"The feedback content is not valid. Please enter valid content to proceed" viewController:nil cancelBtnTitle:@"OK"];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    DLog(@"Log : Ok clicked in alert view...");
+    
+    if( self.fdbckTxtVw.tag )
+    {
+        [self.fdbckTxtVw resignFirstResponder];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }
+    else{
+        
+        if( buttonIndex == 0 )
+            [self sendFeedback];
+        else
+        {
+            [self.fdbckTxtVw resignFirstResponder];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated

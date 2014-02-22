@@ -42,9 +42,10 @@
     DLog(@"Log : In view did load on login view controller");
     
     [self.email setFont: [UIFont fontWithName:@"Aleo-LightItalic" size:18]];
+    [self.password setFont: [UIFont fontWithName:@"Aleo-LightItalic" size:18]];
     
-    self.email.text = @"vinay@cognitiveclouds.com";
-    self.password.text = @"MaraliMannige4";
+//    self.email.text = @"vinay@cognitiveclouds.com";
+//    self.password.text = @"MaraliMannige4";
 
 	// Do any additional setup after loading the view.
     

@@ -177,6 +177,26 @@
     }];
 }
 
+
+// Fucntion for deletion descretion. All the entries in DB which are no more found in the camera roll should be deleted. URL is used for comparison
+
+-(void)deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound
+{
+    NSArray *DBEntries = [DBCLIENT listAllEntitiesinTheDB];
+    for( Videos *video in DBEntries )
+    {
+        DLog(@"Log : The video obtained is - %@", video);
+        ALAsset *asset = [VCLIENT getAssetFromFilteredVideosForUrl:video.fileURL];
+        if( asset == nil )
+        {
+            DLog(@"Log : There is no corresponding entry for the video in Camera roll.. Delete it from DB");
+            [DBCLIENT deleteOperationOnDB:video.fileURL];
+        }
+        else
+            DLog(@"Log : Video is found in the DB");
+    }
+}
+
 /*------------------------------------------------------------------------------------------- Syncing Date Related Functions --------------------------*/
 
 -(NSDate*)getDateOfLastSync
@@ -218,7 +238,7 @@
         [info setValue:[NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970]] forKey:@"sync_time"];
         
         if (![self.managedObjectContext save:&error]) {
-            NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+            DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
         }
         
         request = nil;
@@ -290,6 +310,27 @@
     
     return videoList;
 }
+
+-(Videos*)getWhetherAFileWithUUIDExistsInDB : (NSString*)uuid
+{
+    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
+    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileUUID == %@", uuid];
+    [videos setPredicate:predicate];
+    
+    NSError * error = nil;
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
+    videos = nil;
+    
+    if( videoList.count > 0 )
+        return [videoList firstObject];
+    else
+        return nil;
+}
+
+
 
 /*------------------------------------------------------------------------------------------*/
 
@@ -374,7 +415,7 @@
     }
 
     if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     //more error handling here
 }
@@ -394,13 +435,13 @@
     [request setPredicate:predicate];
     
     NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-    NSLog(@"LOG : The results obtained are - %@", results);
+    DLog(@"LOG : The results obtained are - %@", results);
     
     Videos *video = [results firstObject];
     [video setValue:[NSNumber numberWithInt:status] forKey:@"sync_status"];
 
     if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     
     request = nil;
@@ -417,13 +458,13 @@
     [request setPredicate:predicate];
     
     NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-    NSLog(@"LOG : The results obtained are - %@", results);
+    DLog(@"LOG : The results obtained are - %@", results);
     
     Videos *video = [results firstObject];
     [video setValue:@(isPaused) forKey:@"isPaused"];
     
     if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     
     request = nil;
@@ -439,13 +480,13 @@
     [request setPredicate:predicate];
     
     NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-    NSLog(@"LOG : The results obtained are - %@", results);
+    DLog(@"LOG : The results obtained are - %@", results);
     
     Videos *video = [results firstObject];
     [video setValue:locationID forKey:@"fileLocation"];
     
     if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     
     request = nil;
@@ -462,13 +503,13 @@
     [request setPredicate:predicate];
     
     NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-    NSLog(@"LOG : The results obtained are - %@", results);
+    DLog(@"LOG : The results obtained are - %@", results);
     
     Videos *video = [results firstObject];
     [video setValue:status forKey:@"hasFailed"];
     
     if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     
     request = nil;
@@ -486,18 +527,39 @@
     [request setPredicate:predicate];
     
     NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-    NSLog(@"LOG : The results obtained are - %@", results);
+    DLog(@"LOG : The results obtained are - %@", results);
     
     Videos *video = [results firstObject];
     DLog(@"Log : Storing uploaded bytes --- %lf", bytes.doubleValue);
     [video setValue:bytes forKey:@"uploadedBytes"];
     
     if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     request = nil;
 }
 
+
+-(void)updateFileUUIDForFile:(NSURL*)assetUrl withUUID : (NSString*)uuid
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", assetUrl];
+    [request setPredicate:predicate];
+    
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    DLog(@"LOG : The results obtained are - %@", results);
+    
+    Videos *video = [results firstObject];
+    [video setValue:uuid forKey:@"fileUUID"];
+    
+    if (![self.managedObjectContext save:&error]) {
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    request = nil;
+}
 
 /*************************************** Session Entity Related Functions ***************************************************/
 
@@ -561,7 +623,7 @@
     [sessionInfo setValue:@(value) forKey:key];
     
     if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
     
     request = nil;
@@ -592,7 +654,7 @@
         }
         
         if (![self.managedObjectContext save:&deleteError]) {
-            NSLog(@"Whoops, couldn't save: %@", [deleteError localizedDescription]);
+            DLog(@"Whoops, couldn't save: %@", [deleteError localizedDescription]);
         }
     
         DLog(@"LOG : Adding the new user details to the DB");
@@ -646,7 +708,7 @@
     }
     
     if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
     }
 }
 
@@ -661,7 +723,7 @@
         if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            DLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
     }
@@ -732,7 +794,7 @@
          Lightweight migration will only work for a limited set of schema changes; consult "Core Data Model Versioning and Data Migration Programming Guide" for details.
          
          */
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        DLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
     

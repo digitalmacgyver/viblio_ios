@@ -22,6 +22,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedClient = [[self alloc] init];
+        _sharedClient.pageCount = 1;
     });
     return _sharedClient;
 }
@@ -38,7 +39,7 @@
         @try
         {
             bytesRead = [rep getBytes:buffer fromOffset:offsetOfUpload length:BufferSize error:&error];
-            NSLog(@"LOG : Bytes read length - %d",bytesRead);
+            DLog(@"LOG : Bytes read length - %d",bytesRead);
             chunkData = [NSData dataWithData:[NSData dataWithBytesNoCopy:buffer length:bytesRead freeWhenDone:NO]];
         }
         @catch (NSException *exception)
@@ -50,7 +51,7 @@
         
         free(buffer);
     } else {
-        NSLog(@"failed to retrive Asset");
+        DLog(@"failed to retrive Asset");
     }
     return chunkData;
 }
@@ -86,61 +87,6 @@
     [self.assetsLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:listGroupBlock failureBlock:failureBlock];
 }
 
-// Function to find differece between two dates
-
-- (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2 {
-    NSUInteger unitFlags = NSDayCalendarUnit;
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *components = [calendar components:unitFlags fromDate:dt1 toDate:dt2 options:0];
-    return (int)([components day]);
-    
-//    [self fetchVideosFromCameraRoll:[df dateFromString: str] success:^(NSArray *filteredVideos)
-//     {
-//         for ( ALAsset *asset in filteredVideos )
-//         {
-//             NSManagedObjectContext *context = [DBCLIENT managedObjectContext];
-//             Videos *video = [NSEntityDescription
-//                              insertNewObjectForEntityForName:@"Videos"
-//                              inManagedObjectContext:context];
-//             
-//             video.fileURL = [asset.defaultRepresentation.url absoluteString];
-//             video.sync_status = [NSNumber numberWithInt:0];
-//
-//             NSError *error;
-//             if (![context save:&error]) {
-//                 NSLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
-//             }
-//         }
-//     }failure:^(NSError *error)
-//     {
-//         switch ([error code]) {
-//             case ALAssetsLibraryAccessUserDeniedError:
-//             case ALAssetsLibraryAccessGloballyDeniedError:
-//                 [ViblioHelper displayAlertWithTitle:@"Access Denied" messageBody:@"Please enable access to Camera Roll" viewController:nil cancelBtnTitle:@"OK"];
-//                 //[ViblioHelper displayAlert:@"Access Denied" :@"Please enable access to Camera Roll" :nil :@"OK"];
-//                 break;
-//             default:
-//                 NSLog(@"Reason unknown.");
-//                 break;
-//         }
-//     }];
-//    df = nil; str = nil;
-}
-
-//-(void)otherServices
-//{
-//    NSLog(@"LOG : The asset details are - %@",self.asset);
-//    
-//    [APPCLIENT authenticateUserWithEmail:@"vinay@cognitiveclouds.com" password:@"MaraliMannige4" type:@"db" success:^(User *user)
-//     {
-//         NSLog(@"LOG : Modal user object obtained is - %@",user);
-//         
-//     }failure:^(NSError *error)
-//     {
-//         
-//     }];
-//}
-
 -(void)getOffsetFromTheHeadService
 {
     [APPCLIENT getOffsetOfTheFileAtLocationID:self.videoUploading.fileLocation sessionCookie:nil success:^(double offsetObtained)
@@ -151,7 +97,7 @@
          [self videoFromNSData];
      }failure:^(NSError *error)
      {
-         NSLog(@"LOG : %@", error);
+         DLog(@"LOG : %@", error);
      }];
 }
 
@@ -176,7 +122,7 @@
          [self videoFromNSData];
      }failure:^(NSError *error)
      {
-         NSLog(@"LOG : The error is - %@",error);
+         DLog(@"LOG : The error is - %@",error);
      }];
     
 }
@@ -194,8 +140,8 @@
         if (!chunkData || ![chunkData length]) { // finished reading data
             // break;
             
-            NSLog(@"LOG : Chunk data failure --- %d --- %@",chunkData.length,chunkData);
-            NSLog(@"LOG : File transmission done");
+            DLog(@"LOG : Chunk data failure --- %d --- %@",chunkData.length,chunkData);
+            DLog(@"LOG : File transmission done");
             
             DLog(@"Log : Remove the file record from DB ----");
             [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
@@ -220,10 +166,11 @@
             // do your stuff here
             [APPCLIENT resumeUploadOfFileLocationID:self.videoUploading.fileLocation localFileName:@"movieTrialSunday" chunkSize:[NSString stringWithFormat:@"%d",chunkData.length]  offset:[NSString stringWithFormat:@"%f",offset] chunk:chunkData sessionCookie:nil success:^(NSString *msg)
              {
-                 NSLog(@"LOG : Uploading next chunk---- completed upload till offset - %f",offset);
+                 DLog(@"LOG : Uploading next chunk---- completed upload till offset - %f",offset);
                  
-                 NSLog(@"LOG : 1 / %f th part uploading..... ", offset/self.asset.defaultRepresentation.size);
+                 DLog(@"LOG : 1 / %f th part uploading..... ", offset/self.asset.defaultRepresentation.size);
                  
+                 APPCLIENT.uploadedSize = offset;
                  [self videoFromNSData];
                  
              }failure:^(NSError *error)

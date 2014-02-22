@@ -25,7 +25,12 @@
               @"backgroundSyncEnabled" : self.activeSession.backgroundSyncEnabled,
               @"wifiupload" : self.activeSession.wifiupload,
               @"autolockdisable" : self.activeSession.autolockdisable,
-              @"batterSaving" : self.activeSession.batterSaving};
+              @"batterSaving" : self.activeSession.batterSaving };
+}
+
+-(NSArray*)getSectionsList
+{
+    return @[@"Today", @"This Week", @"This Month", @"This Year", @"Older"];
 }
 
 -(NSArray*)getSettings

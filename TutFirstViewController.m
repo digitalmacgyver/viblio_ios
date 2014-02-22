@@ -34,7 +34,6 @@
     self.lblHeading.font = [ViblioHelper viblio_Font_Regular_WithSize:30 isBold:NO];
     self.lblContent.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     
-    APPDEL.navController = self.navigationController;
 }
 
 - (void)didReceiveMemoryWarning

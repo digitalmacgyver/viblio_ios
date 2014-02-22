@@ -8,10 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import "listTableCell.h"
+#import "ECSlidingViewController.h"
 
-@interface ListViewController : UIViewController
+@interface ListViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segment;
 @property (weak, nonatomic) IBOutlet UITableView *listView;
+
+@property (nonatomic, strong) listTableCell *listCell;
+@property (nonatomic, strong) NSMutableDictionary *address,*dateStamp, *faceIndexes;
+@property (nonatomic, strong) NSMutableDictionary *result;
 
 @end

@@ -11,6 +11,6 @@
 @interface AuthControllers : NSObject
 
 + (AuthControllers *)sharedInstance;
-- (void)authorizeToGetInfoAboutMeWithCompleteBlock:(void(^)(NSError*))cblock inView:(UIView *)view;
+- (void)authorizeToGetInfoAboutMeWithCompleteBlock:(void(^)(NSError*, NSString *))cblock inView:(UIView *)view;
 
 @end

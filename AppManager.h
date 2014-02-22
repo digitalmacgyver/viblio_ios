@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "User.h"
 #import "Session.h"
+#import "cloudVideos.h"
 
 #define APPMANAGER [AppManager sharedClient]
 
@@ -18,9 +19,13 @@
 @property (nonatomic, strong) Session *activeSession;
 @property (nonatomic, strong) NSArray *listVideos;
 @property (nonatomic) BOOL turnOffUploads;
+@property (nonatomic, strong) NSMutableArray *contacts;
+@property (nonatomic, strong) cloudVideos *video;
+@property (nonatomic, strong) NSDictionary *resultCategorized;
 
 + (AppManager *)sharedClient;
 -(NSArray*)getSettings;
 -(NSDictionary*)getSessionKeysAndValues;
+-(NSArray*)getSectionsList;
 
 @end

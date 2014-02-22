@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "DashBoardNavController.h"
 
-@interface TermsOfUseViewController : UIViewController
+@interface TermsOfUseViewController : UIViewController<UIWebViewDelegate>
 
+@property (weak, nonatomic) IBOutlet UIWebView *wvTerms;
 @property (weak, nonatomic) IBOutlet UITextView *termsView;
 @property (nonatomic, strong) NSString *text;
 @end

@@ -14,6 +14,14 @@
 NSString *const refreshProgress = @"com.viblio.app : UplodProgressNotification";
 NSString *const uploadComplete = @"com.viblio.app : uploadComplete";
 NSString * const uploadVideoPaused = @"com.viblio.app : uploadVideoPaused";
+NSString *const playVideo = @"com.viblio.app : playVideo";
+NSString * const stopVideo = @"com.viblio.app : stopVideo";
+NSString * const showingSharingView = @"com.viblio.app : showSharingView";
+NSString * const removeSharingView = @"com.viblio.app : removeSharingView";
+NSString * const showListSharingVw = @"com.viblio.app : showListSharingView";
+NSString * const removeListSharinVw = @"com.viblio.app : removeListSharingView";
+NSString * const showContactsScreen = @"com.viblio.app : showContactsScreen";
+NSString * const removeContactsScreen = @"com.viblio.app : removeContactsScreen";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {
@@ -201,6 +209,174 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 +(UIColor*)getVblBlueColor
 {
     return [UIColor colorWithRed:0.2117 green:0.2196 blue:0.2784 alpha:1];
+}
+
+
++ (void)downloadImageWithURLString:(NSString *)urlString completion:(void (^)(UIImage *image, NSError *error))completion
+{
+    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+    
+    [manager downloadWithURL:[NSURL URLWithString:urlString]
+                     options:SDWebImageCacheMemoryOnly
+                    progress:nil
+                   completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished) {
+                       
+                       completion(image, error);
+                   }];
+}
+
++(NSArray*)getDateTimeStampToReadableFormat : (NSString*)dateStamp
+{
+    DLog(@"Log : dateStamp received is - %@", dateStamp);
+    NSArray *dateTimeSep = [dateStamp componentsSeparatedByString:@" "];
+    NSArray *dateComps = [dateTimeSep[0] componentsSeparatedByString:@"-"];
+    //NSArray *timeComps = [dateTimeSep[1] componentsSeparatedByString:@":"];
+    NSString *displayString = [self getMonthInWords:dateComps[1]];
+    //dateTimeSep = nil;
+    displayString = [displayString stringByAppendingString:@" "];
+    displayString = [displayString stringByAppendingString:dateComps[2]];
+    displayString = [displayString stringByAppendingString:@", "];
+    displayString  = [displayString stringByAppendingString:dateComps[0]];
+    
+    //NSString *time = [time string];
+    DLog(@"Log : String being sent back is - %@", displayString);
+    return @[displayString, dateTimeSep[1]];
+}
+
++(NSString*)getMonthInWords : (NSString*)month
+{
+    DLog(@"Log : The value received is - %@", month);
+    NSDictionary *months = @{ @"01" : @"Jan",
+                              @"02" : @"Feb",
+                              @"03" : @"Mar",
+                              @"04" : @"April",
+                              @"05" : @"May",
+                              @"06" : @"June",
+                              @"07" : @"July",
+                              @"08" : @"Aug",
+                              @"09" : @"Sep",
+                              @"10" : @"Oct",
+                              @"11" : @"Nov",
+                              @"12" : @"Dec"};
+    
+    DLog(@"Log : Value being returned is - %@", [months valueForKey:month]);
+    return [months valueForKey:month];
+}
+
+// Function to find differece between two dates
+
++ (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2 {
+    NSUInteger unitFlags = NSDayCalendarUnit;
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *components = [calendar components:unitFlags fromDate:dt1 toDate:dt2 options:0];
+    return (int)([components day]);
+}
+
++(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList
+{
+    NSDate *curDate = [NSDate date];
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    
+    [result setValue:@[@"Today"] forKey:@"SectionA"];
+    [result setValue:@[@"This Week"] forKey:@"SectionB"];
+    [result setValue:@[@"This Month"] forKey:@"SectionC"];
+    [result setValue:@[@"This Year"] forKey:@"SectionD"];
+    [result setValue:@[@"Older"] forKey:@"SectionE"];
+    
+    for( int i=0; i < videoList.count; i++ )
+    {
+        DLog(@"Log : Result dictionary is - %@", result);
+        
+        id video = videoList[i];
+        NSDate *videoDate;
+        NSString *dateStr;
+
+        // 2014-02-07 14:21:00
+        // 2014-01-30 18:20:34
+        
+        DLog(@"Log : The class of object is - %@", NSStringFromClass([video class]));
+        if( [video isKindOfClass:[cloudVideos class]] )
+            dateStr = ((cloudVideos*)video).createdDate;
+        else
+            dateStr = ((SharedVideos*)video).sharedDate;
+        
+        NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+        [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        videoDate = [dateFormat dateFromString:dateStr];
+        dateFormat = nil;
+        dateStr = nil;
+        
+        NSDateComponents *videoDateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitWeekOfMonth | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:videoDate];
+        
+        NSDateComponents *currentDateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitWeekOfMonth |NSCalendarUnitMonth | NSCalendarUnitYear fromDate:curDate];
+        
+        DLog(@"Log : Video week - %d, current week - %d", videoDateComponents.weekOfMonth, currentDateComponents.weekOfMonth);
+        
+        if( videoDateComponents.year == currentDateComponents.year )
+        {
+            if( videoDateComponents.month == currentDateComponents.month )
+            {
+                if( videoDateComponents.weekOfMonth == currentDateComponents.weekOfMonth )
+                {
+                    if( videoDateComponents.day == currentDateComponents.day )
+                        result = [self addObjectToArray:@"SectionA" :video toRsult:result];
+                    else
+                        result = [self addObjectToArray:@"SectionB" :video toRsult:result];
+                }
+                else
+                    result = [self addObjectToArray:@"SectionC" :video toRsult:result];
+            }
+            else
+                result = [self addObjectToArray:@"SectionD" :video toRsult:result];
+        }
+        else
+            result = [self addObjectToArray:@"SectionE" :video toRsult:result];
+        
+//        if( videoDateComponents.day == currentDateComponents.day )
+//            result = [self addObjectToArray:@"Today" :video toRsult:result];
+//        else if (videoDateComponents.weekOfMonth == currentDateComponents.weekOfMonth)
+//            result = [self addObjectToArray:@"This Week" :video toRsult:result];
+//        else if (videoDateComponents.month == currentDateComponents.month)
+//            result = [self addObjectToArray:@"This Month" :video toRsult:result];
+//        else if (videoDateComponents.year == currentDateComponents.year)
+//            result = [self addObjectToArray:@"This Year" :video toRsult:result];
+//        else
+        
+        
+        videoDateComponents = nil;
+        currentDateComponents = nil;
+        
+        videoDate = nil;
+        video = nil;
+    }
+    
+    NSMutableArray *array = [NSMutableArray new];
+    for ( NSString *category in result )
+    {
+        if( ((NSArray*)result[category]).count <= 1 )
+           [array addObject:category]; //[result removeObjectForKey:category];
+    }
+    
+    DLog(@"Log : The result before for loop is - %@", result);
+    for( int i=0; i<array.count; i++ )
+    {
+        [result removeObjectForKey:array[i]];
+    }
+    
+    DLog(@"Log : The result is - %@", result);
+    
+    return result;
+}
+
++(NSMutableDictionary*)addObjectToArray : (NSString*)key :(id)obj toRsult : (NSMutableDictionary*)result
+{
+    NSMutableArray *arr = [[result valueForKey:key] mutableCopy];
+    DLog(@"Log : The object to be added is - %@", obj);
+    [arr addObject:obj];
+    [result setValue:arr forKey:key];
+//    [arr removeAllObjects];
+//    arr = nil;
+    return result;
 }
 
 @end

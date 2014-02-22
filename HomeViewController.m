@@ -9,7 +9,7 @@
 #import "HomeViewController.h"
 
 //#define PAGE_COUNT @"01"
-#define ROW_COUNT @"12"
+#define ROW_COUNT @"100"
 
 @interface HomeViewController ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 

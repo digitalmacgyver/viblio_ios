@@ -49,6 +49,7 @@
 {
     DLog(@"Log : Geting the information of video being uploaded to show in progress bar");
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(logoutUser) name:logoutUser object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoUploadDescretion) name:uploadVideoPaused object:nil];
     [self videoUploadDescretion];
@@ -69,12 +70,12 @@
     self.progressView.progress = APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size;
     self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
     
-    NSString *dateString = [NSDateFormatter localizedStringFromDate:[VCLIENT.asset valueForProperty:ALAssetPropertyDate]
-                                                          dateStyle:NSDateFormatterShortStyle
-                                                          timeStyle:NSDateFormatterFullStyle];
-    dateString = (NSString*)[[dateString componentsSeparatedByString:@" "] firstObject];
-    DLog(@"Log : The date sring about to be set is - %@", dateString);
-    self.lblProgressTitle.text = dateString;
+//    NSString *dateString = [NSDateFormatter localizedStringFromDate:[VCLIENT.asset valueForProperty:ALAssetPropertyDate]
+//                                                          dateStyle:NSDateFormatterShortStyle
+//                                                          timeStyle:NSDateFormatterFullStyle];
+//    dateString = (NSString*)[[dateString componentsSeparatedByString:@" "] firstObject];
+//    DLog(@"Log : The date sring about to be set is - %@", dateString);
+    self.lblProgressTitle.text = @"Uploding";
 }
 
 - (IBAction)progressBarClicked:(id)sender {
@@ -227,9 +228,10 @@
     myBackView.backgroundColor = [UIColor clearColor];
     cell.selectedBackgroundView = myBackView;
     
+    cell.imageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@", _menuSections[indexPath.row]]];
     cell.textLabel.text = _menuSections[indexPath.row];
-    cell.textLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
-    cell.textLabel.textColor = [UIColor grayColor];
+    cell.textLabel.font = [UIFont fontWithName:@"Avenir-Light" size:18];
+    cell.textLabel.textColor = [UIColor colorWithRed:0.3686 green:0.3803 blue:0.4431 alpha:1];
     return cell;
 }
 

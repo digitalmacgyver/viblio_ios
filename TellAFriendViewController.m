@@ -28,11 +28,11 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationTellAFriendTitleView]];
+    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationShareTitleView:@"Tell A Friend"]];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
-                                              [UIButton navigationItemWithTarget:self action:@selector(tellAFriend) withImage:@"" withTitle:@"Send"]];
+                                              [UIButton navigationRightItemWithTarget:self action:@selector(tellAFriend) withImage:@"" withTitle:@"Send" ]];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
-                                             [UIButton navigationItemWithTarget:self action:@selector(revealMenu) withImage:@"icon_options"]];
+                                             [UIButton navigationLeftItemWithTarget:self action:@selector(cancel) withImage:@"" withTitle:@"Cancel" ]];
     
     self.txtVwTellAFriend.autocorrectionType = UITextAutocorrectionTypeNo;
     self.txtVwTellAFriend.layer.borderWidth = 1.0;
@@ -40,14 +40,60 @@
     self.txtVwTellAFriend.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
 }
 
+//-(UIView*)leftNavButton
+//{
+//        UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 50, 30)];
+//        UIButton *_b = [UIButton buttonWithType:UIButtonTypeCustom];
+//        [_b.titleLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
+//        [_b setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//        [_b setTitle:@"Cancel" forState:UIControlStateNormal];
+//        [_b setTitle:@"Cancel" forState:UIControlStateHighlighted];
+//        [_b addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
+//        _b.frame = CGRectMake(-18, 0, 50, 30);
+//        [containerView addSubview:_b];
+//        containerView.backgroundColor = [UIColor clearColor];
+//        return containerView;
+//}
+//
+//-(UIView*)rightNavButton
+//{
+//    UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(8, 0, 50, 30)];
+//    UIButton *_b = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [_b.titleLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
+//    [_b setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//    [_b setTitle:@"Send" forState:UIControlStateNormal];
+//    [_b setTitle:@"Send" forState:UIControlStateHighlighted];
+//    [_b addTarget:self action:@selector(tellAFriend) forControlEvents:UIControlEventTouchUpInside];
+//    _b.frame = containerView.frame;
+//    [containerView addSubview:_b];
+//    containerView.backgroundColor = [UIColor clearColor];
+//    return containerView;
+//}
+
 -(void)tellAFriend
 {
     
 }
 
--(void)revealMenu
+- (UIEdgeInsets)alignmentRectInsets {
+    UIEdgeInsets insets;
+//    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+//        if ([self isLeftButton]) {
+            insets = UIEdgeInsetsMake(-30, -10, 0, 0);
+//        } else {
+//            insets = UIEdgeInsetsMake(0, 0, 0, -10);
+//        }
+//    } else {
+//        insets = UIEdgeInsetsZero;
+//    }
+    
+    return insets;
+}
+
+-(void)cancel
 {
-    [self.slidingViewController anchorTopViewTo:ECRight];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+    //[self.slidingViewController anchorTopViewTo:ECRight];
 }
 
 - (void)didReceiveMemoryWarning

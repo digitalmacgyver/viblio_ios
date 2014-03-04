@@ -10,6 +10,7 @@
 #import "User.h"
 #import "Session.h"
 #import "cloudVideos.h"
+#import "SharedVideos.h"
 
 #define APPMANAGER [AppManager sharedClient]
 
@@ -19,9 +20,11 @@
 @property (nonatomic, strong) Session *activeSession;
 @property (nonatomic, strong) NSArray *listVideos;
 @property (nonatomic) BOOL turnOffUploads;
-@property (nonatomic, strong) NSMutableArray *contacts;
-@property (nonatomic, strong) cloudVideos *video;
+@property (nonatomic, strong) NSMutableArray *contacts, *selectedContacts;
+//@property (nonatomic, strong) cloudVideos *video;
 @property (nonatomic, strong) NSDictionary *resultCategorized;
+@property (nonatomic, strong) UIImage *posterImageForVideoSharing;
+@property (nonatomic, strong) id VideoToBeShared;
 
 + (AppManager *)sharedClient;
 -(NSArray*)getSettings;

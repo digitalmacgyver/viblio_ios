@@ -18,6 +18,7 @@
 @property (nonatomic, retain) NSNumber * isFbUser;
 @property (nonatomic, retain) NSString * fbAccessToken;
 @property (nonatomic, retain) NSString * sessionCookie;
+@property (nonatomic, retain) NSString * userName;
 @property (nonatomic, retain) NSNumber * isNewUser;
 
 @end

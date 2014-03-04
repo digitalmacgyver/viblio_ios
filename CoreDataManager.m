@@ -642,6 +642,7 @@
                           isFbUser:(NSNumber*)isFbUser
                      sessionCookie:(NSString*)sessionCookie
                      fbAccessToken:(NSString*)fbAccessToken
+                          userName:(NSString*)userName
 {
     NSArray *results = [self getUserDataFromDB];
     
@@ -669,6 +670,7 @@
         userDB.isFbUser = isFbUser;
         userDB.sessionCookie = sessionCookie;
         userDB.password = password;
+        userDB.userName = userName;
         
         NSError *errorUserStore;
         if (![[self managedObjectContext] save:&errorUserStore]) {

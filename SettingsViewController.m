@@ -30,6 +30,7 @@
     
     self.settingsList = [APPMANAGER getSettings];
     [ViblioHelper setUpNavigationBarForController:self withLeftBarButtonSelector:@selector(cancelChanges) andRightBarButtonSelector:@selector(doneChanges)];
+    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationShareTitleView:@"Settings"]];
 }
 
 -(void)cancelChanges
@@ -98,12 +99,31 @@
     
     SettingsCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
     cell.lblSettingsHeading.text = ((NSDictionary*)self.settingsList[indexPath.row])[@"title"];
-    cell.lblSettingsSubTitle.text = ((NSDictionary*)self.settingsList[indexPath.row])[@"detail"];
+    
+    NSString *subText = ((NSDictionary*)self.settingsList[indexPath.row])[@"detail"];
+    if( subText.length > 34 )
+    {
+        CGRect HeadTxtFrame = cell.lblSettingsHeading.frame;
+        HeadTxtFrame.origin.y -= 10;
+        //subTxtFrame.size.height += 10;
+        cell.lblSettingsHeading.frame = HeadTxtFrame;
+        
+        CGRect subTxtFrame = cell.lblSettingsSubTitle.frame;
+        subTxtFrame.origin.y -= 10;
+        subTxtFrame.size.height += 10;
+        cell.lblSettingsSubTitle.frame = subTxtFrame;
+    }
+    
+    cell.lblSettingsSubTitle.text = subText;
+    subText = nil;
+    
+    
     cell.settingSwitch.tag = indexPath.row;
     [self setSwitchStatusForCell:cell atIndexPath:indexPath];
-    cell.lblSettingsHeading.font = [ViblioHelper viblio_Font_Regular_WithSize:18 isBold:NO];
-    cell.lblSettingsSubTitle.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
+    //cell.lblSettingsHeading.font = [ViblioHelper viblio_Font_Regular_WithSize:18 isBold:NO];
+    //cell.lblSettingsSubTitle.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     cell.lblSettingsSubTitle.numberOfLines = 0;
+    cell.lblSettingsSubTitle.lineBreakMode = NSLineBreakByWordWrapping;
  
     return cell;
 }

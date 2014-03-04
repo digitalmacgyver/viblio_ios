@@ -179,8 +179,9 @@ void(^_failure)(NSError *error);
                                       }
                                       else
                                       {
-                                          DLog(@"Log : The result obtained is - %@", response);
-
+                                          DLog(@"Log : The result obtained is - %@", JSON);
+                                          
+                                          UserClient.userName = [JSON valueForKeyPath:@"user.displayname"];
                                           UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
                                           UserClient.emailId = emailID;
                                           UserClient.isFbUser = @(NO);
@@ -274,6 +275,8 @@ void(^_failure)(NSError *error);
                                           UserClient.isFbUser = @(NO);
                                           UserClient.isNewUser = @(YES);
                                           UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
+                                          
+                                          
                                           
                                           success(@"success");
                                       }
@@ -379,9 +382,9 @@ void(^_failure)(NSError *error);
     NSDictionary *params = @{
                              @"uuid": userUUId,
                              @"file": @{
-                                     @"Path": @"Sample Video Monday.MOV"
+                                     @"Path": @"Untitled.MOV"
                                      },
-                             @"user-agent": @"your-client-name: your-client-version"
+                             @"user-agent": @"Viblio iOS App : 0.0.1"
                              };
     
     NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:params];
@@ -737,35 +740,41 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           {
                                               DLog(@"Log : In success response callback - Feedback - %@", JSON);
                                               
-                                              NSArray *videoList = [JSON valueForKeyPath:@"media"];
-                                              NSMutableArray *result = [NSMutableArray new];
-
-                                              for( int i=0; i < videoList.count; i++ )
+                                              if( [[JSON valueForKey:@"code"] integerValue] > 299 )
+                                                  failure([ViblioHelper getCustomErrorWithMessage:@"Session Epired. Please Login" withCode:401]);
+                                              else
                                               {
-                                                  NSDictionary *videoObj = [videoList objectAtIndex:i];
-                                                  cloudVideos *video = [[cloudVideos alloc]init];
-                                                  video.uuid = [videoObj valueForKey:@"uuid"];
-                                                  video.url = [videoObj valueForKey:@"views"][@"poster"][@"url"];
-                                                  video.createdDate = [videoObj valueForKey:@"created_date"];
+                                                  NSArray *videoList = [JSON valueForKeyPath:@"media"];
+                                                  NSMutableArray *result = [NSMutableArray new];
                                                   
-                                                  NSString *lat = [videoObj valueForKey:@"lat"];
-                                                  NSString *longitude = [videoObj valueForKey:@"lng"];
+                                                  for( int i=0; i < videoList.count; i++ )
+                                                  {
+                                                      NSDictionary *videoObj = [videoList objectAtIndex:i];
+                                                      cloudVideos *video = [[cloudVideos alloc]init];
+                                                      video.uuid = [videoObj valueForKey:@"uuid"];
+                                                      video.url = [videoObj valueForKey:@"views"][@"poster"][@"url"];
+                                                      video.createdDate = [videoObj valueForKey:@"recording_date"];
+                                                      
+                                                      NSString *lat = [videoObj valueForKey:@"lat"];
+                                                      NSString *longitude = [videoObj valueForKey:@"lng"];
+                                                      
+                                                      if( ![lat isEqual:[NSNull null]] && [lat isValid] )
+                                                          video.lat = lat;
+                                                      
+                                                      if( ![lat isEqual:[NSNull null]] && [longitude isValid] )
+                                                          video.longitude = longitude;
+                                                      
+                                                      [result addObject:video];
+                                                      videoObj = nil; video = nil;
+                                                      lat = longitude = nil;
+                                                  }
                                                   
-                                                  if( ![lat isEqual:[NSNull null]] && [lat isValid] )
-                                                      video.lat = lat;
+                                                  videoList = nil;
+                                                  DLog(@"Log : The cloud video list now is - %@", VCLIENT.cloudVideoList);
                                                   
-                                                  if( ![lat isEqual:[NSNull null]] && [longitude isValid] )
-                                                      video.longitude = longitude;
-                                                  
-                                                  [result addObject:video];
-                                                  videoObj = nil; video = nil;
-                                                  lat = longitude = nil;
+                                                  success(result);
                                               }
-                                              
-                                              videoList = nil;
-                                              DLog(@"Log : The cloud video list now is - %@", VCLIENT.cloudVideoList);
-                                              
-                                              success(result);
+
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
                                               failure(error);
@@ -994,16 +1003,37 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                             success : (void(^)(BOOL hasBeenShared))success
                failure:(void(^)(NSError *error))failure
 {
-    NSString *emailList = [APPMANAGER.contacts componentsJoinedByString:@","]; //[[NSString alloc]init];
+   // NSString *emailList = APPMANAGER.selectedContacts; //[APPMANAGER.selectedContacts componentsJoinedByString:@","]; //[[NSString alloc]init];
     //emailList = [emailList str];
+    NSMutableArray *email = [NSMutableArray new];
+    //DLog(@"Log : The email list is - %@", email);
+    for( int i=0; i < APPMANAGER.selectedContacts.count; i++ )
+    {
+        NSDictionary *selectedContct = APPMANAGER.selectedContacts[i];
+        
+        if( selectedContct[@"email"] != nil && ((NSArray*)selectedContct[@"email"]).count > 0 )
+        {
+            for( int j=0; j< ((NSArray*)selectedContct[@"email"]).count; j++ )
+            {
+                [email addObject: ((NSArray*)selectedContct[@"email"])[j]];
+            }
+//            for( int j=0;j<((NSArray*)((NSDictionary*)APPMANAGER.selectedContacts[j])[@"email"]).count;i++ )
+//            {
+//                [email addObject:((NSArray*)((NSDictionary*)APPMANAGER.selectedContacts[j])[@"email"])[j]];
+//            }
+        }
+    }
+    
+    DLog(@"Log : The email list being sent is - %@", email);
+    
     __block AFJSONRequestOperation *op;
-    if( APPMANAGER.contacts != nil && APPMANAGER.contacts.count > 0 )
+    if( email != nil && email.count > 0 )
     {
         NSDictionary *queryParams = @{
                                         @"mid" : mid,
                                         @"subject" : subject,
                                         @"body" : body,
-                                        @"list" : emailList
+                                        @"list" : [email componentsJoinedByString:@","]
                                      };
         
         NSString *path = [NSString stringWithFormat:@"/services/mediafile/add_share?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
@@ -1015,7 +1045,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                               ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                               {
                                                   DLog(@"Log : In success response callback - Feedback - %@", JSON);
-                                                  failure(nil); //success(YES);
+                                                  success(YES);
                                               } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                               {
                                                   failure(error);

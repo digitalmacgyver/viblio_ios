@@ -18,6 +18,7 @@
         <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="sessionCookie" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="userID" optional="YES" attributeType="String" minValueString="0" syncable="YES"/>
+        <attribute name="userName" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="Videos" representedClassName="Videos" syncable="YES">
         <attribute name="fileLocation" optional="YES" attributeType="String" syncable="YES"/>
@@ -32,7 +33,7 @@
     <elements>
         <element name="Info" positionX="-7265" positionY="-1603" width="128" height="58"/>
         <element name="Session" positionX="-7389" positionY="-1402" width="128" height="118"/>
-        <element name="User" positionX="-7173" positionY="-1456" width="128" height="148"/>
+        <element name="User" positionX="-7173" positionY="-1456" width="128" height="163"/>
         <element name="Videos" positionX="-7515" positionY="-1602" width="128" height="163"/>
     </elements>
 </model>

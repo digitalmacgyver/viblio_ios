@@ -18,11 +18,11 @@
 @dynamic fbAccessToken;
 @dynamic sessionCookie;
 @dynamic isNewUser;
+@dynamic userName;
 
 -(NSString*)description
 {
-    return [NSString stringWithFormat:@"userId : %@, emailID : %@, password : %@, isFbUser : %@, fbAccessToken : %@, sessionCokkie : %@, isNewUser : %@", self.userID, self.emailId, self.password, self.isFbUser, self.fbAccessToken, self.sessionCookie, self.isNewUser];
+    return [NSString stringWithFormat:@"userId : %@, emailID : %@, password : %@, isFbUser : %@, fbAccessToken : %@, sessionCokkie : %@, isNewUser : %@, userName : %@", self.userID, self.emailId, self.password, self.isFbUser, self.fbAccessToken, self.sessionCookie, self.isNewUser, self.userName];
 }
-
 
 @end

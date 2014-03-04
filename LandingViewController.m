@@ -64,6 +64,7 @@
     if( userResults != nil && userResults.count > 0 )
     {
              APPMANAGER.user = [userResults firstObject];
+        
              [self performSegueWithIdentifier:(@"dashboardNav") sender:self];
         
              DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");

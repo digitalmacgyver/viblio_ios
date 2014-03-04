@@ -70,7 +70,7 @@
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 30)];
     /* Create custom view to display section header... */
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, tableView.frame.size.width, 20)];
-    [label setFont:[ViblioHelper viblio_Font_Regular_WithSize:13 isBold:NO]];
+    [label setFont:[UIFont fontWithName:@"Avenir-Roman" size:14]];
     label.textColor = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1];
     NSString *string = ((NSArray*)self.resCategorizedList[[[self.resCategorizedList allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][section]])[0]; //[VCLIENT.resCategorized allKeys][section];
     /* Section header is in 0th index... */
@@ -85,7 +85,7 @@
     NSString *cellIdentifier = @"sharedvideolist";
     SharedVideo *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.lblOwnerName.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
+    //cell.lblOwnerName.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     cell.lblVwCount.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     
     // If movie is being played stop it as the focus shifts on scrolling

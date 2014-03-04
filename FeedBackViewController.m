@@ -28,11 +28,11 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationFeedbackTitleView]];
+    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationShareTitleView:@"Feedback"]];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
-                                            [UIButton navigationItemWithTarget:self action:@selector(sendFeedback) withImage:@"" withTitle:@"Send"]];
+                                            [UIButton navigationRightItemWithTarget:self action:@selector(sendFeedback) withImage:@"" withTitle:@"Send" ]];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
-                                              [UIButton navigationItemWithTarget:self action:@selector(revealMenu) withImage:@"icon_options"]];
+                                              [UIButton navigationLeftItemWithTarget:self action:@selector(revealMenu) withImage:@"icon_options" withTitle:@"Cancel"]];
     
     self.fdbckTxtVw.autocorrectionType = UITextAutocorrectionTypeNo;
     self.fdbckTxtVw.layer.borderWidth = 1.0;
@@ -42,7 +42,7 @@
 
 -(void)revealMenu
 {
-    [self.slidingViewController anchorTopViewTo:ECRight];
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 -(void)sendFeedback
@@ -57,21 +57,24 @@
         else
             categorySelected = self.btnBug.tag ? @"Bug" : @"Idea";
         
+        // self.fdbckTxtVw.tag = 1;
         [APPCLIENT sendFeedbackToServerWithText:self.fdbckTxtVw.text category:categorySelected success:^(NSString *msg)
          {
-             self.fdbckTxtVw.tag = 1;
-             [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Feedback successfully sent" viewController:self cancelBtnTitle:@"OK"];
+            // self.fdbckTxtVw.tag = 1;
+            
          }failure:^(NSError *error)
          {
-             self.fdbckTxtVw.tag = 0;
-             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                             message:@"Feedback could not be sent. Try sending again ?"
-                                                            delegate:self
-                                                   cancelButtonTitle:@"OK"
-                                                   otherButtonTitles:@"Cancel",nil];
-             [alert show];
-             alert = nil;
+            // self.fdbckTxtVw.tag = 0;
+//             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+//                                                             message:@"Feedback could not be sent. Try sending again ?"
+//                                                            delegate:self
+//                                                   cancelButtonTitle:@"OK"
+//                                                   otherButtonTitles:@"Cancel",nil];
+//             [alert show];
+//             alert = nil;
          }];
+        
+         [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Feedback successfully sent" viewController:self cancelBtnTitle:@"OK"];
     }
     else
     {
@@ -83,21 +86,21 @@
 {
     DLog(@"Log : Ok clicked in alert view...");
     
-    if( self.fdbckTxtVw.tag )
-    {
+//    if( self.fdbckTxtVw.tag )
+//    {
         [self.fdbckTxtVw resignFirstResponder];
         [self.navigationController popToRootViewControllerAnimated:YES];
-    }
-    else{
-        
-        if( buttonIndex == 0 )
-            [self sendFeedback];
-        else
-        {
-            [self.fdbckTxtVw resignFirstResponder];
-            [self.navigationController popToRootViewControllerAnimated:YES];
-        }
-    }
+//    }
+//    else{
+//        
+//        if( buttonIndex == 0 )
+//            [self sendFeedback];
+//        else
+//        {
+//            [self.fdbckTxtVw resignFirstResponder];
+//            [self.navigationController popToRootViewControllerAnimated:YES];
+//        }
+//    }
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -155,6 +158,8 @@
     if( [textView.text isEqualToString:@"Type your feedback here"] )
         textView.text = @"";
     
+    textView.font = [UIFont fontWithName:@"Avenir-Roman" size:14];
+    
     CGRect txtVwFrame = self.fdbckTxtVw.frame;
     txtVwFrame.size.height -= 215;
     self.fdbckTxtVw.frame = txtVwFrame;
@@ -166,7 +171,10 @@
     if([text isEqualToString:@"\n"]) {
         
         if( [textView.text isEqualToString:@""] )
+        {
             textView.text = @"Type your feedback here";
+            textView.font = [UIFont fontWithName:@"Avenir-Light" size:14];
+        }
         
         CGRect txtVwFrame = self.fdbckTxtVw.frame;
         txtVwFrame.size.height += 215;

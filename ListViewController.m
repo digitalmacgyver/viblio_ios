@@ -32,27 +32,30 @@
     self.address = [[NSMutableDictionary alloc]init];
     self.dateStamp = [[NSMutableDictionary alloc]init];
     self.faceIndexes = [[NSMutableDictionary alloc]init];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOtherSharingViews:) name:showListSharingVw object:nil];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOtherSharingViews:) name:showListSharingVw object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadListView) name:reloadListView object:nil];
     
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showContacts:) name:showContactsScreen object:nil];
-    
-    if( VCLIENT.cloudVideoList == nil && VCLIENT.cloudVideoList.count <= 0 )
-    {
-        [APPCLIENT getListOfSharedWithMeVideos:^(NSArray *sharedList)
-        {
-            VCLIENT.cloudVideoList = [sharedList mutableCopy];
-            VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:APPMANAGER.listVideos];
-            [self.listView reloadData];
-        }failure:^(NSError *error)
-        {
-            DLog(@"Log : Could not load list of videos.. ");
-        }];
-    }
+//    if( VCLIENT.cloudVideoList == nil && VCLIENT.cloudVideoList.count <= 0 )
+//    {
+//        [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d", VCLIENT.pageCount] rows:ROW_COUNT success:^(NSMutableArray *result)
+//         {
+//             VCLIENT.cloudVideoList =  result;
+//            VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:APPMANAGER.listVideos];
+//            [self.listView reloadData];
+//        }failure:^(NSError *error)
+//        {
+//            DLog(@"Log : Could not load list of videos.. ");
+//        }];
+//    }
+}
+
+-(void)reloadListView
+{
+    [self.listView reloadData];
 }
 
 -(void)removeOtherSharingViews : (NSNotification*)notification
@@ -73,7 +76,8 @@
     self.address = nil;
     self.dateStamp = nil;
     self.faceIndexes = nil;
-    //[[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOtherSharingViews:) name:showListSharingVw object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -106,9 +110,21 @@
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, tableView.frame.size.width, 20)];
     [label setFont:[ViblioHelper viblio_Font_Regular_WithSize:13 isBold:NO]];
     label.textColor = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1];
-    NSString *string = ((NSArray*)VCLIENT.resCategorized[[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][section]])[0]; //[VCLIENT.resCategorized allKeys][section];
+    
+    NSArray *keysSorted = [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)];
+    DLog(@"Log : KeySorted are - %@", keysSorted);
+    NSArray *resArray = VCLIENT.resCategorized[keysSorted[section]];
+    
+    if( resArray != nil && resArray.count > 0 )
+        [label setText:[resArray firstObject]];
+    else
+        DLog(@"Log : NO contents found in the array.. Seems to be a bug.. %@ ... keysSorted - %@ ... ", resArray, keysSorted);
+    
+    keysSorted = nil;
+    resArray = nil;
+    
     /* Section header is in 0th index... */
-    [label setText:string];
+    
     [view addSubview:label];
     [view setBackgroundColor:[UIColor whiteColor]]; //your background color...
     return view;
@@ -179,10 +195,10 @@
         
         [APPCLIENT hasAMediaFileBeenSharedByTheUSerWithUUID:cell.video.uuid success:^(BOOL isShared)
          {
-             if( isShared )
-                 [cell.lblShareNow setHidden:YES];
+             if( !isShared )
+                [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_selected"] forState:UIControlStateNormal];
              else
-                 [cell.lblShareNow setHidden:NO];
+                [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_list"] forState:UIControlStateNormal];
              
          }failure:^(NSError *error)
          {

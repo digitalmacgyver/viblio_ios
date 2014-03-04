@@ -36,6 +36,13 @@
     [self.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
                                              [UIButton navigationItemWithTarget:self action:@selector(revealMenu) withImage:@"icon_options"]];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
+                                            [UIButton navigationRightItemWithTarget:self action:@selector(done) withImage:@"" withTitle:@"Done" ]];
+}
+
+-(void)done
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 -(void)revealMenu
@@ -48,7 +55,7 @@
     [APPCLIENT fetchTermsAndConditions:^(NSString *terms)
      {
          DLog(@"Log : Terms fetched is - %@", terms);
-         [self.wvTerms loadHTMLString:terms baseURL:[NSURL URLWithString:@"http://toto.com"]];
+         [self.wvTerms loadHTMLString:terms baseURL:[NSURL URLWithString:nil]];
      }failure:^(NSError *error)
      {
          DLog(@"Log : Could not fetch terms and conditions");

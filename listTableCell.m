@@ -45,62 +45,63 @@
 - (IBAction)MailSharingClicked:(id)sender {
     DLog(@"Log : Mail sharing selected");
     
-    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+//    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+//    
+//    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+//        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+//            ABAddressBookRef addressBook = ABAddressBookCreate( );
+//        });
+//    }
+//    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+//        
+//        CFErrorRef *error = NULL;
+//        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
+//        CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+//        CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
+//        
+//        if( APPMANAGER.contacts != nil )
+//        {
+//            [APPMANAGER.contacts removeAllObjects];
+//            APPMANAGER.contacts = nil;
+//        }
+//        
+//        APPMANAGER.contacts = [NSMutableArray new];
+//        
+//        for(int i = 0; i < numberOfPeople; i++) {
+//            
+//            ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
+//            
+//             NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+//             NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
+//            // NSString *emailID = (__bridge NSString*)(ABRecordCopyValue(person, kABPersonEmailProperty));
+//           //  NSLog(@"Name:%@ %@ %@", firstName, lastName, emailID);
+//            
+//            
+//            ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
+//           // [[UIDevice currentDevice] name];
+//            NSMutableArray *emailIds = [NSMutableArray new];
+//            
+//            for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
+//                NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
+//                DLog(@"Log : email is - %@", phoneNumber);
+//                [emailIds addObject:phoneNumber];
+//            }
+//            
+//            if( emailIds.count > 0 )
+//                [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
+//            [emailIds removeAllObjects];
+//            emailIds = nil;
+//        }
+//        
+//        //APPMANAGER.video = self.video;
+//        [[NSNotificationCenter defaultCenter] postNotificationName:showContactsScreen object:nil];
+//    }
+//    else {
+//        // Send an alert telling user to change privacy setting in settings app
+//        
+//        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
+//    }
     
-    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-            ABAddressBookRef addressBook = ABAddressBookCreate( );
-        });
-    }
-    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-        
-        CFErrorRef *error = NULL;
-        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
-        CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-        CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
-        
-        if( APPMANAGER.contacts != nil )
-        {
-            [APPMANAGER.contacts removeAllObjects];
-            APPMANAGER.contacts = nil;
-        }
-        
-        APPMANAGER.contacts = [NSMutableArray new];
-        
-        for(int i = 0; i < numberOfPeople; i++) {
-            
-            ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
-            
-             NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
-             NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
-            // NSString *emailID = (__bridge NSString*)(ABRecordCopyValue(person, kABPersonEmailProperty));
-           //  NSLog(@"Name:%@ %@ %@", firstName, lastName, emailID);
-            
-            
-            ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
-           // [[UIDevice currentDevice] name];
-            NSMutableArray *emailIds = [NSMutableArray new];
-            
-            for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
-                NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
-                DLog(@"Log : email is - %@", phoneNumber);
-                [emailIds addObject:phoneNumber];
-            }
-            
-            if( emailIds.count > 0 )
-                [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
-            [emailIds removeAllObjects];
-            emailIds = nil;
-        }
-        
-        APPMANAGER.video = self.video;
-        [[NSNotificationCenter defaultCenter] postNotificationName:showContactsScreen object:nil];
-    }
-    else {
-        // Send an alert telling user to change privacy setting in settings app
-        
-        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
-    }
 }
 
 
@@ -242,27 +243,30 @@
 - (IBAction)sharingVideoClicked:(id)sender {
     DLog(@"Log : Sharing button clicked...");
     
-    [self.superview addSubview:self.vwShareBtns];
+//    [self.superview addSubview:self.vwShareBtns];
+//    
+//    CGRect shareFrame = self.vwShareBtns.frame;
+//    shareFrame.origin.y = self.frame.origin.y;
+//    self.vwShareBtns.frame = shareFrame;
+//    
+//    UISwipeGestureRecognizer *recognizer;
+//    recognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(removeShareVw)];
+//    [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
+//    [self.vwShareBtns addGestureRecognizer:recognizer];
+//    recognizer = nil;
+//    
+//    [self.vwShareBtns setHidden:NO];
+//    [UIView animateWithDuration:0.5 animations:^{
+//        CGRect shareFrame = self.vwShareBtns.frame;
+//        shareFrame.origin.x = 88;
+//        shareFrame.size.width = 232;
+//        self.vwShareBtns.frame = shareFrame;
+//    }];
+//    
+//    [[NSNotificationCenter defaultCenter] postNotificationName:showListSharingVw object:self];
     
-    CGRect shareFrame = self.vwShareBtns.frame;
-    shareFrame.origin.y = self.frame.origin.y;
-    self.vwShareBtns.frame = shareFrame;
-    
-    UISwipeGestureRecognizer *recognizer;
-    recognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(removeShareVw)];
-    [recognizer setDirection:(UISwipeGestureRecognizerDirectionRight)];
-    [self.vwShareBtns addGestureRecognizer:recognizer];
-    recognizer = nil;
-    
-    [self.vwShareBtns setHidden:NO];
-    [UIView animateWithDuration:0.5 animations:^{
-        CGRect shareFrame = self.vwShareBtns.frame;
-        shareFrame.origin.x = 88;
-        shareFrame.size.width = 232;
-        self.vwShareBtns.frame = shareFrame;
-    }];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:showListSharingVw object:self];
+    APPMANAGER.posterImageForVideoSharing = self.imgVwThumbnail.image;
+    [[NSNotificationCenter defaultCenter] postNotificationName:showingSharingView object:self];
 }
 
 - (IBAction)imfThumbTapped:(id)sender {

@@ -67,7 +67,7 @@
                 [self.activity stopAnimating];
                 
                 // Persist the user details in the DB until the user logs out
-                [DBCLIENT persistUserDetailsWithEmail:UserClient.emailId password:nil userID:UserClient.userID isNewUser:UserClient.isNewUser isFbUser:UserClient.isFbUser sessionCookie:UserClient.sessionCookie fbAccessToken:UserClient.fbAccessToken];
+                [DBCLIENT persistUserDetailsWithEmail:UserClient.emailId password:nil userID:UserClient.userID isNewUser:UserClient.isNewUser isFbUser:UserClient.isFbUser sessionCookie:UserClient.sessionCookie fbAccessToken:UserClient.fbAccessToken userName:UserClient.userName];
                 
                 APPMANAGER.turnOffUploads = NO;
                 APPMANAGER.user = [[DBCLIENT getUserDataFromDB] firstObject];

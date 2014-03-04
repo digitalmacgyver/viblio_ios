@@ -55,7 +55,8 @@
                          isNewUser:(NSNumber*)isNewUser
                           isFbUser:(NSNumber*)isFbUser
                      sessionCookie:(NSString*)sessionCookie
-                     fbAccessToken:(NSString*)fbAccessToken;
+                     fbAccessToken:(NSString*)fbAccessToken
+                          userName:(NSString*)userName;
 -(NSArray *)getUserDataFromDB;
 -(void)deleteUserEntity;
 

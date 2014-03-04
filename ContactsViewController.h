@@ -12,6 +12,5 @@
 
 @property (nonatomic, retain)NSMutableArray *selectedIndices;
 @property (weak, nonatomic) IBOutlet UITableView *contactsList;
-@property (nonatomic, strong) AFJSONRequestOperation* op;
 
 @end

@@ -22,6 +22,8 @@ NSString * const showListSharingVw = @"com.viblio.app : showListSharingView";
 NSString * const removeListSharinVw = @"com.viblio.app : removeListSharingView";
 NSString * const showContactsScreen = @"com.viblio.app : showContactsScreen";
 NSString * const removeContactsScreen = @"com.viblio.app : removeContactsScreen";
+NSString * const logoutUser = @"com.viblio.app : logoutUser";
+NSString * const reloadListView = @"com.viblio.app : reloadListView";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {
@@ -55,9 +57,13 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 {
     // Assets will be loaded on subsequent logins again
     
+    APPMANAGER.posterImageForVideoSharing = nil;
+    APPMANAGER.videoToBeShared = nil;
+    
     [VCLIENT.filteredVideoList  removeAllObjects];
     VCLIENT.filteredVideoList = nil;
-    
+    [VCLIENT.cloudVideoList removeAllObjects];
+    VCLIENT.cloudVideoList = nil;
 
     [DBCLIENT deleteUserEntity];
     APPMANAGER.user = nil;
@@ -154,9 +160,25 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(UIView *)vbl_navigationTitleView
 {
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 61, 17)];
-    [imageView setImage:[UIImage imageNamed:@"viblio"]];
-    return (UIView *)imageView;
+    UIView *vwTitle = [[UIView alloc]initWithFrame:CGRectMake(0, 20, 171, 27)];
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(45, 0, 111, 30)];
+    [imageView setImage:[UIImage imageNamed:@"nav_logo"]];
+    [vwTitle addSubview:imageView];
+    return vwTitle;
+}
+
++(UIView *)vbl_navigationShareTitleView : (NSString*)title
+{
+    UIView *vwTitle = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 201, 20)];
+    UILabel *lblTitle = [[ UILabel alloc ]initWithFrame:CGRectMake(-10, 0, 201, 20)];
+    lblTitle.backgroundColor = [UIColor clearColor];
+    lblTitle.text = title; //@"Share with VIBLIO";
+    lblTitle.font = [UIFont fontWithName:@"Avenir-Heavy" size:18];
+    lblTitle.textColor = [UIColor whiteColor];
+    lblTitle.textAlignment = NSTextAlignmentCenter;
+    [vwTitle addSubview:lblTitle];
+    //vwTitle.backgroundColor = [UIColor redColor];
+    return vwTitle;
 }
 
 +(UIView *)vbl_navigationTellAFriendTitleView
@@ -164,6 +186,22 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 61, 17)];
     [imageView setImage:[UIImage imageNamed:@"tell_friend"]];
     return (UIView *)imageView;
+}
+
++(UIView *)vbl_navigationSetingsView
+{
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 61, 22)];
+    [imageView setImage:[UIImage imageNamed:@"settings"]];
+    return (UIView *)imageView;
+}
+
++(UIView *)vbl_navigationInProgressView
+{
+    UIView *vwTitle = [[UIView alloc]initWithFrame:CGRectMake(0, 20, 171, 17)];
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 0, 171, 17)];
+    [imageView setImage:[UIImage imageNamed:@"text_uploads_in_progress"]];
+    [vwTitle addSubview:imageView];
+    return vwTitle;
 }
 
 +(UIView *)vbl_navigationFeedbackTitleView
@@ -191,9 +229,9 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 {
     [vc.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
     vc.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
-                                           [UIButton navigationItemWithTarget:vc action:leftSelector withImage:@"" withTitle:@"Cancel"]];
+                                           [UIButton navigationLeftItemWithTarget:vc action:leftSelector withImage:@"" withTitle:@"Cancel"]];
     vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
-                                            [UIButton navigationItemWithTarget:vc action:rightSelector withImage:@"" withTitle:@"Done"]];
+                                            [UIButton navigationRightItemWithTarget:vc action:rightSelector withImage:@"" withTitle:@"Done" ]];
 }
 
 +(UIColor*)getVblRedColor
@@ -211,6 +249,10 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     return [UIColor colorWithRed:0.2117 green:0.2196 blue:0.2784 alpha:1];
 }
 
++(UIColor*)getVblGreenishBlueColor
+{
+    return [UIColor colorWithRed:.1098 green:.7215 blue:.8196 alpha:1];
+}
 
 + (void)downloadImageWithURLString:(NSString *)urlString completion:(void (^)(UIImage *image, NSError *error))completion
 {
@@ -378,5 +420,8 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 //    arr = nil;
     return result;
 }
+
+
+
 
 @end

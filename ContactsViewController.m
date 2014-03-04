@@ -27,66 +27,66 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    
-    DLog(@"Log : View has been loaded");
-    
-    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
+
+    [self.navigationItem setTitleView:[ViblioHelper vbl_navigationShareTitleView:@"Contacts"]];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
-                                              [UIButton navigationItemWithTarget:self action:@selector(selectContactList) withImage:@"" withTitle:@"Done"]];
+                                              [UIButton navigationRightItemWithTarget:self action:@selector(selectContactList) withImage:@"" withTitle:@"Done"]];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
-                                             [UIButton navigationItemWithTarget:self action:@selector(cancelContactList) withImage:@"" withTitle:@"Cancel"]];
+                                             [UIButton navigationLeftItemWithTarget:self action:@selector(cancelContactList) withImage:@"" withTitle:@"Cancel" ]];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
     self.selectedIndices = [NSMutableArray new];
+    
+    if( APPMANAGER.selectedContacts != nil && APPMANAGER.selectedContacts.count > 0 )
+    {
+        DLog(@"Log : Finding to restore selected indices...");
+        for( int i=0; i<APPMANAGER.selectedContacts.count; i++ )
+        {
+            id selectedContact = APPMANAGER.selectedContacts[i];
+            for( int j=0; j < APPMANAGER.contacts.count; j++ )
+            {
+                id contact = APPMANAGER.contacts[j];
+                if( [((NSDictionary*)contact)[@"fname"] isEqualToString:((NSDictionary*)selectedContact)[@"fname"]] &&
+                            [((NSDictionary*)contact)[@"lname"] isEqualToString:((NSDictionary*)selectedContact)[@"lname"]] )
+                    [self.selectedIndices addObject:@(j)];
+            }
+            [self.contactsList reloadData];
+        }
+    }
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
-    DLog(@"Log : Cancelling requests..");
     [self.selectedIndices removeAllObjects];
     self.selectedIndices = nil;
     
-    if( self.op != nil )
-    {
-        [self.op cancel];
-    }
-//    [APPCLIENT.operationQueue cancelAllOperations];
-//    NSString *emailList = [APPMANAGER.contacts componentsJoinedByString:@","]; //[[NSString alloc]init];
-//    //emailList = [emailList str];
-////    if( APPMANAGER.contacts != nil && APPMANAGER.contacts.count > 0 )
-////    {
-//        NSDictionary *queryParams = @{
-//                                      @"mid" : APPMANAGER.video.uuid,
-//                                      @"subject" : @"",
-//                                      @"body" : @"",
-//                                      @"list" : emailList
-//                                      };
-//        
-//        NSString *path = [NSString stringWithFormat:@"/services/mediafile/add_share?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
-//    [APPCLIENT cancelAllHTTPOperationsWithMethod:@"POST" path:path];
+//    if( self.op != nil )
+//        [self.op cancel];
 }
 
 -(void)selectContactList
 {
     DLog(@"Log : Select the contact list");
+    DLog(@"Log : Selected contact list is - %@", self.selectedIndices);
     
-    self.op = [APPCLIENT sharingToUsersWithSubject:@"" body:@"" fileId:APPMANAGER.video.uuid success:^(BOOL sharingSuccess)
+    if (APPMANAGER.selectedContacts != nil)
     {
-        DLog(@"Log : Success callback...");
-        [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
-    }failure:^(NSError *error)
+        [APPMANAGER.selectedContacts removeAllObjects];
+        APPMANAGER.selectedContacts = nil;
+    }
+    APPMANAGER.selectedContacts = [[NSMutableArray alloc]init];
+    
+    for( int i=0; i < self.selectedIndices.count; i++ )
     {
-        DLog(@"Log : Error - %@", error);
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                        message:@"Error while sharing the video. Do you want to try again ?"
-                                                       delegate:self
-                                              cancelButtonTitle:@"Cancel"
-                                              otherButtonTitles:@"Try Again", nil];
-        [alert show];
-        alert = nil;
-    }];
+        DLog(@"Log : The object to be added is - %@", [APPMANAGER.contacts objectAtIndex:i]);
+        [APPMANAGER.selectedContacts addObject:[APPMANAGER.contacts objectAtIndex:i]];
+    }
+    
+    DLog(@"Log : The selected list is - %@", APPMANAGER.selectedContacts);
+    
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 -(void)cancelContactList
@@ -128,14 +128,31 @@
     NSString *cellIdentifier = @"ContactsCell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+   // cell.tag = 0;
     
     if( ![self isIndexSelected:@(indexPath.row)] )
+    {
         cell.imageView.image = nil;
+        cell.tag = 0;
+    }
     else
+    {
+        cell.tag = 1;
         cell.imageView.image = [UIImage imageNamed:@"selected"];
-    cell.textLabel.text = [[((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"fname"] stringByAppendingString:@" "] stringByAppendingString:((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"lname"]];
+    }
+    
+    if( [((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"fname"] isValid] &&  ((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"lname"] )
+    {
+            cell.textLabel.text = [[((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"fname"] stringByAppendingString:@" "] stringByAppendingString:((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"lname"]];
+    }
+    else
+    {
+        cell.textLabel.text =  [((NSArray*)((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"email"]) firstObject];
+    }
+
     cell.textLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     cell.textLabel.textColor = [UIColor grayColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -152,6 +169,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    DLog(@"Log : Selection detected..");
     
     if( cell.tag )
     {
@@ -162,7 +180,9 @@
         {
             if( [self.selectedIndices[i] isEqual:@(indexPath.row)] )
             {
+                DLog(@"Log : Entering in removig the object - %@", self.selectedIndices);
                 [self.selectedIndices removeObjectAtIndex:i];
+                DLog(@"Log : Entering in removig the object after removal - %@", self.selectedIndices);
                 break;
             }
         }
@@ -173,6 +193,8 @@
         cell.tag = 1;
         [self.selectedIndices addObject:@(indexPath.row)];
     }
+    
+    [self.contactsList reloadData];
 }
 
 @end

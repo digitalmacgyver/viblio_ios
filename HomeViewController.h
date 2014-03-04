@@ -12,8 +12,9 @@
 #import <AVFoundation/AVFoundation.h>
 #import "ListViewController.h"
 #import "SharedViewController.h"
+#import "LandingViewController.h"
 
-@interface HomeViewController : UIViewController
+@interface HomeViewController : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, UIAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UICollectionView *videoList;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segment;

@@ -82,7 +82,7 @@
              {
                  [self.loginActivity stopAnimating];
                  
-                 [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Reset password will be sent to your mail" viewController:self cancelBtnTitle:@"OK"];
+                 [ViblioHelper displayAlertWithTitle:@"Success" messageBody:[NSString stringWithFormat:@"Your new password will be sent to your mail %@", self.email] viewController:self cancelBtnTitle:@"OK"];
              }failure:^(NSError *error)
              {
                  [self.loginActivity stopAnimating];
@@ -124,7 +124,7 @@
                      [self.loginActivity stopAnimating];
                      
                      // Persist the user details in the DB until the user logs out
-                     [DBCLIENT persistUserDetailsWithEmail:UserClient.emailId password:self.password.text userID:UserClient.userID isNewUser:UserClient.isNewUser isFbUser:UserClient.isFbUser sessionCookie:UserClient.sessionCookie fbAccessToken:UserClient.fbAccessToken];
+                     [DBCLIENT persistUserDetailsWithEmail:UserClient.emailId password:self.password.text userID:UserClient.userID isNewUser:UserClient.isNewUser isFbUser:UserClient.isFbUser sessionCookie:UserClient.sessionCookie fbAccessToken:UserClient.fbAccessToken userName:UserClient.userName];
                      
                      APPMANAGER.turnOffUploads = NO;
                      APPMANAGER.user = [[DBCLIENT getUserDataFromDB] firstObject];

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "UIButton+Additions.h"
 #import "SDWebImageManager.h"
+#import <AddressBook/AddressBook.h>
 
 @interface ViblioHelper : NSObject
 
@@ -25,6 +26,8 @@ extern NSString * const removeListSharinVw;
 
 extern NSString * const showContactsScreen;
 extern NSString * const removeContactsScreen;
+extern NSString * const logoutUser;
+extern NSString * const reloadListView;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 
@@ -52,7 +55,9 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 +(UIView *)vbl_navigationTitleView;
 +(UIView *)vbl_navigationFeedbackTitleView;
 +(UIView *)vbl_navigationTellAFriendTitleView;
-
++(UIView *)vbl_navigationSetingsView;
++(UIView *)vbl_navigationInProgressView;
++(UIView *)vbl_navigationShareTitleView : (NSString*)title;
 
 +(void)clearSessionVariables;
 +(void)setUpNavigationBarForController : (UIViewController*)vc withLeftBarButtonSelector : (SEL)leftSelector andRightBarButtonSelector : (SEL) rightSelector;
@@ -60,6 +65,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 +(UIColor*)getVblRedColor;
 +(UIColor*)getVblGrayColor;
 +(UIColor*)getVblBlueColor;
++(UIColor*)getVblGreenishBlueColor;
 
 + (void)downloadImageWithURLString:(NSString *)urlString completion:(void (^)(UIImage *image, NSError *error))completion;
 +(NSArray*)getDateTimeStampToReadableFormat : (NSString*)dateStamp;

@@ -333,7 +333,7 @@ typedef enum FBRequestConnectionState {
     FBRequest *request = [FBRequest requestWithGraphPath:graphPath
                                               parameters:parameters
                                               HTTPMethod:HTTPMethod];
-
+    NSLog(@"Log : The request sent is - %@", request);
     return [request startWithCompletionHandler:handler];
 }
 

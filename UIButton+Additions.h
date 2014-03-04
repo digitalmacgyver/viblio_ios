@@ -11,6 +11,7 @@
 @interface UIButton (Additions)
 
 + (UIButton*)navigationItemWithTarget:(id)target action:(SEL)selector withImage:(NSString*)image;
-+ (UIButton*)navigationItemWithTarget:(id)target action:(SEL)selector withImage:(NSString*)image withTitle:(NSString *)title;
++ (UIView*)navigationRightItemWithTarget:(id)target action:(SEL)selector withImage:(NSString*)image withTitle:(NSString *)title;
++ (UIView*)navigationLeftItemWithTarget:(id)target action:(SEL)selector withImage:(NSString*)image withTitle:(NSString *)title;
 
 @end

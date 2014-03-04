@@ -106,46 +106,46 @@
 
 -(void)send
 {
-    [self likeButtonPressed:self];
+    //[self likeButtonPressed:self];
 //    [self postWithText:self.txtSubject.text ImageName:@"Sample Video" URL:[NSURL URLWithString:@"https://staging.viblio.com/"] Caption:@"" Name:self.txtFiledTitle.text andDescription:self.txtVwBody.text];
-//    NSString *fileId ;
-//    BOOL isShared = NO;
-//    
-//    if( self.btnFB.tag )
-//    {
-//        isShared = YES;
-//        DLog(@"Log : Has to be shared via FB too...");
-//    }
-//    
-//    if( self.btnMail.tag )
-//    {
-//        isShared = YES;
-//        DLog(@"Log : Has to be shared via Mail too...");
-//        if( [APPMANAGER.VideoToBeShared isKindOfClass:[VideoCell class] ] )
-//            fileId = ((VideoCell*)APPMANAGER.VideoToBeShared).video.uuid;
-//        else
-//            fileId = ((listTableCell*)APPMANAGER.VideoToBeShared).video.uuid;
-//        
-//        self.op = [APPCLIENT sharingToUsersWithSubject:@"" body:@"" fileId:fileId success:^(BOOL sharingSuccess)
-//                   {
-//                       DLog(@"Log : Success callback...");
-//                   }failure:^(NSError *error)
-//                   {
-//                       DLog(@"Log : Error - %@", error);
-//                       //                   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-//                       //                                                                   message:@"Error while sharing the video. Do you want to try again ?"
-//                       //                                                                  delegate:self
-//                       //                                                         cancelButtonTitle:@"Cancel"
-//                       //                                                         otherButtonTitles:@"Try Again", nil];
-//                       //                   [alert show];
-//                       //                   alert = nil;
-//                   }];
-//    }
-//
-//    if( isShared )
-//        [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
-//    else
-//        [ViblioHelper displayAlertWithTitle:@"Alert" messageBody:@"Please selct an option to share the video" viewController:self cancelBtnTitle:@"OK"];
+    NSString *fileId ;
+    BOOL isShared = NO;
+    
+    if( self.btnFB.tag )
+    {
+        isShared = YES;
+        DLog(@"Log : Has to be shared via FB too...");
+    }
+    
+    if( self.btnMail.tag )
+    {
+        isShared = YES;
+        DLog(@"Log : Has to be shared via Mail too...");
+        if( [APPMANAGER.VideoToBeShared isKindOfClass:[VideoCell class] ] )
+            fileId = ((VideoCell*)APPMANAGER.VideoToBeShared).video.uuid;
+        else
+            fileId = ((listTableCell*)APPMANAGER.VideoToBeShared).video.uuid;
+        
+        self.op = [APPCLIENT sharingToUsersWithSubject:self.txtSubject.text  title:self.txtFiledTitle.text body:self.txtVwBody.text fileId:fileId success:^(BOOL sharingSuccess)
+                   {
+                       DLog(@"Log : Success callback...");
+                   }failure:^(NSError *error)
+                   {
+                       DLog(@"Log : Error - %@", error);
+                       //                   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                       //                                                                   message:@"Error while sharing the video. Do you want to try again ?"
+                       //                                                                  delegate:self
+                       //                                                         cancelButtonTitle:@"Cancel"
+                       //                                                         otherButtonTitles:@"Try Again", nil];
+                       //                   [alert show];
+                       //                   alert = nil;
+                   }];
+    }
+
+    if( isShared )
+        [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
+    else
+        [ViblioHelper displayAlertWithTitle:@"Alert" messageBody:@"Please selct an option to share the video" viewController:self cancelBtnTitle:@"OK"];
 }
 
 -(void)cancelSharing

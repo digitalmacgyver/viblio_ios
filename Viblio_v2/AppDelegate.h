@@ -18,6 +18,7 @@
 
 @property (strong, nonatomic) UINavigationController *navController;
 
+@property(assign) BOOL isMoviePlayer;
 @property (copy) void (^backgroundSessionCompletionHandler)();
 
 @end

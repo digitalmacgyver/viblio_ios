@@ -12,7 +12,10 @@
 @interface SignInViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UILabel *lblSignUpWith;
-@property (weak, nonatomic) IBOutlet UILabel *lblTrial;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activity;
+
+@property (weak, nonatomic) IBOutlet UITextField *txtUserName;
+@property (weak, nonatomic) IBOutlet UITextField *txtPassword;
+@property (weak, nonatomic) IBOutlet UIButton *btnforgotPasswd;
 
 @end

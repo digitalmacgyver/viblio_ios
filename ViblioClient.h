@@ -128,8 +128,9 @@
                                          failure:(void(^)(NSError *error))failure;
 
 -(AFJSONRequestOperation*)sharingToUsersWithSubject : (NSString*)subject
-                            body : (NSString*)body
-                          fileId : (NSString*)mid
-                         success : (void(^)(BOOL hasBeenShared))success
-                          failure:(void(^)(NSError *error))failure;
+                                              title : (NSString*) title
+                                               body : (NSString*)body
+                                             fileId : (NSString*)mid
+                                            success : (void(^)(BOOL hasBeenShared))success
+                                             failure:(void(^)(NSError *error))failure;
 @end

@@ -48,6 +48,11 @@
 {
     // Override point for customization after application launch.
     
+    self.isMoviePlayer = NO;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:MPMoviePlayerWillEnterFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disableOrientation) name:MPMoviePlayerWillExitFullscreenNotification object:nil];
+    
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
     UIDevice *device = [UIDevice currentDevice];
@@ -141,6 +146,28 @@
     [APPCLIENT invalidateFileUploadTask];
     APPCLIENT.uploadTask = nil;
     [FBSession.activeSession close];
+}
+
+-(void)changeOrientation
+{
+    self.isMoviePlayer = YES;
+}
+
+-(void)disableOrientation
+{
+    self.isMoviePlayer = NO;
+}
+
+- (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
+{
+    if( self.isMoviePlayer )
+    return UIInterfaceOrientationMaskAll
+    ;
+    
+    else
+        return UIInterfaceOrientationMaskPortrait;
+    
+    
 }
 
 @end

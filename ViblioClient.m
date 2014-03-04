@@ -337,6 +337,8 @@ void(^_failure)(NSError *error);
                                               ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                               {
                                                   DLog(@"LOG : The response obtained is - %@",op.responseString);
+                                                  success(@"");
+                                                  
                                               } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                               {
                                                   failure(error);
@@ -998,6 +1000,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 
 -(AFJSONRequestOperation*)sharingToUsersWithSubject : (NSString*)subject
+                                              title : (NSString*) title
                             body : (NSString*)body
                           fileId : (NSString*)mid
                             success : (void(^)(BOOL hasBeenShared))success
@@ -1005,6 +1008,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
    // NSString *emailList = APPMANAGER.selectedContacts; //[APPMANAGER.selectedContacts componentsJoinedByString:@","]; //[[NSString alloc]init];
     //emailList = [emailList str];
+    
+    if([title isValid] && [title isEqualToString:@"Title"])
+        title = @"Untitled";
+        
+    
     NSMutableArray *email = [NSMutableArray new];
     //DLog(@"Log : The email list is - %@", email);
     for( int i=0; i < APPMANAGER.selectedContacts.count; i++ )
@@ -1017,10 +1025,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
             {
                 [email addObject: ((NSArray*)selectedContct[@"email"])[j]];
             }
-//            for( int j=0;j<((NSArray*)((NSDictionary*)APPMANAGER.selectedContacts[j])[@"email"]).count;i++ )
-//            {
-//                [email addObject:((NSArray*)((NSDictionary*)APPMANAGER.selectedContacts[j])[@"email"])[j]];
-//            }
         }
     }
     
@@ -1030,6 +1034,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     if( email != nil && email.count > 0 )
     {
         NSDictionary *queryParams = @{
+                                      @"title" : title,
                                         @"mid" : mid,
                                         @"subject" : subject,
                                         @"body" : body,

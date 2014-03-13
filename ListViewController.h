@@ -19,4 +19,6 @@
 @property (nonatomic, strong) NSMutableDictionary *address,*dateStamp, *faceIndexes;
 @property (nonatomic, strong) NSMutableDictionary *result;
 
+@property (nonatomic, strong)UIView *popUp;
+
 @end

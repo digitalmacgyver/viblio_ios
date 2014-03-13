@@ -39,7 +39,6 @@
     {
         DLog(@"Log : Some other video paused");
         [DBCLIENT updateIsPausedStatusOfFile:self.asset.defaultRepresentation.url forPausedState:1];
-        //[ViblioHelper displayAlertWithTitle:@"Resume" messageBody:@"Video Upload paused" viewController:nil cancelBtnTitle:@"OK"];
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:uploadComplete object:nil];
 }

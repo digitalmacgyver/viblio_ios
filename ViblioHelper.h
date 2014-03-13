@@ -72,4 +72,6 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 + (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2;
 +(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList;
 
++(void)MailSharingClicked : (id)sender;
+
 @end

@@ -241,6 +241,8 @@
     DLog(@"Log : Option %@ selected....", _menuSections[indexPath.row]);
      [self.slidingViewController resetTopView];
     
+    APPMANAGER.restoreMyViblio = YES;
+    
     if( [_menuSections[indexPath.row] isEqualToString:@"Home"] )
     {
         DLog(@"Log : Show home screen");

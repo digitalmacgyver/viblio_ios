@@ -32,6 +32,8 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    [ViblioHelper MailSharingClicked:self];
+    
     [self.navigationController.navigationBar setBackgroundImage:[ViblioHelper setUpNavigationBarBackgroundImage] forBarMetrics:UIBarMetricsDefault];
     [self.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
     self.segment.tag = 0;
@@ -46,34 +48,25 @@
     {
         [VCLIENT videoUploadIntelligence];
     }
-    else
-    {
-//        [ViblioHelper displayAlertWithTitle:@"No Videos" messageBody:@"No videos found in the camera roll to upload" viewController:self cancelBtnTitle:@"OK"];
-    }
-//    
-//    UICollectionViewFlowLayout *collectionViewLayout = (UICollectionViewFlowLayout*)self.videoList.collectionViewLayout;
-//    collectionViewLayout.sectionInset = UIEdgeInsetsMake(20, 0, 20, 0);
 }
-
-//- (IBAction)shareClicked:(id)sender {
-//
-//    UIButton *btnShare = (UIButton*)sender;
-//    DLog(@"Log : Share clicked on index - %d", btnShare.tag);
-//}
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    
-    self.indexClicked = -1;
     
     // Get the list of videos in cloud and render them in the UI
     // The fetched list of videos are mapped to the cloudVideoList model and are stored in an cloudList array in VCLIENT
     
     [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d", VCLIENT.pageCount] rows:ROW_COUNT success:^(NSMutableArray *result)
      {
+         if( self.errorAlert.tag == 1 )
+         {
+             self.errorAlert.tag = 0;
+             [self.errorAlert dismissWithClickedButtonIndex:0 animated:NO];
+             self.errorAlert = nil;
+         }
+         
          if( VCLIENT.cloudVideoList != nil )
          {
-             DLog(@"Flushing the objects from cloud...");
              [VCLIENT.cloudVideoList removeAllObjects];
              VCLIENT.cloudVideoList = nil;
          }
@@ -81,17 +74,11 @@
          VCLIENT.cloudVideoList = result;
          VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
          
-         // If list vie wis pushed on then publish notification and dont reload the home view
+         // If list view was pushed on then publish notification and dont reload the home view
          if( self.segment.tag )
-         {
-             DLog(@"Log : In if - ");
              [[NSNotificationCenter defaultCenter] postNotificationName:reloadListView object:nil];
-         }
          else
-         {
-             DLog(@"Log : In else - ");
-            [self.videoList reloadData];
-         }
+             [self.videoList reloadData];
          
      }failure:^(NSError *error)
      {
@@ -107,37 +94,83 @@
               }];
          }
          else
-             [ViblioHelper displayAlertWithTitle:@"Error" messageBody:error.localizedDescription viewController:nil cancelBtnTitle:@"OK"];
+         {
+             [self viewDidAppear:YES];
+             if( !self.errorAlert.tag )
+             {
+                 self.errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                              message:@"Connecting to server..."
+                                                             delegate:self
+                                                    cancelButtonTitle:@"OK"
+                                                    otherButtonTitles:nil];
+                 [self.errorAlert show];
+                 self.errorAlert.tag = 1;
+             }
+         }
      }];
-
+    
     
     // Get the count of media files uploaded by the user as a reference to create the records and lazy load..
     [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
      {
-         DLog(@"Log : The count obtained is - %d", count);
          VCLIENT.totalRecordsCount = count;
+         if( count == 0 )
+         {
+             self.popUp = [[UIView alloc]initWithFrame:CGRectMake(20, 140, 280, 150)];
+             self.popUp.backgroundColor = [UIColor whiteColor];
+             [self.view addSubview:self.popUp];
+             self.popUp.clipsToBounds = YES;
+             [self.popUp.layer setCornerRadius:10];
+             
+             UILabel *lblMsg = [[UILabel alloc]initWithFrame:CGRectMake(5, 10, 270, 100)];
+             lblMsg.text = @"Hi, I'm VIBLIO!  Right now, I am uploading and processing your videos.  This will take me a while depending on how many videos you have.  I'll let you know as soon as I'm done.";
+             lblMsg.textColor = [ViblioHelper getVblBlueColor];
+             lblMsg.numberOfLines = 0;
+             lblMsg.font = [UIFont fontWithName:@"Avenir-Roman" size:14];
+             [self.popUp addSubview:lblMsg];
+             lblMsg.backgroundColor = [UIColor clearColor];
+             lblMsg.textAlignment = NSTextAlignmentCenter;
+             
+             UIButton *ok = [UIButton buttonWithType:UIButtonTypeSystem];
+             ok.titleLabel.text = @"OK";
+             ok.titleLabel.textColor = [ViblioHelper getVblBlueColor];
+             [ok setFrame:CGRectMake(100, 110, 80, 30)];
+             [ok setTitle:@"OK" forState:UIControlStateNormal];
+             [ok addTarget:self action:@selector(okTapped) forControlEvents:UIControlEventTouchUpInside];
+             [self.popUp addSubview:ok];
+             
+             [self.videoList reloadData];
+         }
+         
      }failure:^(NSError *error)
      {
      }];
     
-    [self MyViblioClicked:nil];
+    if( APPMANAGER.restoreMyViblio )
+        [self MyViblioClicked:nil];
     
+    APPMANAGER.restoreMyViblio = NO;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSharingScreen:) name:showingSharingView object:nil];
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showContacts:) name:showContactsScreen object:nil];
+    
+}
+
+
+-(void)okTapped
+{
+    DLog(@"Log : Ok tapped");
+    if( self.popUp != nil )
+    {
+        DLog(@"Log : Ok tapped - In");
+        [self.popUp removeFromSuperview];
+        self.popUp = nil;
+    }
 }
 
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    DLog(@"Log : alert index is - %d", buttonIndex);
     if( buttonIndex == 0 )
         [[NSNotificationCenter defaultCenter] postNotificationName:logoutUser object:nil];
 }
-
-//-(void)showContacts:(NSNotification*)notification
-//{
-//    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
-//    DLog(@"Log : The parent class is - %@", NSStringFromClass([self.slidingViewController.topViewController class]));
-//}
 
 -(void)showSharingScreen : (NSNotification*)notification
 {
@@ -187,14 +220,15 @@
         self.btnMyViblio.titleLabel.textColor = [ViblioHelper getVblGrayColor];
         [self.btnSharedWithMe setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [self.btnSharedWithMe setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-        //self.btnSharedWithMe.titleLabel.textColor = [UIColor greenColor];
     }
 }
 
 - (IBAction)valueOfSegmentChanged:(id)sender {
 
+    if( VCLIENT.cloudVideoList == nil || VCLIENT.cloudVideoList.count <= 0 )
+        [self viewDidAppear:YES];
+    
     UISegmentedControl *segmentView = (UISegmentedControl*)sender;
-    DLog(@"Log : Segment value changed...");
 
     switch (segmentView.selectedSegmentIndex) {
         case 0:
@@ -213,10 +247,9 @@
             {
                 self.list = nil;
             }
-
-                DLog(@"Log : List object does not exist... Create it...");
+            
                 self.list = (ListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"listDash")];
-                self.list.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
+                self.list.view.frame = CGRectMake(0, self.btnMyViblio.frame.size.height, 320, self.view.frame.size.height - self.btnMyViblio.frame.size.height);
             
             [self.view addSubview:self.list.view];
             break;
@@ -231,13 +264,17 @@
     if( self.sharedList == nil )
     {
         self.sharedList = (SharedViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"sharedList")];
-        self.sharedList.view.frame = CGRectMake(0, 34, 320, self.view.frame.size.height - 34);
+        self.sharedList.view.frame = CGRectMake(0, self.btnMyViblio.frame.size.height, 320, self.view.frame.size.height - self.btnMyViblio.frame.size.height);
     }
     [self.view addSubview:self.sharedList.view];
     [self.segment setHidden:YES];
 }
 
 - (IBAction)MyViblioClicked:(id)sender {
+    
+    if( VCLIENT.cloudVideoList == nil || VCLIENT.cloudVideoList.count <= 0 )
+        [self viewDidAppear:YES];
+    
     [self setBackGroundColorsForButtons:YES];
     [self.segment setHidden:NO];
     
@@ -287,10 +324,15 @@
     if (kind == UICollectionElementKindSectionHeader) {
         AssetsCollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         
+        DLog(@"Log : Not crashing before this...");
+        
         headerView.lblTitle.text = [VCLIENT.resCategorized[[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][indexPath.section]] firstObject];
+        DLog(@"Log : Crashing after this....");
+        
         headerView.lblTitle.font = [UIFont fontWithName:@"Avenir-Light" size:14];
         headerView.lblTitle.textColor = [UIColor colorWithRed:0.6156 green:0.6274 blue:0.6745 alpha:1];
         
+        DLog(@"Log : Crashing somewhere in between");
         reusableview = headerView;
     }
     return reusableview;
@@ -342,6 +384,7 @@
             DLog(@"Log : Lazy load next set of records...");
             [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d",(int)(VCLIENT.cloudVideoList.count/ROW_COUNT.integerValue)+1] rows:ROW_COUNT success:^(NSMutableArray *result)
              {
+                 DLog(@"Log : Coming in response");
                  VCLIENT.cloudVideoList = [[VCLIENT.cloudVideoList arrayByAddingObjectsFromArray:result ] mutableCopy];
                  VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
                  [self.videoList reloadData];

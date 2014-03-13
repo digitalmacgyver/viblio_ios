@@ -7,7 +7,7 @@
 //
 
 #import "CoreDataManager.h"
-#define BLOCK_REQ_SIZE 3
+#define BLOCK_REQ_SIZE 1
 
 @implementation CoreDataManager
 
@@ -598,7 +598,7 @@
     
     sessionSettings.autoSyncEnabled = @(YES);
     sessionSettings.backgroundSyncEnabled = @(YES);
-    sessionSettings.wifiupload = @(NO);
+    sessionSettings.wifiupload = @(YES);
     sessionSettings.autolockdisable = @(YES);
     sessionSettings.batterSaving = @(YES);
     

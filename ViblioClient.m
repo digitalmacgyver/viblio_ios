@@ -174,8 +174,12 @@ void(^_failure)(NSError *error);
                                       
                                       if( [[JSON valueForKey:@"code"] integerValue] > 299 )
                                       {
-                                          DLog(@"Log : The server failed to service the login request...");
-                                          failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                          DLog(@"Log : The server failed to service the login request... - %@", JSON);
+                                          
+                                          if( [JSON[@"detail"] isEqualToString:@"NOLOGIN_NOT_IN_BETA"] )
+                                              failure([ViblioHelper getCustomErrorWithMessage:@"uh oh!  looks like the email or password you entered is incorrect" withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                          else
+                                              failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
                                       }
                                       else
                                       {
@@ -275,8 +279,6 @@ void(^_failure)(NSError *error);
                                           UserClient.isFbUser = @(NO);
                                           UserClient.isNewUser = @(YES);
                                           UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
-                                          
-                                          
                                           
                                           success(@"success");
                                       }
@@ -438,11 +440,8 @@ void(^_failure)(NSError *error);
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
-                                          
                                       success([((NSDictionary*)response.allHeaderFields)[@"Offset"] doubleValue]);
-                                      
                                       DLog(@"LOG : The response headers is - %@", response);
-                                      DLog(@"LOG : The response body - %@",op.responseString);
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
@@ -578,6 +577,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     // Upload paused by the user.... Update the user isPaused status
     
     [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
+    VCLIENT.asset = nil;
     [self.uploadTask suspend];
     
     NSError *error = nil;
@@ -748,13 +748,19 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                               {
                                                   NSArray *videoList = [JSON valueForKeyPath:@"media"];
                                                   NSMutableArray *result = [NSMutableArray new];
-                                                  
                                                   for( int i=0; i < videoList.count; i++ )
                                                   {
                                                       NSDictionary *videoObj = [videoList objectAtIndex:i];
                                                       cloudVideos *video = [[cloudVideos alloc]init];
                                                       video.uuid = [videoObj valueForKey:@"uuid"];
-                                                      video.url = [videoObj valueForKey:@"views"][@"poster"][@"url"];
+                                                      
+                                                      id poster = [videoObj valueForKey:@"views"][@"poster"];
+                                                      
+                                                      if( [poster isKindOfClass:[NSDictionary class]] ||  [poster isKindOfClass:[NSMutableDictionary class]])
+                                                          video.url = poster[@"url"];
+                                                      else if ( [poster isKindOfClass:[NSArray class]] ||  [poster isKindOfClass:[NSMutableArray class]] )
+                                                          video.url = [poster firstObject][@"url"];
+                                                      
                                                       video.createdDate = [videoObj valueForKey:@"recording_date"];
                                                       
                                                       NSString *lat = [videoObj valueForKey:@"lat"];
@@ -765,15 +771,12 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                       
                                                       if( ![lat isEqual:[NSNull null]] && [longitude isValid] )
                                                           video.longitude = longitude;
-                                                      
+
                                                       [result addObject:video];
                                                       videoObj = nil; video = nil;
                                                       lat = longitude = nil;
                                                   }
-                                                  
                                                   videoList = nil;
-                                                  DLog(@"Log : The cloud video list now is - %@", VCLIENT.cloudVideoList);
-                                                  
                                                   success(result);
                                               }
 
@@ -1006,15 +1009,77 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                             success : (void(^)(BOOL hasBeenShared))success
                failure:(void(^)(NSError *error))failure
 {
-   // NSString *emailList = APPMANAGER.selectedContacts; //[APPMANAGER.selectedContacts componentsJoinedByString:@","]; //[[NSString alloc]init];
-    //emailList = [emailList str];
-    
     if([title isValid] && [title isEqualToString:@"Title"])
         title = @"Untitled";
         
     
     NSMutableArray *email = [NSMutableArray new];
-    //DLog(@"Log : The email list is - %@", email);
+    for( int i=0; i < APPMANAGER.selectedContacts.count; i++ )
+    {
+        NSDictionary *selectedContct = APPMANAGER.selectedContacts[i];
+        
+        if( selectedContct[@"email"] != nil && ((NSArray*)selectedContct[@"email"]).count > 0 )
+        {
+            for( int j=0; j< ((NSArray*)selectedContct[@"email"]).count; j++ )
+            {
+                [email addObject: ((NSArray*)selectedContct[@"email"])[j]];
+            }
+        }
+    }
+    
+    __block AFJSONRequestOperation *op;
+    if( email != nil && email.count > 0 )
+    {
+        
+        NSString *encodedSubject = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
+                                                                                      NULL,
+                                                                                      (CFStringRef)subject,
+                                                                                      NULL,
+                                                                                      (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                                      kCFStringEncodingUTF8 ));
+        
+        NSString *encodedBody = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
+                                                                                                         NULL,
+                                                                                                         (CFStringRef)body,
+                                                                                                         NULL,
+                                                                                                         (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                                                         kCFStringEncodingUTF8 ));
+        
+        NSString *emailList = @"";
+        for(NSString *emailid in email)
+        {
+            emailList = [emailList stringByAppendingString:[NSString stringWithFormat:@"list[]=%@&", emailid]];
+        }
+
+        NSString *path = [NSString stringWithFormat:@"/services/mediafile/add_share?title=%@&mid=%@&subject=%@&body=%@&%@",title, mid, encodedSubject, encodedBody, emailList];
+
+        NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+                      
+        [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+        [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+        
+        DLog(@"Log : The request being sent is - %@", request);
+        op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                              ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                              {
+                                                  success(YES);
+                                              } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                              {
+                                                  failure(error);
+                                              }];
+        [op start];
+    }
+    else
+        failure([ViblioHelper getCustomErrorWithMessage:@"No contacts found in Address Book" withCode:1003]);
+    return op;
+}
+
+
+-(AFJSONRequestOperation*)tellAFriendAboutViblioWithMessage : (NSString*)msg
+                                 success : (void(^)(BOOL hasBeenTold))success
+                                 failure : (void(^)(NSError *error))failure
+{
+    NSMutableArray *email = [NSMutableArray new];
     for( int i=0; i < APPMANAGER.selectedContacts.count; i++ )
     {
         NSDictionary *selectedContct = APPMANAGER.selectedContacts[i];
@@ -1034,31 +1099,52 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     if( email != nil && email.count > 0 )
     {
         NSDictionary *queryParams = @{
-                                      @"title" : title,
-                                        @"mid" : mid,
-                                        @"subject" : subject,
-                                        @"body" : body,
-                                        @"list" : [email componentsJoinedByString:@","]
-                                     };
+                                      @"message" : msg,
+                                      @"list" : [email componentsJoinedByString:@","]
+                                      };
         
-        NSString *path = [NSString stringWithFormat:@"/services/mediafile/add_share?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
+        NSString *path = [NSString stringWithFormat:@"/services/user/tell_a_friend?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
         NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
         [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
         [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
         
         op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
-                                              ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
-                                              {
-                                                  DLog(@"Log : In success response callback - Feedback - %@", JSON);
-                                                  success(YES);
-                                              } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
-                                              {
-                                                  failure(error);
-                                              }];
+              ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+              {
+                  DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                  success(YES);
+              } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+              {
+                  failure(error);
+              }];
         [op start];
     }
     else
         failure([ViblioHelper getCustomErrorWithMessage:@"No contacts found in Address Book" withCode:1003]);
     return op;
 }
+
+-(void)deleteTheFileWithID : (NSString*)fileLocation
+                   success : (void(^)(BOOL hasBeenDeleted))success
+                   failure : (void(^)(NSError *error))failure
+{
+    NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocation];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"DELETE" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              success(YES);
+
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
+
 @end

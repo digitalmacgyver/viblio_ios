@@ -36,22 +36,48 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOtherSharingViews:) name:showListSharingVw object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadListView) name:reloadListView object:nil];
-    
-//    if( VCLIENT.cloudVideoList == nil && VCLIENT.cloudVideoList.count <= 0 )
+//    if( APPMANAGER.user.isNewUser.integerValue )
 //    {
-//        [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d", VCLIENT.pageCount] rows:ROW_COUNT success:^(NSMutableArray *result)
-//         {
-//             VCLIENT.cloudVideoList =  result;
-//            VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:APPMANAGER.listVideos];
-//            [self.listView reloadData];
-//        }failure:^(NSError *error)
-//        {
-//            DLog(@"Log : Could not load list of videos.. ");
-//        }];
+//        self.popUp = [[UIView alloc]initWithFrame:CGRectMake(20, 140, 280, 150)];
+//        self.popUp.backgroundColor = [UIColor grayColor];
+//        [self.view addSubview:self.popUp];
+//        self.popUp.clipsToBounds = YES;
+//        [self.popUp.layer setCornerRadius:10];
+//        
+//        UILabel *lblMsg = [[UILabel alloc]initWithFrame:CGRectMake(5, 10, 270, 100)];
+//        lblMsg.text = @"Hi, I'm VIBLIO!  Right now, I am uploading and processing your videos.  This will take me a while depending on how many videos you have.  I'll let you know as soon as I'm done.";
+//        lblMsg.textColor = [ViblioHelper getVblBlueColor];
+//        lblMsg.numberOfLines = 0;
+//        lblMsg.font = [UIFont fontWithName:@"Avenir-Roman" size:14];
+//        [self.popUp addSubview:lblMsg];
+//        lblMsg.backgroundColor = [UIColor clearColor];
+//        lblMsg.textAlignment = NSTextAlignmentCenter;
+//        
+//        UIButton *ok = [UIButton buttonWithType:UIButtonTypeSystem];
+//        ok.titleLabel.text = @"OK";
+//        ok.titleLabel.textColor = [ViblioHelper getVblBlueColor];
+//        [ok setFrame:CGRectMake(100, 110, 80, 30)];
+//        [ok setTitle:@"OK" forState:UIControlStateNormal];
+//        [ok addTarget:self action:@selector(okTapped) forControlEvents:UIControlEventTouchUpInside];
+//        [self.popUp addSubview:ok];
+//        
+//        [self.listView reloadData];
+//    }
+//    else
+//    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOtherSharingViews:) name:showListSharingVw object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadListView) name:reloadListView object:nil];
 //    }
 }
+
+//-(void)okTapped
+//{
+//    if( self.popUp != nil )
+//    {
+//        [self.popUp removeFromSuperview];
+//        self.popUp = nil;
+//    }
+//}
 
 -(void)reloadListView
 {
@@ -158,7 +184,6 @@
         [cell.lblUploadNow setHidden:YES];
         [cell.lblShareNow setHidden:YES];
         [cell.btnPlay setHidden:NO];
-        //[cell.btnShare setHidden:NO];
         cell.lblInfo.text = nil;
         
         [[NSNotificationCenter defaultCenter] addObserver:cell selector:@selector(removeShareVw) name:removeListSharinVw object:nil];

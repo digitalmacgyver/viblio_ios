@@ -129,6 +129,9 @@
 		CBA770FD18AE56DD00240D49 /* SDWebImagePrefetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = CBA770F018AE56DD00240D49 /* SDWebImagePrefetcher.m */; };
 		CBA770FE18AE56DD00240D49 /* UIButton+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CBA770F218AE56DD00240D49 /* UIButton+WebCache.m */; };
 		CBA770FF18AE56DD00240D49 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CBA770F418AE56DD00240D49 /* UIImageView+WebCache.m */; };
+		CBAAAF5E18C9DCD700DC4A21 /* tutorial_step_1.png in Resources */ = {isa = PBXBuildFile; fileRef = CBAAAF5B18C9DCD700DC4A21 /* tutorial_step_1.png */; };
+		CBAAAF5F18C9DCD700DC4A21 /* tutorial_step_2.png in Resources */ = {isa = PBXBuildFile; fileRef = CBAAAF5C18C9DCD700DC4A21 /* tutorial_step_2.png */; };
+		CBAAAF6018C9DCD700DC4A21 /* tutorial_step_3.png in Resources */ = {isa = PBXBuildFile; fileRef = CBAAAF5D18C9DCD700DC4A21 /* tutorial_step_3.png */; };
 		CBC1E42118C5C00D00BD61EE /* viblio_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = CBC1E42018C5C00D00BD61EE /* viblio_logo.png */; };
 		CBD0496118BB87D400B9A962 /* icon_share_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD0495E18BB87D400B9A962 /* icon_share_selected@2x.png */; };
 		CBD0496218BB87D400B9A962 /* icon_views@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD0495F18BB87D400B9A962 /* icon_views@2x.png */; };
@@ -339,6 +342,9 @@
 		CBA770F218AE56DD00240D49 /* UIButton+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+WebCache.m"; sourceTree = "<group>"; };
 		CBA770F318AE56DD00240D49 /* UIImageView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+WebCache.h"; sourceTree = "<group>"; };
 		CBA770F418AE56DD00240D49 /* UIImageView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WebCache.m"; sourceTree = "<group>"; };
+		CBAAAF5B18C9DCD700DC4A21 /* tutorial_step_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_step_1.png; sourceTree = "<group>"; };
+		CBAAAF5C18C9DCD700DC4A21 /* tutorial_step_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_step_2.png; sourceTree = "<group>"; };
+		CBAAAF5D18C9DCD700DC4A21 /* tutorial_step_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_step_3.png; sourceTree = "<group>"; };
 		CBC1E42018C5C00D00BD61EE /* viblio_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = viblio_logo.png; sourceTree = "<group>"; };
 		CBD0495E18BB87D400B9A962 /* icon_share_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_share_selected@2x.png"; sourceTree = "<group>"; };
 		CBD0495F18BB87D400B9A962 /* icon_views@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_views@2x.png"; sourceTree = "<group>"; };
@@ -581,6 +587,7 @@
 		2AD637F41886CAB400012A86 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				CBAAAF5A18C9DCC400DC4A21 /* Tutorial */,
 				CBD049BB18BE306B00B9A962 /* icons */,
 				CBD049B018BC818600B9A962 /* nav_logo.png */,
 				CB65D4BA18B3ECFA00A69B95 /* selected@2x.png */,
@@ -905,6 +912,16 @@
 			path = SDWebImage;
 			sourceTree = "<group>";
 		};
+		CBAAAF5A18C9DCC400DC4A21 /* Tutorial */ = {
+			isa = PBXGroup;
+			children = (
+				CBAAAF5B18C9DCD700DC4A21 /* tutorial_step_1.png */,
+				CBAAAF5C18C9DCD700DC4A21 /* tutorial_step_2.png */,
+				CBAAAF5D18C9DCD700DC4A21 /* tutorial_step_3.png */,
+			);
+			name = Tutorial;
+			sourceTree = "<group>";
+		};
 		CBD0495D18BB87D400B9A962 /* new_icons */ = {
 			isa = PBXGroup;
 			children = (
@@ -1033,6 +1050,7 @@
 				85ED8003188EBB8C00CEAE85 /* Aleo-LightItalic.otf in Resources */,
 				85F70AC4189A56F700696E1E /* icon_share_list@2x.png in Resources */,
 				85F70AB118992C3E00696E1E /* bttn_facebook_tap@2x.png in Resources */,
+				CBAAAF6018C9DCD700DC4A21 /* tutorial_step_3.png in Resources */,
 				85ED8004188EBB8C00CEAE85 /* Aleo-Regular.otf in Resources */,
 				85ED801B18901EE600CEAE85 /* empty@2x.png in Resources */,
 				CBA770F618AE56DD00240D49 /* README.md in Resources */,
@@ -1045,6 +1063,8 @@
 				85ED804F1891B44300CEAE85 /* bttn_grid_view_normal@2x.png in Resources */,
 				CBC1E42118C5C00D00BD61EE /* viblio_logo.png in Resources */,
 				2A22F3FE187AAD8E002F71F8 /* Images.xcassets in Resources */,
+				CBAAAF5E18C9DCD700DC4A21 /* tutorial_step_1.png in Resources */,
+				CBAAAF5F18C9DCD700DC4A21 /* tutorial_step_2.png in Resources */,
 				85F70AB518992C3E00696E1E /* bttn_mail_tap@2x.png in Resources */,
 				85F70AC9189A870800696E1E /* icon_stop_grid@2x.png in Resources */,
 				85F70AAF18992C3E00696E1E /* bttn_twitter@2x.png in Resources */,
@@ -1311,8 +1331,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Matthew Hayward (C9FAXL3LGX)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Matthew Hayward (C9FAXL3LGX)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Video Analytics, Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Video Analytics, Inc.";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Viblio_v2/Viblio_v2-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1355,7 +1375,7 @@
 					Social,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "DA76EE28-C731-4411-9B75-3A921C1D3730";
+				PROVISIONING_PROFILE = "3690BCA8-65BD-4AE1-8634-61F8875434AD";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;
@@ -1369,8 +1389,8 @@
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Matthew Hayward (C9FAXL3LGX)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Matthew Hayward (C9FAXL3LGX)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Video Analytics, Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Video Analytics, Inc.";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Viblio_v2/Viblio_v2-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1412,7 +1432,7 @@
 					Social,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "DA76EE28-C731-4411-9B75-3A921C1D3730";
+				PROVISIONING_PROFILE = "3690BCA8-65BD-4AE1-8634-61F8875434AD";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = armv7;
 				WRAPPER_EXTENSION = app;

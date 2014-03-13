@@ -90,7 +90,7 @@
     
     // If movie is being played stop it as the focus shifts on scrolling
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
+    //[[NSNotificationCenter defaultCenter] postNotificationName:stopVideo object:nil];
     
     if( indexPath.section < self.resCategorizedList.allKeys.count )
     {

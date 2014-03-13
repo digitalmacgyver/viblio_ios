@@ -46,8 +46,10 @@
          DLog(@"Log : Cloud url obtained is - %@", cloudURL);
          self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]]; //self.asset.defaultRepresentation.url];
          self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
-         self.moviePlayer.view.frame = self.imgVwPoster.frame;
-         [self.imgVwPoster.superview addSubview:self.moviePlayer.view];
+         //self.moviePlayer.movieSourceType = MPMovieSourceTypeStreaming;
+         self.moviePlayer.view.frame = CGRectMake(0, self.frame.origin.y + 40, 320, self.frame.size.height-40); //self.frame;  //self.imgVwPoster.frame;
+         [self.superview addSubview:self.moviePlayer.view];
+         //[self.imgVwPoster.superview addSubview:self.moviePlayer.view];
          [self.moviePlayer.view addSubview:self.spinningWheel];
          
          [self.spinningWheel startAnimating];

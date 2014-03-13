@@ -160,8 +160,8 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(UIView *)vbl_navigationTitleView
 {
-    UIView *vwTitle = [[UIView alloc]initWithFrame:CGRectMake(0, 20, 171, 27)];
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(45, 0, 111, 30)];
+    UIView *vwTitle = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 171, 27)];
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(45, -5, 111, 30)];
     [imageView setImage:[UIImage imageNamed:@"nav_logo"]];
     [vwTitle addSubview:imageView];
     return vwTitle;
@@ -170,7 +170,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 +(UIView *)vbl_navigationShareTitleView : (NSString*)title
 {
     UIView *vwTitle = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 201, 20)];
-    UILabel *lblTitle = [[ UILabel alloc ]initWithFrame:CGRectMake(-10, 0, 201, 20)];
+    UILabel *lblTitle = [[ UILabel alloc ]initWithFrame:CGRectMake(0, 0, 201, 20)];
     lblTitle.backgroundColor = [UIColor clearColor];
     lblTitle.text = title; //@"Share with VIBLIO";
     lblTitle.font = [UIFont fontWithName:@"Avenir-Heavy" size:18];
@@ -421,7 +421,77 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     return result;
 }
 
-
++(void)MailSharingClicked : (id)sender
+{
+    DLog(@" Log : Mail Clicked - 2");
+    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+    
+    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+            ABAddressBookRef addressBook = ABAddressBookCreate( );
+        });
+    }
+    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+        
+        DLog(@" Log : Mail Clicked - 3");
+        CFErrorRef *error = NULL;
+        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
+        CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+        CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
+        
+        if( APPMANAGER.contacts != nil )
+        {
+            [APPMANAGER.contacts removeAllObjects];
+            APPMANAGER.contacts = nil;
+        }
+        
+        DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
+        APPMANAGER.contacts = [NSMutableArray new];
+        
+        for(int i = 0; i < numberOfPeople; i++) {
+            
+            DLog(@"Log : In processing contact - %d", i);
+            ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
+            
+            NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+            NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
+            
+            ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
+            NSMutableArray *emailIds = [NSMutableArray new];
+            
+            DLog(@" Log : Mail Clicked 6 - %@", email);
+            
+            for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
+                NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
+                DLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
+                [emailIds addObject:phoneNumber];
+            }
+            
+            if( emailIds.count > 0 )
+            {
+                DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
+                
+                if( [firstName isValid] && [lastName isValid] )
+                    [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
+                else
+                    [APPMANAGER.contacts addObject:@{ @"email" : emailIds}];
+                
+            }
+            
+            // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
+        }
+        
+        DLog(@" Log : Mail Clicked - 5");
+//        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+        //APPMANAGER.video = self.video;
+        //[[NSNotificationCenter defaultCenter] postNotificationName:showContactsScreen object:nil];
+    }
+    else {
+        // Send an alert telling user to change privacy setting in settings app
+        
+        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
+    }
+}
 
 
 @end

@@ -145,8 +145,10 @@
     if( isShared )
         [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
     else
-        [ViblioHelper displayAlertWithTitle:@"Alert" messageBody:@"Please selct an option to share the video" viewController:self cancelBtnTitle:@"OK"];
+        [ViblioHelper displayAlertWithTitle:@"Alert" messageBody:@"Please select an option to share the video" viewController:self cancelBtnTitle:@"OK"];
 }
+
+
 
 -(void)cancelSharing
 {
@@ -418,6 +420,19 @@
     };
 }
 
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    APPMANAGER.posterImageForVideoSharing = nil;
+    APPMANAGER.videoToBeShared = nil;
+    
+    [APPMANAGER.selectedContacts removeAllObjects];
+    APPMANAGER.selectedContacts = nil;
+
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
 - (void)postOnWall
 {
     NSNumber *testMessageIndex=[[NSNumber alloc] init];
@@ -631,8 +646,6 @@
         
         DLog(@" Log : Mail Clicked - 5");
         [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
-        //APPMANAGER.video = self.video;
-        //[[NSNotificationCenter defaultCenter] postNotificationName:showContactsScreen object:nil];
     }
     else {
         // Send an alert telling user to change privacy setting in settings app

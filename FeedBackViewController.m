@@ -49,36 +49,35 @@
 {
     DLog(@"Log : About to send feedback");
     
-    if( [self.fdbckTxtVw.text isValid] && [self.fdbckTxtVw.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0 )
+    if( [self.fdbckTxtVw.text isEqualToString:@"Type your feedback here"] )
     {
-        NSString *categorySelected = [[NSString alloc]init];
-        if( self.btnBravo.tag )
-            categorySelected = @"Bravo";
-        else
-            categorySelected = self.btnBug.tag ? @"Bug" : @"Idea";
-        
-        // self.fdbckTxtVw.tag = 1;
-        [APPCLIENT sendFeedbackToServerWithText:self.fdbckTxtVw.text category:categorySelected success:^(NSString *msg)
-         {
-            // self.fdbckTxtVw.tag = 1;
-            
-         }failure:^(NSError *error)
-         {
-            // self.fdbckTxtVw.tag = 0;
-//             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-//                                                             message:@"Feedback could not be sent. Try sending again ?"
-//                                                            delegate:self
-//                                                   cancelButtonTitle:@"OK"
-//                                                   otherButtonTitles:@"Cancel",nil];
-//             [alert show];
-//             alert = nil;
-         }];
-        
-         [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Feedback successfully sent" viewController:self cancelBtnTitle:@"OK"];
+        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"The feedback content is not valid. Please enter valid content to proceed" viewController:nil cancelBtnTitle:@"OK"];
     }
     else
     {
-        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"The feedback content is not valid. Please enter valid content to proceed" viewController:nil cancelBtnTitle:@"OK"];
+        if( [self.fdbckTxtVw.text isValid] && [self.fdbckTxtVw.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length > 0 )
+        {
+            NSString *categorySelected = [[NSString alloc]init];
+            if( self.btnBravo.tag )
+                categorySelected = @"Bravo";
+            else
+                categorySelected = self.btnBug.tag ? @"Bug" : @"Idea";
+            
+            // self.fdbckTxtVw.tag = 1;
+            [APPCLIENT sendFeedbackToServerWithText:self.fdbckTxtVw.text category:categorySelected success:^(NSString *msg)
+             {
+                 // self.fdbckTxtVw.tag = 1;
+                 
+             }failure:^(NSError *error)
+             {
+             }];
+            
+            [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Feedback successfully sent" viewController:self cancelBtnTitle:@"OK"];
+        }
+        else
+        {
+            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"The feedback content is not valid. Please enter valid content to proceed" viewController:nil cancelBtnTitle:@"OK"];
+        }
     }
 }
 

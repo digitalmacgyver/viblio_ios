@@ -99,6 +99,7 @@
     
     SettingsCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
     cell.lblSettingsHeading.text = ((NSDictionary*)self.settingsList[indexPath.row])[@"title"];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     NSString *subText = ((NSDictionary*)self.settingsList[indexPath.row])[@"detail"];
     if( subText.length > 34 )
@@ -120,8 +121,6 @@
     
     cell.settingSwitch.tag = indexPath.row;
     [self setSwitchStatusForCell:cell atIndexPath:indexPath];
-    //cell.lblSettingsHeading.font = [ViblioHelper viblio_Font_Regular_WithSize:18 isBold:NO];
-    //cell.lblSettingsSubTitle.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     cell.lblSettingsSubTitle.numberOfLines = 0;
     cell.lblSettingsSubTitle.lineBreakMode = NSLineBreakByWordWrapping;
  

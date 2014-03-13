@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnMail;
 @property (weak, nonatomic) IBOutlet UITextView *txtVwTellAFriend;
 
+@property (nonatomic, strong) AFJSONRequestOperation *op;
 @property (weak, nonatomic) IBOutlet UIView *vwSharingOptions;
 
 @end

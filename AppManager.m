@@ -35,11 +35,11 @@
 
 -(NSArray*)getSettings
 {
-    return  @[@{@"title" : @"Enable Auto Sync", @"detail" : @"Ask me when I add a new video"},
+    return  @[
                                      @{@"title" : @"Wifi Upload", @"detail" : @"Upload only over wifi connection"},
                                      @{@"title" : @"Background Uploading", @"detail" : @"Upload videos when app is in background"},
                                      @{@"title" : @"Power Saving", @"detail" : @"Stops uploading files when battery gets less than 20%"},
-                                     @{@"title" : @"Avoid Auto Lock", @"detail" : @"Avoid locking of screen when app is in foreground"}];
+                                     @{@"title" : @"Avoid Auto Lock", @"detail" : @"Don't auto lock the screen when the app is processing videos"}];
 }
 
 @end

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "User.h"
+//#import <CoreFoundation/CoreFoundation.h>
 
 #define APPCLIENT [ViblioClient sharedClient]
 #define APPAUTH [AuthControllers sharedInstance]
@@ -127,10 +128,21 @@
                                          success:(void(^)(BOOL hasBeenShared))success
                                          failure:(void(^)(NSError *error))failure;
 
+-(void)deleteTheFileWithID : (NSString*)fileID
+                   success : (void(^)(BOOL hasBeenDeleted))success
+                   failure : (void(^)(NSError *error))failure;
+
 -(AFJSONRequestOperation*)sharingToUsersWithSubject : (NSString*)subject
                                               title : (NSString*) title
                                                body : (NSString*)body
                                              fileId : (NSString*)mid
                                             success : (void(^)(BOOL hasBeenShared))success
                                              failure:(void(^)(NSError *error))failure;
+
+-(AFJSONRequestOperation*)tellAFriendAboutViblioWithMessage : (NSString*)msg
+                                                    success : (void(^)(BOOL hasBeenTold))success
+                                                    failure : (void(^)(NSError *error))failure;
+
+
+
 @end

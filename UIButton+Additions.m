@@ -27,7 +27,7 @@
 
 + (UIView*)navigationLeftItemWithTarget:(id)target action:(SEL)selector withImage:(NSString*)image withTitle:(NSString *)title
 {
-    UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(-8, 0, 50, 30)];
+    UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(-8, 0, 50, 50)];
     UIButton *_b = [UIButton buttonWithType:UIButtonTypeCustom];
     [_b.titleLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:16]];
     [_b setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -36,23 +36,24 @@
     [_b addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
     _b.frame = containerView.frame;
     [containerView addSubview:_b];
+    //_b.backgroundColor = [UIColor greenColor];
     containerView.backgroundColor = [UIColor clearColor];
     return containerView;
 }
 
 + (UIView*)navigationRightItemWithTarget:(id)target action:(SEL)selector withImage:(NSString*)image withTitle:(NSString *)title
 {
-    UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(14, 0, 50, 30)];
+    UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(14, 0, 70, 50)];
     UIButton *_b = [UIButton buttonWithType:UIButtonTypeCustom];
     [_b.titleLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:16]];
     [_b setTitleColor:[ViblioHelper getVblGreenishBlueColor] forState:UIControlStateNormal];
     [_b setTitle:title forState:UIControlStateNormal];
     [_b setTitle:title forState:UIControlStateHighlighted];
     [_b addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
-    _b.frame = containerView.frame;
+    _b.frame = CGRectMake(25, 0, 70, 50); //containerView.frame;
     [containerView addSubview:_b];
+    //_b.backgroundColor = [UIColor greenColor];
     containerView.backgroundColor = [UIColor clearColor];
     return containerView;
 }
-
 @end

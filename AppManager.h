@@ -25,6 +25,7 @@
 @property (nonatomic, strong) NSDictionary *resultCategorized;
 @property (nonatomic, strong) UIImage *posterImageForVideoSharing;
 @property (nonatomic, strong) id VideoToBeShared;
+@property (assign) BOOL restoreMyViblio;
 
 + (AppManager *)sharedClient;
 -(NSArray*)getSettings;

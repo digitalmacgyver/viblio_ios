@@ -47,9 +47,11 @@
     
     [APPCLIENT getTheCloudUrlForVideoStreamingForFileWithUUID:self.video.uuid success:^(NSString *cloudURL)
      {
+         DLog(@"Log : Cloud url obtained is - %@", cloudURL);
          self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]];
          self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
          self.moviePlayer.view.frame = self.vwShare.frame;
+         //self.moviePlayer.movieSourceType = MPMovieSourceTypeStreaming;
          
          [self insertSubview:self.moviePlayer.view belowSubview:self.vwPlayShare];
          [self addSubview:self.spinningWheel];
@@ -61,9 +63,7 @@
          self.moviePlayer.shouldAutoplay = YES;
          
          if( fullScreen )
-         {
              [self playInFullScreen];
-         }
          else
          {
              self.moviePlayer.controlStyle = MPMovieControlStyleDefault;

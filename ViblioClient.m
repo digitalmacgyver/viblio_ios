@@ -40,6 +40,7 @@ void(^_failure)(NSError *error);
             
             if( VCLIENT.asset != nil )
             {
+                APPMANAGER.errorCode = 1000;
                 APPMANAGER.turnOffUploads = YES;
                 [APPCLIENT invalidateFileUploadTask];
             }
@@ -87,10 +88,12 @@ void(^_failure)(NSError *error);
                 
                 if( VCLIENT.asset !=  nil )
                 {
+                    APPMANAGER.errorCode = 1001;
                     DLog(@"Log : Internet reachability went off.. Pausing the upload..");
                     [ViblioHelper displayAlertWithTitle:@"Not on WiFi" messageBody:@"Uploading paused until WiFi connection established" viewController:nil cancelBtnTitle:@"OK"];
-                    APPMANAGER.turnOffUploads = YES;
-                    [APPCLIENT invalidateFileUploadTask];
+                    //APPMANAGER.turnOffUploads = YES;
+                    [APPCLIENT invalidateUploadTaskWithoutPausing];
+                    //[APPCLIENT invalidateFileUploadTask];
                 }
             }
             else
@@ -115,8 +118,6 @@ void(^_failure)(NSError *error);
                 {
                     // Wifi only upload has not been set.. Initiate upload
                     DLog(@"Log : Initating upload as no preference settings has been made..");
-                    
-//                    [ViblioHelper displayAlertWithTitle:@"Connection Established" messageBody:@"Internet Connection established.. Starting uploads" viewController:nil cancelBtnTitle:@"OK"];
                     
                     APPMANAGER.turnOffUploads = NO;
                     [VCLIENT videoUploadIntelligence];
@@ -217,16 +218,18 @@ void(^_failure)(NSError *error);
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
                                       DLog(@"LOG : result - %@",JSON);
-                                      DLog(@"LOG : response - %@", response);
-                                      
                                       
                                       if( [[JSON valueForKey:@"code"] integerValue] > 299 )
                                       {
-                                          DLog(@"Log : The server failed to service the login request...");
-                                          failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                          
+                                          if( [JSON[@"detail"] isEqualToString:@"NOLOGIN_NOT_IN_BETA"] )
+                                              failure([ViblioHelper getCustomErrorWithMessage:@"uh oh!  looks like the email or password you entered is incorrect" withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                          else
+                                              failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
                                       }
                                       else
                                       {
+                                          UserClient.userName = JSON[@"user"][@"displayname"];
                                           UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
                                           UserClient.emailId = nil;
                                           UserClient.isFbUser = @(YES);
@@ -269,11 +272,17 @@ void(^_failure)(NSError *error);
                                       
                                       if( [[JSON valueForKey:@"code"] integerValue] > 299 )
                                       {
-                                          DLog(@"Log : The server failed to service the login request...");
-                                          failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                          if( [JSON[@"detail"] isEqualToString:@"NOLOGIN_NOT_IN_BETA"] )
+                                              failure([ViblioHelper getCustomErrorWithMessage:@"uh oh!  looks like the email or password you entered is incorrect" withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                          else
+                                              failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                          
+//                                          DLog(@"Log : The server failed to service the login request...");
+//                                          failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
                                       }
                                       else
                                       {
+                                          UserClient.userName = displayName;
                                           UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
                                           UserClient.emailId = emailID;
                                           UserClient.isFbUser = @(NO);
@@ -305,12 +314,24 @@ void(^_failure)(NSError *error);
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
-                                      UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
-                                      UserClient.emailId = nil;
-                                      UserClient.isFbUser = @(YES);
-                                      UserClient.isNewUser = @(NO);
-                                      UserClient.fbAccessToken = accessToken;
-                                      UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
+                                      if( [[JSON valueForKey:@"code"] integerValue] > 299 )
+                                      {
+                                          
+                                          if( [JSON[@"detail"] isEqualToString:@"NOLOGIN_NOT_IN_BETA"] )
+                                              failure([ViblioHelper getCustomErrorWithMessage:@"uh oh!  looks like the email or password you entered is incorrect" withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                          else
+                                              failure([ViblioHelper getCustomErrorWithMessage:[JSON valueForKey:@"message"] withCode:[[JSON valueForKey:@"code"] integerValue]]);
+                                      }
+                                      else
+                                      {
+                                          UserClient.userName = JSON[@"user"][@"displayname"];
+                                          UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
+                                          UserClient.emailId = nil;
+                                          UserClient.isFbUser = @(YES);
+                                          UserClient.isNewUser = @(NO);
+                                          UserClient.fbAccessToken = accessToken;
+                                          UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
+                                      }
                                       
                                       success(@"Success");
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
@@ -382,7 +403,6 @@ void(^_failure)(NSError *error);
                            failure : (void(^)(NSError *error))failure
 
 {
-    NSString *path = @"/files";
     NSDictionary *params = @{
                              @"uuid": userUUId,
                              @"file": @{
@@ -391,18 +411,23 @@ void(^_failure)(NSError *error);
                              @"user-agent": @"Viblio iOS App : 0.0.1"
                              };
     
-    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:params];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://staging.viblio.com/files"]]; //[self requestWithMethod:@"POST" path:path parameters:params];
+    [request setHTTPMethod:@"POST"];
+    
+    NSString *file = [NSString stringWithFormat:@"{\n\"Path\" : \"Untitled.MOV\"}"];
+    
+    
+    NSString *jsonString = [NSString stringWithFormat:@"{ \n \"uuid\" : \"%@\" , \n \"file\" : %@ , \n \"user-agent\" : \"Viblio iOS App : 0.0.1\"   }", userUUId, file];
+    NSData *myJSONData =[jsonString dataUsingEncoding:NSUTF8StringEncoding];
     
     NSData * data = [NSPropertyListSerialization dataFromPropertyList:params
-                                                               format:NSPropertyListBinaryFormat_v1_0 errorDescription:NULL];
+                                                                format:NSPropertyListBinaryFormat_v1_0 errorDescription:NULL];
     DLog(@"size: %lu --- fileSize - %@", (unsigned long)[data length], fileSize);
     
+    [request setHTTPBody:myJSONData];
     [request setValue: fileSize  forHTTPHeaderField:@"Final-Length"];
     [request setValue: [NSString stringWithFormat:@"%lu", (unsigned long)data.length]  forHTTPHeaderField:@"Content-Length"];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
-    
-    
-//    DLog(@"LOG : REquest that was sent - %@ --- %@",request, );
 
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
@@ -413,9 +438,9 @@ void(^_failure)(NSError *error);
                                           if( parsedSession != nil && parsedSession.count > 0 )
                                               success([parsedSession lastObject]);
                                       }
-                                      
-                                      DLog(@"LOG : Response Headers - %@",response);
-                                      DLog(@"LOG : Response Body - %@",op.responseString);
+                                      else
+                                          failure(nil);
+
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
                                       failure(error);
@@ -423,16 +448,78 @@ void(^_failure)(NSError *error);
     [op start];
 }
 
+
+-(void)startUploadingFileInBackgroundForUserId : (NSString*)userUUId
+                     fileLocalPath : (NSString*)fileLocalPath
+                          fileSize : (NSString*)fileSize
+                           success : (void (^)(NSString *fileLocation))success
+                           failure : (void(^)(NSError *error))failure
+{
+    bgTask = [[UIApplication sharedApplication]
+              beginBackgroundTaskWithExpirationHandler:
+              ^{
+                  [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+              }];
+    
+    NSDictionary *params = @{
+                             @"uuid": APPMANAGER.user.userID,
+                             @"file": @{
+                                     @"Path": @"Untitled.MOV"
+                                     },
+                             @"user-agent": @"Viblio iOS App : 0.0.1"
+                             };
+    
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://staging.viblio.com/files"]];
+    [request setHTTPMethod:@"POST"];
+    NSString *file = [NSString stringWithFormat:@"{\n\"Path\" : \"Untitled.MOV\"}"];
+    NSString *jsonString = [NSString stringWithFormat:@"{ \n \"uuid\" : \"%@\" , \n \"file\" : %@ , \n \"user-agent\" : \"Viblio iOS App : 0.0.1\"   }", APPMANAGER.user.userID, file];
+    
+    NSData *myJSONData =[jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSData * data = [NSPropertyListSerialization dataFromPropertyList:params
+                                                               format:NSPropertyListBinaryFormat_v1_0 errorDescription:NULL];
+    DLog(@"size: %lu --- fileSize - %lld", (unsigned long)[data length], VCLIENT.asset.defaultRepresentation.size);
+    
+    [request setHTTPBody:myJSONData];
+    [request setValue: [NSString stringWithFormat:@"%lld", VCLIENT.asset.defaultRepresentation.size]  forHTTPHeaderField:@"Final-Length"];
+    [request setValue: [NSString stringWithFormat:@"%lu", (unsigned long)data.length]  forHTTPHeaderField:@"Content-Length"];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    
+    NSError *error;
+    
+    NSHTTPURLResponse  *response = nil;
+    [NSURLConnection sendSynchronousRequest:request
+                          returningResponse:&response
+                                      error:&error];
+    
+    DLog(@"Log : Ther esponse string is - %@", response);
+
+    if( [((NSDictionary*)response.allHeaderFields)[@"Location"] isValid] )
+    {
+        NSArray *parsedSession = [((NSDictionary*)response.allHeaderFields)[@"Location"] componentsSeparatedByString:@"files/"];
+        if( parsedSession != nil && parsedSession.count > 0 )
+            success([parsedSession lastObject]);
+    }
+    else
+        failure(nil);
+    
+    
+    if (bgTask != UIBackgroundTaskInvalid)
+    {
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }
+}
+
+
 // Get the offset of the file
 
 -(void)getOffsetOfTheFileAtLocationID : (NSString*)fileLocationID
                         sessionCookie : (NSString*)sessionCookie
-                              success : (void (^)(double offset))success
+                              success : (void (^)(NSNumber *offset))success
                               failure : (void(^)(NSError *error))failure
 {
-    NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
-    NSMutableURLRequest* request = [self requestWithMethod:@"HEAD" path:path parameters:nil];
-    
+
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://staging.viblio.com/files/%@",fileLocationID ]]]; //[self requestWithMethod:@"HEAD" path:path parameters:nil];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [request setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
     [request setHTTPMethod:@"HEAD"];
@@ -440,13 +527,56 @@ void(^_failure)(NSError *error);
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                   ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                   {
-                                      success([((NSDictionary*)response.allHeaderFields)[@"Offset"] doubleValue]);
+                                      DLog(@"Log : Checkpoint- 1");
+                                      success( (NSNumber*)((NSDictionary*)response.allHeaderFields)[@"Offset"] );
                                       DLog(@"LOG : The response headers is - %@", response);
                                   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                   {
+                                      DLog(@"Log : Checkpoint- 1.1");
                                       failure(error);
                                   }];
     [op start];
+}
+
+
+-(void)getOffsetOfTheFileInBackgroundAtLocationID : (NSString*)fileLocationID
+                        sessionCookie : (NSString*)sessionCookie
+                              success : (void (^)(NSNumber *offset))success
+                              failure : (void(^)(NSError *error))failure
+{
+    
+    bgTask = [[UIApplication sharedApplication]
+              beginBackgroundTaskWithExpirationHandler:
+              ^{
+                  [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+              }];
+    
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://staging.viblio.com/files/%@",fileLocationID ]]]; //[self requestWithMethod:@"HEAD" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
+    [request setHTTPMethod:@"HEAD"];
+    
+    NSError *error;
+    
+    NSHTTPURLResponse  *response = nil;
+    [NSURLConnection sendSynchronousRequest:request
+                          returningResponse:&response
+                                      error:&error];
+    
+    DLog(@"Log : Ther esponse string is - %@", response);
+
+    if( error == nil )
+    {
+        success( (NSNumber*)((NSDictionary*)response.allHeaderFields)[@"Offset"] );
+    }
+    else
+        failure(error);
+    
+    if (bgTask != UIBackgroundTaskInvalid)
+    {
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+    }
 }
 
 
@@ -462,13 +592,26 @@ void(^_failure)(NSError *error);
                     failure:(void(^)(NSError *error))failureCallback
 {
     
-    NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
-    NSMutableURLRequest* afRequest = [self requestWithMethod:@"PATCH" path:path parameters:nil];
+    if( ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) && offset == 0 )
+    {
+        DLog(@"Log : Application state background.... Registering for background operation");
+        
+        bgTask = [[UIApplication sharedApplication]
+                  beginBackgroundTaskWithExpirationHandler:
+                  ^{
+                      [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+                  }];
+        
+    }
+    
+   // NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
+    NSMutableURLRequest* afRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://staging.viblio.com/files/%@",fileLocationID ]]]; //[self requestWithMethod:@"PATCH" path:path parameters:nil];
+    [afRequest setHTTPMethod:@"PATCH"];
     [afRequest setValue: chunkSize  forHTTPHeaderField:@"Content-Length"];
     [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [afRequest setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
     [afRequest setValue: offset  forHTTPHeaderField:@"Offset"];
-//    [afRequest setHTTPBody:chunk];
+    
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
@@ -485,9 +628,187 @@ void(^_failure)(NSError *error);
         self.session = [self backgroundSession];
     }
     
-    self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromFile:[NSURL fileURLWithPath:dataPath]];
-    [self.uploadTask resume];
+    if( self.uploadTask.state != NSURLSessionTaskStateSuspended )
+    {
+        self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromFile:[NSURL fileURLWithPath:dataPath]];
+        [self.uploadTask resume];
+    }
+    else
+    {
+        DLog(@"Log : ------------------------------*****************/////// The upload task is suspended ///////..........*****************");
+        [self.uploadTask resume];
+    }
+    
+    DLog(@"Log : The location of the file uploaded is - %@", VCLIENT.videoUploading.fileLocation);
+    DLog(@"Log : The task id of the current performing task is - %d", self.uploadTask.taskIdentifier);
+    
+    if( ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) && offset == 0 )
+    {
+        DLog(@"Log : Application state background....");
+        if (bgTask != UIBackgroundTaskInvalid)
+        {
+            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
+        }
+    }
 }
+
+
+#pragma download delegates
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+    
+    
+    NSLog(@"Session %@ download task %@ finished downloading to URL %@\n",
+          session, downloadTask, location);
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+
+    NSString *txtPath = [documentsDirectory stringByAppendingPathComponent:@"response.tmp"];
+    
+    if ([fileManager fileExistsAtPath:txtPath] == YES) {
+        [fileManager removeItemAtPath:txtPath error:&error];
+    }
+    
+    NSError *moveError;
+    
+    if( [fileManager moveItemAtPath:[location path] toPath:txtPath error:&moveError] )
+    {
+        NSError *err = nil;
+        NSFileHandle *fh = [NSFileHandle fileHandleForReadingFromURL:location
+                                                               error: &err];
+        DLog(@"Log : The data in the file is - %@", [fh readDataToEndOfFile] );
+
+    }
+    else
+    {
+        DLog(@"Log : Error while moving and the error is - %@", moveError);
+    }
+    
+    
+    
+    
+    
+//
+//   // NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"response" ofType:@"txt"];
+//    [fileManager mov:[location path] toPath:txtPath error:&error];
+//    
+//    NSError* fileError = nil;
+//   // NSString *path = [[NSBundle mainBundle] pathForResource: @"foo" ofType: @"html"];
+//    NSString *res = [NSString stringWithContentsOfFile: txtPath encoding:NSUTF8StringEncoding error: &fileError];
+//    DLog(@"Log : The result is - %@", res);
+    
+    
+//#if 0
+//    /* Workaround */
+//    [self callCompletionHandlerForSession:session.configuration.identifier];
+//#endif
+//    
+//#define READ_THE_FILE 0
+//#if READ_THE_FILE
+//    /* Open the newly downloaded file for reading. */
+//    NSError *err = nil;
+//    NSFileHandle *fh = [NSFileHandle fileHandleForReadingFromURL:location
+//                                                           error: &err];
+//    /* Store this file handle somewhere, and read data from it. */
+//    // ...
+//    
+//#else
+//    NSError *err = nil;
+//    NSFileManager *fileManager = [NSFileManager defaultManager];
+//    NSString *cacheDir = [[NSHomeDirectory()
+//                           stringByAppendingPathComponent:@"Library"]
+//                          stringByAppendingPathComponent:@"Caches"];
+//    NSURL *cacheDirURL = [NSURL fileURLWithPath:cacheDir];
+//    
+//    NSError *error;
+//    
+//    if ([fileManager fileExistsAtPath:[cacheDirURL path]] == YES) {
+//        DLog(@"Log :File exists and file is being removed -------");
+//        [fileManager removeItemAtPath:[cacheDirURL path] error:&error];
+//    }
+//    
+//    if ([fileManager moveItemAtURL:location
+//                             toURL:cacheDirURL
+//                             error: &err]) {
+//        
+//        NSError *err = nil;
+//        NSFileHandle *fh = [NSFileHandle fileHandleForReadingFromURL:location
+//                                                               error: &err];
+//        DLog(@"Log : The data in the file is - %@", [fh readDataToEndOfFile] );
+//
+//        /* Store some reference to the new URL */
+//    } else {
+//        /* Handle the error. */
+//        DLog(@"Error occured while moving and the error is - %@", err);
+//        
+//       // fileManager removeItemAtURL:<#(NSURL *)#> error:<#(NSError *__autoreleasing *)#>
+//    }
+//#endif
+
+    
+//#if 0
+//    /* Workaround */
+//    [self callCompletionHandlerForSession:session.configuration.identifier];
+//#endif
+//    
+//#define READ_THE_FILE 1
+//#if READ_THE_FILE
+//    /* Open the newly downloaded file for reading. */
+//    NSError *err = nil;
+//    NSFileHandle *fh = [NSFileHandle fileHandleForReadingFromURL:location
+//                                                           error: &err];
+//    NSData *data = [fh readDataToEndOfFile];
+//    
+//    DLog(@"Log : The nsdata obtained from the file is - %@", data);
+//    NSError* error;
+//    NSDictionary* json = [NSJSONSerialization
+//                          JSONObjectWithData:data
+//                          options:kNilOptions
+//                          error:&error];
+//    
+//    DLog(@"Log : The json string obtained is - %@", json);
+//    
+//#else
+//    NSError *err = nil;
+//    NSFileManager *fileManager = [NSFileManager defaultManager];
+//    NSString *cacheDir = [[NSHomeDirectory()
+//                           stringByAppendingPathComponent:@"Library"]
+//                          stringByAppendingPathComponent:@"Caches"];
+//    NSURL *cacheDirURL = [NSURL fileURLWithPath:cacheDir];
+//    if ([fileManager moveItemAtURL:location
+//                             toURL:cacheDirURL
+//                             error: &err]) {
+//        
+//        /* Store some reference to the new URL */
+//    } else {
+//        /* Handle the error. */
+//    }
+//#endif
+
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
+    
+    NSLog(@"Session %@ download task %@ resumed at offset %lld bytes out of an expected %lld bytes.\n",
+          session, downloadTask, fileOffset, expectedTotalBytes);
+    
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+
+    DLog(@"Log : total bytes written - %lld , total bytes expected - %lld", totalBytesWritten, totalBytesExpectedToWrite);
+    //    float progress = (double)totalBytesWritten / (double)totalBytesExpectedToWrite;
+//    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [self.progressView setProgress:progress];
+//    });
+}
+
+
 
 
 #pragma session delegates
@@ -514,11 +835,12 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 
 
+
 - (NSURLSession *)backgroundSession {
 	static NSURLSession *session = nil;
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.viblio.BackGroundSession"];
+//	static dispatch_once_t onceToken;
+//	dispatch_once(&onceToken, ^{
+		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.viblio.BackGroundSession"];//backgroundSessionConfiguration:@"com.viblio.BackGroundSession"];
         
         if( APPMANAGER.activeSession.wifiupload.integerValue )
         {
@@ -530,7 +852,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         }
         
 		session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-	});
+//	});
 	return session;
 }
 
@@ -542,7 +864,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     DLog(@"Log : Did complete called");
 //    if(task != nil)
 //    {
-        DLog(@"Log : Not entering if");
+//        DLog(@"Log : Not entering if");
         if (error == nil) {
             
             DLog(@"Task: %@ completed successfully", task);
@@ -570,37 +892,233 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     DLog(@"All tasks are finished");
 }
 
+- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error
+{
+    DLog(@"Log : Session did get inavlidated.. %@", error);
+}
+//- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
+//{
+//    DLog(@"Log : Did receive challenge.... %@", challenge);
+//}
+
+
+-(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
+{
+//    if (_sessionFailureCount == 0) {
+    
+  //  Class_get
+    
+    DLog(@"Log : Did receive challenge.... %@ -- %@, protection Space - %@ , proposedCredential - %@, sender - %@", challenge, challenge.error, challenge.protectionSpace,challenge.proposedCredential, challenge.sender);
+ 
+    DLog(@"Log : Cred for trust is - %@", [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+    completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
+    
+    
+    id <NSURLAuthenticationChallengeSender> sender = challenge.sender;
+    NSURLProtectionSpace *protectionSpace = challenge.protectionSpace;
+    
+    SecTrustRef trust = protectionSpace.serverTrust;
+    DLog(@"Log : The trust is - %@", trust);
+    [sender useCredential:[NSURLCredential credentialForTrust:trust] forAuthenticationChallenge:challenge];
+    
+//    if ([challenge previousFailureCount] > 0) {
+//        [[challenge sender] cancelAuthenticationChallenge:challenge];
+//        NSLog(@"Bad Username Or Password");
+//      //  badUsernameAndPassword = YES;
+//      //  finished = YES;
+//        return;
+//    }
+    
+//    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
+//    {
+//        
+//        SecTrustResultType result;
+//        //This takes the serverTrust object and checkes it against your keychain
+//        SecTrustEvaluate(challenge.protectionSpace.serverTrust, &result);
+//        
+////        if (appDelegate._allowInvalidCert)
+////        {
+////            [challenge.sender useCredential:
+////             [NSURLCredential credentialForTrust: challenge.protectionSpace.serverTrust]
+////                 forAuthenticationChallenge: challenge];
+////        }
+//        //When testing this against a trusted server I got kSecTrustResultUnspecified every time. But the other two match the description of a trusted server
+////        else if( result == kSecTrustResultUnspecified){
+//            [challenge.sender useCredential:
+//             [NSURLCredential credentialForTrust: challenge.protectionSpace.serverTrust]
+//                 forAuthenticationChallenge: challenge];
+//        }
+//        else
+//        {
+//            //Asks the user for trust
+//            TrustGenerator *tg = [[TrustGenerator alloc] init];
+//            
+//            if ([tg getTrust:challenge.protectionSpace])
+//            {
+//                
+//                //May need to add a method to add serverTrust to the keychain like Firefox's "Add Excpetion"
+//                [challenge.sender useCredential:
+//                 [NSURLCredential credentialForTrust: challenge.protectionSpace.serverTrust]
+//                     forAuthenticationChallenge: challenge];
+//            }
+//            else {
+//                [[challenge sender] cancelAuthenticationChallenge:challenge];
+//            }
+//        }
+//    }
+//    else if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodDefault) {
+//        NSURLCredential *newCredential = [NSURLCredential credentialWithUser:_username password:_password persistence:NSURLCredentialPersistenceNone];
+//        [[challenge sender] useCredential:newCredential forAuthenticationChallenge:challenge];
+//    }
+
+    //    NSArray *trustedHosts = [NSArray arrayWithObjects:@"mytrustedhost",nil];
+//    
+//    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]){
+//        DLog(@"Log : Entering into the challenge added part");
+//        if ([trustedHosts containsObject:challenge.protectionSpace.host]) {
+//            [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+//        }
+//    }
+//    [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+    
+//    DLog(@"Log : Did receive challenge.... %@ -- %@, protection Space - %@ , proposedCredential - %@", challenge, challenge.error, challenge.protectionSpace,challenge.proposedCredential);
+//    DLog(@"Log : The credentials being sent on the challenge is - %@ - %@", APPMANAGER.user.emailId, APPMANAGER.user.password);
+//    NSURLCredential *cred = [NSURLCredential credentialWithUser:APPMANAGER.user.emailId password:APPMANAGER.user.password persistence:NSURLCredentialPersistenceForSession];
+//    completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
+//        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+//    } else {
+//        completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+//    }
+//    _sessionFailureCount++;
+}
+//
+//
+//- (void)URLSession:(NSURLSession *)session didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+//    
+//    DLog(@"Log : received authentication challenge.....");
+//    NSArray *trustedHosts = [NSArray arrayWithObjects:@"mytrustedhost",nil];
+//    
+//    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]){
+//        if ([trustedHosts containsObject:challenge.protectionSpace.host]) {
+//            [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+//        }
+//    }
+//    [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+//}
+//
+//
+//- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
+//didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+// completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition,    NSURLCredential *credential))completionHandler
+//{
+//    DLog(@"Log : Did receive challenge.... %@ -- %@", challenge, challenge.error);
+////    if (_taskFailureCount == 0) {
+//    
+////    DLog(@"Log : The credentials being sent on the challenge is - %@ - %@", APPMANAGER.user.emailId, APPMANAGER.user.password);
+////    
+////    [challenge.sender useCredential:
+////     [NSURLCredential credentialForTrust: challenge.protectionSpace.serverTrust]
+////         forAuthenticationChallenge: challenge];
+//
+//
+//    
+////        NSURLCredential *cred = [NSURLCredential credentialWithUser:APPMANAGER.user.emailId password:APPMANAGER.user.password persistence:NSURLCredentialPersistenceNone];
+////        completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
+////    } else {
+////        completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+////    }
+////    _taskFailureCount++;
+//}
+//
+//- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task needNewBodyStream:(void (^)(NSInputStream *bodyStream))completionHandler
+//{
+//    DLog(@"Log : Task now requires new body stream to send to the server");
+//}
+
+-(BOOL) shouldTrustProtectionSpace :(NSURLProtectionSpace*)protectionSpace
+{
+    // Load the certificate
+    NSString *certPath = [[NSBundle mainBundle] pathForResource:@"viblio" ofType:@"der"];
+    NSData *certData = [[NSData alloc]initWithContentsOfFile:certPath];
+    CFDataRef certDataRef = (__bridge_retained CFDataRef)certData;
+    SecCertificateRef cert = SecCertificateCreateWithData(NULL, certDataRef);
+    
+    //Establish a chain of trust anchored on our bundled certificate
+    CFArrayRef certArrayRef = CFArrayCreate(NULL, (void*)&cert, 1, NULL);
+    SecTrustRef serverTrust = protectionSpace.serverTrust;
+    SecTrustSetAnchorCertificates(serverTrust, certArrayRef);
+    
+    //Verify that trust
+    SecTrustResultType trustResult;
+    SecTrustEvaluate(serverTrust, &trustResult);
+    
+    // Fix if result is a recoverable trust failure
+    if( trustResult == kSecTrustResultRecoverableTrustFailure )
+    {
+        CFDataRef errDataRef = SecTrustCopyExceptions(serverTrust);
+        SecTrustSetExceptions(serverTrust, errDataRef);
+        SecTrustEvaluate(serverTrust, &trustResult);
+    }
+    
+    DLog(@"Log : Sec trust returned is - %u", trustResult);
+    return trustResult == kSecTrustResultUnspecified || kSecTrustResultProceed ;
+}
+
+
+
+
 -(void)invalidateFileUploadTask
 {
     DLog(@"Log : Initialising upload Pause ----");
     
     // Upload paused by the user.... Update the user isPaused status
     
-    [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
-    VCLIENT.asset = nil;
-    [self.uploadTask suspend];
+   // [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
+    //VCLIENT.asset = nil;
+    //self.uploadTask = nil;
+   // [self.uploadTask suspend];
     
-    NSError *error = nil;
+    VCLIENT.isToBePaused = YES;
     
-    if(_failure != nil)
-        _failure(error);
-    else
-        DLog(@"Log : No existing valid instance for failure....");
+    if( self.uploadTask.state == NSURLSessionTaskStateSuspended )
+    {
+        DLog(@"Log : ---------------************ Task suspended for paused file ************------------");
+        DLog(@"Log : Tsk id of the suspended task is - %d", self.uploadTask.taskIdentifier);
+    }
+    
+    DLog(@"Log : Task id of the suspended task is - %d", self.uploadTask.taskIdentifier);
+    DLog(@"Log : Tha state of the task is - %d", self.uploadTask.state);
+    //DLog(@"Log : The state of the uploadtask is - %@", self.uploadTask.state);
+ 
+    //self.session = nil;
+    //[self.session invalidateAndCancel];
+    
+//    NSError *error = nil;
+    
+//    if(_failure != nil)
+//        _failure(error);
+//    else
+//        DLog(@"Log : No existing valid instance for failure....");
 }
 
 -(void)invalidateUploadTaskWithoutPausing
 {
-      //  DLog(@"Log : Initialising upload Pause ----");
+        DLog(@"Log : Initialising upload Pause ----");
         
         // Upload paused by the user.... Update the user isPaused status
         
       //  [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
     
     APPMANAGER.turnOffUploads = YES;
+    DLog(@"Log : Initialising upload Pause ---- 1");
     [self.uploadTask suspend];
-        
+     DLog(@"Log : Initialising upload Pause ---- 2");
         NSError *error = nil;
+    
+    if( _failure != nil )
         _failure(error);
+    else
+        DLog(@"Log : Failure call back not found....");
 }
 
 
@@ -811,7 +1329,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 
 
--(void)getListOfSharedWithMeVideos :(void(^)(NSArray *sharedList))success
+-(void)getListOfSharedWithMeVideos :(void(^)(NSMutableArray *sharedList))success
                             failure:(void(^)(NSError *error))failure
 {
     
@@ -825,44 +1343,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
                                               DLog(@"Log : In success response callback - Feedback - %@", JSON);
-                                              
-                                              // Create an array that holds the resultant parsed sharedVideo Objects to be sent as success response
-                                              NSMutableArray *sharedVideoList = [NSMutableArray new];
-                                              
-                                              // List of all shared
-                                              NSArray *array = (NSArray*)[JSON valueForKeyPath:@"shared"] ;
-                                              
-                                              // Iterating through list of all shared
-                                              for( int i = 0; i < array.count; i++ )
-                                              {
-                                                  NSDictionary *videoValues = [array objectAtIndex:i];
-                                                  NSArray *videoBySpecificOwner = videoValues[@"media"];
-                                                  
-                                                  NSString *ownerName = videoValues[@"owner"][@"displayname"];
-                                                  NSString *ownerUUID = videoValues[@"owner"][@"uuid"];
-                                                  
-                                                  // Media list of the specific owner
-                                                  for( int i = 0; i < videoBySpecificOwner.count; i++ )
-                                                  {
-                                                      SharedVideos *video = [[SharedVideos alloc]init];
-                                                      NSDictionary *mediaObj = (NSDictionary*)[videoBySpecificOwner objectAtIndex:i];
-                                                      video.createdDate = mediaObj[@"created_date"];
-                                                      video.sharedDate = mediaObj[@"shared_date"];
-                                                      video.mediaUUID = mediaObj[@"uuid"];
-                                                      video.viewCount = mediaObj[@"view_count"] ;
-                                                      video.posterURL = mediaObj[@"views"][@"poster"][@"url"];
-                                                      video.ownerName = ownerName;
-                                                      video.ownerUUID = ownerUUID;
-                                                      
-                                                      // Add the video object to the resultant array list
-                                                      [sharedVideoList addObject:video];
-                                                      video = nil;
-                                                      mediaObj = nil;
-                                                  }
-                                              }
-                                              
-                                              // Send the list of result objects back in the success response
-                                              success(sharedVideoList);
+
+                                              success(JSON[@"shared"]);
                                               
                                           } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
                                           {
@@ -1027,6 +1509,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         }
     }
     
+  //  [email addObject:@"dunty.vinay@gmail.com"];
+    
     __block AFJSONRequestOperation *op;
     if( email != nil && email.count > 0 )
     {
@@ -1050,7 +1534,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         {
             emailList = [emailList stringByAppendingString:[NSString stringWithFormat:@"list[]=%@&", emailid]];
         }
-
+        emailList = [emailList substringToIndex:emailList.length-1];
+        
         NSString *path = [NSString stringWithFormat:@"/services/mediafile/add_share?title=%@&mid=%@&subject=%@&body=%@&%@",title, mid, encodedSubject, encodedBody, emailList];
 
         NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
@@ -1093,17 +1578,33 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         }
     }
     
-    DLog(@"Log : The email list being sent is - %@", email);
+  //  [email addObject:@"dunty.vinay@gmail.com"];
     
     __block AFJSONRequestOperation *op;
     if( email != nil && email.count > 0 )
     {
-        NSDictionary *queryParams = @{
-                                      @"message" : msg,
-                                      @"list" : [email componentsJoinedByString:@","]
-                                      };
         
-        NSString *path = [NSString stringWithFormat:@"/services/user/tell_a_friend?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
+        NSString *encodedSubject = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(
+                                                                                                         NULL,
+                                                                                                         (CFStringRef)msg,
+                                                                                                         NULL,
+                                                                                                         (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                                                         kCFStringEncodingUTF8 ));
+        NSString *emailList = @"";
+        for(NSString *emailid in email)
+        {
+            emailList = [emailList stringByAppendingString:[NSString stringWithFormat:@"list[]=%@&", emailid]];
+        }
+        emailList = [emailList substringToIndex:emailList.length-1];
+        NSString *path = [NSString stringWithFormat:@"/services/user/tell_a_friend?message=%@&%@", encodedSubject, emailList];
+        
+        
+//        NSDictionary *queryParams = @{
+//                                      @"message" : msg,
+//                                      @"list" : [email componentsJoinedByString:@","]
+//                                      };
+        
+//        NSString *path = [NSString stringWithFormat:@"/services/user/tell_a_friend?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
         NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
         [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
         [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];

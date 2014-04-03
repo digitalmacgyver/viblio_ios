@@ -32,6 +32,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    APPMANAGER.indexOfSharedListSelected = nil;
     [ViblioHelper MailSharingClicked:self];
     
     [self.navigationController.navigationBar setBackgroundImage:[ViblioHelper setUpNavigationBarBackgroundImage] forBarMetrics:UIBarMetricsDefault];
@@ -74,6 +75,12 @@
          VCLIENT.cloudVideoList = result;
          VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
          
+        // DLog(@"Log : Keys sorted order is - %@", [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]);
+         
+         APPMANAGER.orderedKeys = [[ViblioHelper getReOrderedListOfKeys:[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]] mutableCopy];
+         
+         DLog(@"Log : Sorted list of keys obtained are ************************* %@", APPMANAGER.orderedKeys);
+         
          // If list view was pushed on then publish notification and dont reload the home view
          if( self.segment.tag )
              [[NSNotificationCenter defaultCenter] postNotificationName:reloadListView object:nil];
@@ -82,31 +89,34 @@
          
      }failure:^(NSError *error)
      {
-         if ( error.code == 401 )
-         {
-             APPMANAGER.turnOffUploads = YES;
-             [APPCLIENT invalidateFileUploadTask];
-             [ViblioHelper clearSessionVariables];
-             LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
-             [self.presentingViewController dismissViewControllerAnimated:NO completion:^(void)
-              {
-                  [lvc performSegueWithIdentifier: Viblio_wideNonWideSegue( @"signInNav" ) sender:self];
-              }];
-         }
-         else
-         {
-             [self viewDidAppear:YES];
-             if( !self.errorAlert.tag )
-             {
-                 self.errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                              message:@"Connecting to server..."
-                                                             delegate:self
-                                                    cancelButtonTitle:@"OK"
-                                                    otherButtonTitles:nil];
-                 [self.errorAlert show];
-                 self.errorAlert.tag = 1;
-             }
-         }
+         
+         DLog(@"Log : Error obtained is - %@", error.localizedDescription);
+//         if ( error.code == 401 )
+//         {
+//             APPMANAGER.errorCode = 1002;
+//             //APPMANAGER.turnOffUploads = YES;
+//             [APPCLIENT invalidateUploadTaskWithoutPausing];
+//             [ViblioHelper clearSessionVariables];
+//             LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
+//             [self.presentingViewController dismissViewControllerAnimated:NO completion:^(void)
+//              {
+//                  [lvc performSegueWithIdentifier: Viblio_wideNonWideSegue( @"signInNav" ) sender:self];
+//              }];
+//         }
+//         else
+//         {
+//             [self performSelector:@selector(viewDidAppear:) withObject:Nil afterDelay:5];
+//             if( !self.errorAlert.tag )
+//             {
+//                 self.errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+//                                                              message:@"Connecting to server..."
+//                                                             delegate:self
+//                                                    cancelButtonTitle:@"OK"
+//                                                    otherButtonTitles:nil];
+//                 [self.errorAlert show];
+//                 self.errorAlert.tag = 1;
+//             }
+//         }
      }];
     
     
@@ -151,7 +161,45 @@
     
     APPMANAGER.restoreMyViblio = NO;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSharingScreen:) name:showingSharingView object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshScreen) name:uploadComplete object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showOwnerSharedList) name:showSharingView object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOwnerShareView) name:removeOwnerSharingView object:nil];
+}
+
+-(void)removeOwnerShareView
+{
+    [self.sharedOwnerList.view removeFromSuperview];
+    self.sharedOwnerList = nil;
+}
+
+-(void)showOwnerSharedList
+{
+    if(self.sharedOwnerList != nil)
+    {
+        self.sharedOwnerList = nil;
+    }
     
+    self.sharedOwnerList = (SharedVideoListViewController*)[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"sharedOwnerList")];
+    self.sharedOwnerList.view.frame = CGRectMake(0, self.btnMyViblio.frame.size.height, 320, self.view.frame.size.height - self.btnMyViblio.frame.size.height);
+    
+    [self.view addSubview:self.sharedOwnerList.view];
+}
+
+-(void)refreshScreen
+{
+    DLog(@"Log : An upload has been completed... Refresh the screen now...");
+    
+    if( VCLIENT.cloudVideoList.count < ROW_COUNT.integerValue )
+    {
+        [self viewDidAppear:YES];
+    }
+    else
+    {
+        if( self.segment.tag )
+            [[NSNotificationCenter defaultCenter] postNotificationName:reloadListView object:nil];
+        else
+            [self.videoList reloadData];
+    }
 }
 
 
@@ -306,10 +354,8 @@
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section {
 
     DLog(@"Log : Coming in number of rows in sections" );
-    return ((NSArray*)VCLIENT.resCategorized[[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][section]]).count-1;
-    
-//    DLog(@"LOG : Count being returned is - %d", VCLIENT.filteredVideoList.count);
-//    return VCLIENT.totalRecordsCount;
+    NSArray *sectionList = VCLIENT.resCategorized[APPMANAGER.orderedKeys[section]];
+    return sectionList.count;
 }
 
 -(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -324,15 +370,15 @@
     if (kind == UICollectionElementKindSectionHeader) {
         AssetsCollectionReusableView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"HeaderView" forIndexPath:indexPath];
         
-        DLog(@"Log : Not crashing before this...");
+      //  DLog(@"Log : Not crashing before this...");
         
-        headerView.lblTitle.text = [VCLIENT.resCategorized[[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][indexPath.section]] firstObject];
-        DLog(@"Log : Crashing after this....");
+        headerView.lblTitle.text = APPMANAGER.orderedKeys[indexPath.section]; //([[(NSArray*)[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)] reverseObjectEnumerator] allObjects])[indexPath.section];
+      //  DLog(@"Log : Crashing after this....");
         
         headerView.lblTitle.font = [UIFont fontWithName:@"Avenir-Light" size:14];
         headerView.lblTitle.textColor = [UIColor colorWithRed:0.6156 green:0.6274 blue:0.6745 alpha:1];
         
-        DLog(@"Log : Crashing somewhere in between");
+      //  DLog(@"Log : Crashing somewhere in between");
         reusableview = headerView;
     }
     return reusableview;
@@ -341,10 +387,14 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)cv cellForItemAtIndexPath:(NSIndexPath *)indexPath {
 
     VideoCell *cell = (VideoCell*)[cv dequeueReusableCellWithReuseIdentifier:@"VideoStaticCell" forIndexPath:indexPath];
-    //cell.btnShare.tag = indexPath; //indexPath.row;
     
-    NSMutableArray *resArrayOfVideoObjects = [VCLIENT.resCategorized[[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][indexPath.section]] mutableCopy];
-    [resArrayOfVideoObjects  removeObjectAtIndex:0];
+//    NSArray *sortedArrayOfKeys = [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)];
+//    NSArray *sortedReversedArray = [[sortedArrayOfKeys reverseObjectEnumerator] allObjects];
+    NSMutableArray *resArrayOfVideoObjects = [VCLIENT.resCategorized[APPMANAGER.orderedKeys[indexPath.section]] mutableCopy];
+    
+  //  sortedReversedArray = nil; sortedArrayOfKeys = nil;
+    
+   // [resArrayOfVideoObjects  removeObjectAtIndex:0];
     
     DLog(@"Log : The resultant array obtained is - %@", resArrayOfVideoObjects);
     if( indexPath.section < VCLIENT.resCategorized.allKeys.count )
@@ -387,6 +437,11 @@
                  DLog(@"Log : Coming in response");
                  VCLIENT.cloudVideoList = [[VCLIENT.cloudVideoList arrayByAddingObjectsFromArray:result ] mutableCopy];
                  VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
+                 
+                 APPMANAGER.orderedKeys = [[ViblioHelper getReOrderedListOfKeys:[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]] mutableCopy];
+                 
+                 DLog(@"Log : Sorted list of keys obtained are ************************* %@", APPMANAGER.orderedKeys);
+                 
                  [self.videoList reloadData];
              }failure:^(NSError *error)
              {

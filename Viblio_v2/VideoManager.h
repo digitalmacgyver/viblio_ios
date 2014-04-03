@@ -17,15 +17,19 @@
 {
     __block int i, videosCount;
     double offset;
+    UIBackgroundTaskIdentifier bgTask;
 }
 @property(nonatomic,retain)NSMutableArray *filteredVideoList, *cloudVideoList;
 
 @property(nonatomic, retain)NSMutableArray *chunks;
 @property(nonatomic,strong)ALAsset *asset;
 @property(nonatomic, strong)Videos *videoUploading;
-@property(nonatomic, assign)BOOL shouldProceedWithNextFile;
+@property(nonatomic, assign)BOOL shouldProceedWithNextFile, isToBePaused;
 @property(nonatomic, assign)NSInteger totalRecordsCount, pageCount;
 @property (nonatomic, retain)NSDictionary *resCategorized;
+@property (nonatomic, assign)int totalChunksSent;
+
+
 
 + (VideoManager *)sharedClient;
 -(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success

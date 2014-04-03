@@ -27,10 +27,10 @@
 // Server URL
 #ifdef DEBUG
 #define API_UPLOAD_FILE_SERVER_URL @"https://staging.viblio.com/files"
-#define API_LOGIN_SERVER_URL @"https://staging.viblio.com/files"
+#define API_LOGIN_SERVER_URL @"https://staging.viblio.com"
 #else
 #define API_UPLOAD_FILE_SERVER_URL @"https://viblio.com/files"
-#define API_LOGIN_SERVER_URL @"https://staging.viblio.com/files"
+#define API_LOGIN_SERVER_URL @"https://staging.viblio.com"
 #endif
 
 

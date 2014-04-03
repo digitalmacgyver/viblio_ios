@@ -23,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UIView *vwBody;
 @property (weak, nonatomic) IBOutlet UIImageView *thumbImgVw;
 
+@property (weak, nonatomic) IBOutlet UILabel *lblToList;
 
 @property (weak, nonatomic) IBOutlet UIButton *btnMail;
 @property (weak, nonatomic) IBOutlet UIButton *btnFB;
@@ -30,5 +31,7 @@
 @property (nonatomic, strong) AFJSONRequestOperation* op;
 
 @property (nonatomic, strong) FBRequestConnection *requestConnection;
+@property (weak, nonatomic) IBOutlet UITableView *emailList;
+@property (weak, nonatomic) IBOutlet UIView *vwToList;
 
 @end

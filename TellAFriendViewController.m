@@ -60,11 +60,72 @@
     }
 }
 
+-(void)sendAppRequestTOAFriendOnFB : (NSString*)messgae
+{
+    NSMutableDictionary* params = nil;
+    FBSession *session;
+    if( [[FBSession activeSession] isOpen] )
+    {
+        session = [FBSession activeSession];
+    }
+    else
+    {
+        session = nil;
+    }
+    
+    DLog(@"Log : The message obtained for telel a friend is - %@", messgae);
+    // Display the requests dialog
+    [FBWebDialogs
+     presentRequestsDialogModallyWithSession:session
+     message:messgae
+     title:nil
+     parameters:params
+     handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+         if (error) {
+             // Error launching the dialog or sending the request.
+             NSLog(@"Error sending request.");
+         } else {
+             if (result == FBWebDialogResultDialogNotCompleted) {
+                 // User clicked the "x" icon
+                 NSLog(@"User canceled request.");
+             } else {
+                 // Handle the send request callback
+                 NSDictionary *urlParams = [self parseURLParams:[resultURL query]];
+                 if (![urlParams valueForKey:@"request"]) {
+                     // User clicked the Cancel button
+                     NSLog(@"User canceled request.");
+                 }
+                 else {
+                     // User clicked the Send button
+                                 [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Friend has been successfully invited!" viewController:self cancelBtnTitle:@"OK"];
+                     
+                    // [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Friend has been successfully invited!" viewController:self cancelBtnTitle:@"OK"];
+                     //NSLog(@"Log : The ids of the user to whom request has been sent is - %@", fbId);
+                 }
+             }
+         }
+     }];
+}
+
+- (NSDictionary*)parseURLParams:(NSString *)query {
+	NSArray *pairs = [query componentsSeparatedByString:@"&"];
+	NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+	for (NSString *pair in pairs) {
+		NSArray *kv = [pair componentsSeparatedByString:@"="];
+		NSString *val =
+        [[kv objectAtIndex:1]
+         stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+		[params setObject:val forKey:[kv objectAtIndex:0]];
+	}
+    return params;
+}
+
 -(void)tellAFriend
 {
     if( self.btnFacebook.tag )
     {
-        
+        [self sendAppRequestTOAFriendOnFB:self.txtVwTellAFriend.text];
     }
     
     if( self.btnMail.tag )
@@ -78,23 +139,26 @@
            {
                
            }];
+        
+        if( !self.btnFacebook.tag )
+            [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Friend has been successfully invited!" viewController:self cancelBtnTitle:@"OK"];
     }
-
-        [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Friend has been successfully invited!" viewController:self cancelBtnTitle:@"OK"];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
 {
- 
-    CGRect txtVwFrame = self.txtVwTellAFriend.frame;
-    txtVwFrame.size.height += 215;
-    self.txtVwTellAFriend.frame = txtVwFrame;
-    
-    CGRect vwSharingFrame = self.vwSharingOptions.frame;
-    vwSharingFrame.origin.y += 215;
-    self.vwSharingOptions.frame = vwSharingFrame;
-    
-    [self.txtVwTellAFriend resignFirstResponder];
+    if( self.txtVwTellAFriend.tag )
+    {
+        CGRect txtVwFrame = self.txtVwTellAFriend.frame;
+        txtVwFrame.size.height += 215;
+        self.txtVwTellAFriend.frame = txtVwFrame;
+        
+        CGRect vwSharingFrame = self.vwSharingOptions.frame;
+        vwSharingFrame.origin.y += 215;
+        self.vwSharingOptions.frame = vwSharingFrame;
+        
+        [self.txtVwTellAFriend resignFirstResponder];
+    }
 }
 
 -(void)cancel
@@ -141,7 +205,7 @@
         
         for(int i = 0; i < numberOfPeople; i++) {
             
-            DLog(@"Log : In processing contact - %d", i);
+            //DLog(@"Log : In processing contact - %d", i);
             ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
             
             NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
@@ -230,6 +294,7 @@
     CGRect txtVwFrame = self.txtVwTellAFriend.frame;
     txtVwFrame.size.height -= 215;
     self.txtVwTellAFriend.frame = txtVwFrame;
+    self.txtVwTellAFriend.tag = 1;
     
     CGRect vwSharingFrame = self.vwSharingOptions.frame;
     vwSharingFrame.origin.y -= 215;

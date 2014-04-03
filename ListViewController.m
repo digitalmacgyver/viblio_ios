@@ -117,7 +117,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
 {
     DLog(@"Log : Coming in number of rows in sections" );
-    return ((NSArray*)VCLIENT.resCategorized[[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][sectionIndex]]).count-1;
+    return ((NSArray*)VCLIENT.resCategorized[APPMANAGER.orderedKeys[sectionIndex]]).count; //((NSArray*)VCLIENT.resCategorized[[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][sectionIndex]]).count-1;
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -137,17 +137,19 @@
     [label setFont:[ViblioHelper viblio_Font_Regular_WithSize:13 isBold:NO]];
     label.textColor = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1];
     
-    NSArray *keysSorted = [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)];
-    DLog(@"Log : KeySorted are - %@", keysSorted);
-    NSArray *resArray = VCLIENT.resCategorized[keysSorted[section]];
+//    NSArray *keysSorted = [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)];
+//    DLog(@"Log : KeySorted are - %@", keysSorted);
+//    NSArray *resArray = VCLIENT.resCategorized[keysSorted[section]];
+//    
+//    if( resArray != nil && resArray.count > 0 )
+//        [label setText:[resArray firstObject]];
+//    else
+//        DLog(@"Log : NO contents found in the array.. Seems to be a bug.. %@ ... keysSorted - %@ ... ", resArray, keysSorted);
+//    
+//    keysSorted = nil;
+//    resArray = nil;
     
-    if( resArray != nil && resArray.count > 0 )
-        [label setText:[resArray firstObject]];
-    else
-        DLog(@"Log : NO contents found in the array.. Seems to be a bug.. %@ ... keysSorted - %@ ... ", resArray, keysSorted);
-    
-    keysSorted = nil;
-    resArray = nil;
+    [label setText:APPMANAGER.orderedKeys[section]];
     
     /* Section header is in 0th index... */
     
@@ -170,8 +172,8 @@
     if( indexPath.section < VCLIENT.resCategorized.allKeys.count )
     {
         DLog(@"Log : In if for section");
-        NSMutableArray *resArrayOfVideoObjects = [VCLIENT.resCategorized[[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)][indexPath.section]] mutableCopy];
-        [resArrayOfVideoObjects removeObjectAtIndex:0];
+        NSMutableArray *resArrayOfVideoObjects = [VCLIENT.resCategorized[APPMANAGER.orderedKeys[indexPath.section]] mutableCopy];
+        //[resArrayOfVideoObjects removeObjectAtIndex:0];
         
         if( indexPath.row < resArrayOfVideoObjects.count )
         {
@@ -206,6 +208,8 @@
                      VCLIENT.cloudVideoList = [[VCLIENT.cloudVideoList arrayByAddingObjectsFromArray:result ] mutableCopy];
                      VCLIENT.resCategorized = nil;
                      VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
+                     APPMANAGER.orderedKeys = [[ViblioHelper getReOrderedListOfKeys:[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]] mutableCopy];
+                     
                      DLog(@"Log : VClient - %@", VCLIENT.resCategorized);
                      DLog(@"Log : The keys are - %@", [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]);
                      [self.listView reloadData];

@@ -35,7 +35,8 @@
     self.lblEmailId.text = APPMANAGER.user.emailId;
     self.lblEmailId.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     
-    self.lblSyncNotInProgress.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
+    self.lblSyncNotInProgress.font = [UIFont fontWithName:@"Avenir-Medium" size:14];
+    self.lblSyncNotInProgress.numberOfLines = 0;
     _menuSections = @[@"Home", @"Settings", @"Tell A Friend", @"Give Feedback", @"Terms Of Use", @"Rate Us In App Store"];
 	// Do any additional setup after loading the view.
 }
@@ -52,6 +53,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(logoutUser) name:logoutUser object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoUploadDescretion) name:uploadVideoPaused object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoUploadDescretion) name:uploadComplete object:nil];
     [self videoUploadDescretion];
 }
 
@@ -66,7 +68,10 @@
     DLog(@"Log : uploaded size is - %f", APPCLIENT.uploadedSize);
     DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
     DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
-
+    
+    self.lblSize.text = [NSString stringWithFormat:@"%.2fMb of %.2fMb(%.2f%%)", (APPCLIENT.uploadedSize/(1024*1024)), (float)VCLIENT.asset.defaultRepresentation.size/(1024*1024), (APPCLIENT.uploadedSize/VCLIENT.asset.defaultRepresentation.size)*100];
+    self.lblSize.adjustsFontSizeToFitWidth = YES;
+    
     self.progressView.progress = APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size;
     self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
     
@@ -75,7 +80,7 @@
 //                                                          timeStyle:NSDateFormatterFullStyle];
 //    dateString = (NSString*)[[dateString componentsSeparatedByString:@" "] firstObject];
 //    DLog(@"Log : The date sring about to be set is - %@", dateString);
-    self.lblProgressTitle.text = @"Uploding";
+    self.lblProgressTitle.text = @"Uploading";
 }
 
 - (IBAction)progressBarClicked:(id)sender {
@@ -107,38 +112,56 @@
 
 -(void)videoUploadDescretion
 {
-    if( VCLIENT.asset != nil )
+    
+    if( APPMANAGER.turnOffUploads )
     {
-        DLog(@"Log : Upload in progress....");
+        // Check for error codes
         
-        [self.lblSyncNotInProgress setHidden:YES];
-        [self.vwSyncingFile setHidden:NO];
-        [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:YES];
-    }
-    else
-    {
         [self.vwSyncingFile setHidden:YES];
         [self.lblSyncNotInProgress setHidden:NO];
         
-        if( [DBCLIENT getTheCountOfRecordsInDB] > 0 )
+        if( APPMANAGER.errorCode == 1000 )
+            self.lblSyncNotInProgress.text = @"Battery less than 20%. Uploads have been stopped";
+        else if( APPMANAGER.errorCode == 1001 )
+            self.lblSyncNotInProgress.text = @"Internet connection appears to be offline";
+        else if ( APPMANAGER.errorCode == 1003 )
+            self.lblSyncNotInProgress.text = @"Server not reachable at the moment.. Reconnecting..";
+    }
+    else
+    {
+        if( VCLIENT.asset != nil )
         {
-            if( [APPMANAGER.activeSession.autoSyncEnabled isEqual:@(1)] )
-            {
-                if( [DBCLIENT getTheListOfPausedVideos].count > 0 )
-                {
-                    self.lblSyncNotInProgress.text = @"Please consider syncing paused uploads";
-                    self.lblSyncNotInProgress.numberOfLines = 0;
-                    self.lblSyncNotInProgress.font = [ViblioHelper viblio_Font_Regular_WithSize:12 isBold:NO];
-                }
-                else
-                    self.lblSyncNotInProgress.text = @"All videos are uploaded !!";
-            }
-            else
-                self.lblSyncNotInProgress.text = @"Enable Auto Sync to upload all your videos !!";
+            DLog(@"Log : Upload in progress....");
+            
+            [self.lblSyncNotInProgress setHidden:YES];
+            [self.vwSyncingFile setHidden:NO];
+            [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:YES];
         }
         else
         {
-            self.lblSyncNotInProgress.text = @"No videos found to upload !!";
+            [self.vwSyncingFile setHidden:YES];
+            [self.lblSyncNotInProgress setHidden:NO];
+            
+            if( [DBCLIENT getTheCountOfRecordsInDB] > 0 )
+            {
+                if( [APPMANAGER.activeSession.autoSyncEnabled isEqual:@(1)] )
+                {
+                    if( [DBCLIENT getTheListOfPausedVideos].count > 0 )
+                    {
+                        self.lblSyncNotInProgress.text = @"Please consider syncing paused uploads";
+                        self.lblSyncNotInProgress.numberOfLines = 0;
+                        self.lblSyncNotInProgress.font = [ViblioHelper viblio_Font_Regular_WithSize:12 isBold:NO];
+                    }
+                    else
+                        self.lblSyncNotInProgress.text = @"All videos are uploaded !!";
+                }
+                else
+                    self.lblSyncNotInProgress.text = @"Enable Auto Sync to upload all your videos !!";
+            }
+            else
+            {
+                self.lblSyncNotInProgress.text = @"No new videos to upload !!";
+            }
         }
     }
 }

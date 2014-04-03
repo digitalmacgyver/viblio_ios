@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Security/Security.h>
 #import "User.h"
 //#import <CoreFoundation/CoreFoundation.h>
 
@@ -14,12 +15,15 @@
 #define APPAUTH [AuthControllers sharedInstance]
 #define ERROR_DOMAIN @"com.viblio.error"
 
-@interface ViblioClient : AFHTTPClient <NSURLSessionDelegate, NSURLSessionTaskDelegate>
-
+@interface ViblioClient : AFHTTPClient <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate>
+{
+    UIBackgroundTaskIdentifier bgTask;
+}
 @property(nonatomic, assign) double uploadedSize;
 
 @property (nonatomic) NSURLSession *session;
 @property (nonatomic) NSURLSessionUploadTask *uploadTask;
+@property (nonatomic) NSURLSessionDownloadTask *downloadTask;
 @property (nonatomic) NSString *filePath;
 
 + (ViblioClient *)sharedClient;
@@ -64,7 +68,7 @@
 
 -(void)getOffsetOfTheFileAtLocationID : (NSString*)fileLocationID
                         sessionCookie : (NSString*)sessionCookie
-                              success : (void (^)(double offset))success
+                              success : (void (^)(NSNumber *offset))success
                               failure : (void(^)(NSError *error))failure;
 
 
@@ -108,7 +112,7 @@
                                                failure:(void(^)(NSError *error))failure;
 
 
--(void)getListOfSharedWithMeVideos :(void(^)(NSArray *sharedList))success
+-(void)getListOfSharedWithMeVideos :(void(^)(NSMutableArray *sharedList))success
                             failure:(void(^)(NSError *error))failure;
 
 -(void)streamAvatarsImageForUUID : (NSString*)uuid
@@ -143,6 +147,15 @@
                                                     success : (void(^)(BOOL hasBeenTold))success
                                                     failure : (void(^)(NSError *error))failure;
 
+-(void)startUploadingFileInBackgroundForUserId : (NSString*)userUUId
+                                 fileLocalPath : (NSString*)fileLocalPath
+                                      fileSize : (NSString*)fileSize
+                                       success : (void (^)(NSString *fileLocation))success
+                                       failure : (void(^)(NSError *error))failure;
 
+-(void)getOffsetOfTheFileInBackgroundAtLocationID : (NSString*)fileLocationID
+                                    sessionCookie : (NSString*)sessionCookie
+                                          success : (void (^)(NSNumber *offset))success
+                                          failure : (void(^)(NSError *error))failure;
 
 @end

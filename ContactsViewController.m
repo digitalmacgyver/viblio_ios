@@ -33,6 +33,7 @@
                                               [UIButton navigationRightItemWithTarget:self action:@selector(selectContactList) withImage:@"" withTitle:@"Done"]];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
                                              [UIButton navigationLeftItemWithTarget:self action:@selector(cancelContactList) withImage:@"" withTitle:@"Cancel" ]];
+    self.contacts = APPMANAGER.contacts;
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -55,6 +56,8 @@
             [self.contactsList reloadData];
         }
     }
+    else if ( APPMANAGER.selectedContacts == nil )
+        APPMANAGER.selectedContacts = [NSMutableArray new];
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -69,22 +72,22 @@
 -(void)selectContactList
 {
     DLog(@"Log : Select the contact list");
-    DLog(@"Log : Selected contact list is - %@", self.selectedIndices);
+//    DLog(@"Log : Selected contact list is - %@", self.selectedIndices);
     
-    if (APPMANAGER.selectedContacts != nil)
-    {
-        [APPMANAGER.selectedContacts removeAllObjects];
-        APPMANAGER.selectedContacts = nil;
-    }
-    APPMANAGER.selectedContacts = [[NSMutableArray alloc]init];
-    
-    for( int i=0; i < self.selectedIndices.count; i++ )
-    {
-        DLog(@"Log : The object to be added is - %@", [APPMANAGER.contacts objectAtIndex:i]);
-        [APPMANAGER.selectedContacts addObject:[APPMANAGER.contacts objectAtIndex:i]];
-    }
-    
-    DLog(@"Log : The selected list is - %@", APPMANAGER.selectedContacts);
+//    if (APPMANAGER.selectedContacts != nil)
+//    {
+//        [APPMANAGER.selectedContacts removeAllObjects];
+//        APPMANAGER.selectedContacts = nil;
+//    }
+//    APPMANAGER.selectedContacts = [[NSMutableArray alloc]init];
+//    
+//    for( int i=0; i < self.selectedIndices.count; i++ )
+//    {
+//        DLog(@"Log : The object to be added is - %@", [APPMANAGER.contacts objectAtIndex:i]);
+//        [APPMANAGER.selectedContacts addObject:[APPMANAGER.contacts objectAtIndex:i]];
+//    }
+//    
+//    DLog(@"Log : The selected list is - %@", APPMANAGER.selectedContacts);
     
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -130,25 +133,17 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
    // cell.tag = 0;
     
-    if( ![self isIndexSelected:@(indexPath.row)] )
-    {
-        cell.imageView.image = nil;
-        cell.tag = 0;
-    }
-    else
-    {
-        cell.tag = 1;
-        cell.imageView.image = [UIImage imageNamed:@"selected"];
-    }
+    NSMutableDictionary *contact = self.contacts[indexPath.row];
     
-    if( [((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"fname"] isValid] &&  ((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"lname"] )
-    {
-            cell.textLabel.text = [[((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"fname"] stringByAppendingString:@" "] stringByAppendingString:((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"lname"]];
-    }
+    if( contact[@"isSelected"] != nil && ((NSNumber*)contact[@"isSelected"]).boolValue  )
+        cell.imageView.image = [UIImage imageNamed:@"selected"];
     else
-    {
-        cell.textLabel.text =  [((NSArray*)((NSDictionary*)APPMANAGER.contacts[indexPath.row])[@"email"]) firstObject];
-    }
+        cell.imageView.image = nil;
+    
+    if( [contact[@"fname"] isValid] && [contact[@"lname"] isValid] )
+        cell.textLabel.text = [[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]];
+    else
+        cell.textLabel.text =  [contact[@"email"] firstObject];
 
     cell.textLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     cell.textLabel.textColor = [UIColor grayColor];
@@ -156,45 +151,78 @@
     return cell;
 }
 
--(BOOL)isIndexSelected : (NSNumber*)currentIndex
-{
-    for( NSNumber *index in self.selectedIndices )
-    {
-        if( [index isEqual:currentIndex] )
-            return YES;
-    }
-    return NO;
-}
+//-(BOOL)isIndexSelected : (NSNumber*)currentIndex
+//{
+//    for( NSNumber *index in self.selectedIndices )
+//    {
+//        if( [index isEqual:currentIndex] )
+//            return YES;
+//    }
+//    return NO;
+//}
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    //UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     DLog(@"Log : Selection detected..");
     
-    if( cell.tag )
+    NSMutableDictionary *contact =  [(NSMutableDictionary*)self.contacts[indexPath.row] mutableCopy];
+    if( contact[@"isSelected"] != nil && ((NSNumber*)contact[@"isSelected"]).boolValue )
     {
-        cell.imageView.image = nil;
-        cell.tag = 0;
+        DLog(@"Log : Its a selected contact... Remove it from everywhere");
+        [contact setValue:@(NO) forKey:@"isSelected"];
         
-        for( int i=0; i<self.selectedIndices.count; i++)
+        DLog(@"Log : The selected contacts list is - %@", APPMANAGER.selectedContacts);
+        for( int i=0; i < APPMANAGER.selectedContacts.count; i++ )
         {
-            if( [self.selectedIndices[i] isEqual:@(indexPath.row)] )
-            {
-                DLog(@"Log : Entering in removig the object - %@", self.selectedIndices);
-                [self.selectedIndices removeObjectAtIndex:i];
-                DLog(@"Log : Entering in removig the object after removal - %@", self.selectedIndices);
-                break;
-            }
+            NSDictionary *contactSelected = APPMANAGER.selectedContacts[i];
+            if( [contact[@"fname"] isEqualToString:contactSelected[@"fname"]] && [contact[@"lname"] isEqualToString:contactSelected[@"lname"]] )
+                [APPMANAGER.selectedContacts removeObjectAtIndex:i];
         }
+        
+        DLog(@"Log : Contacts list before removing is - %@", self.contacts);
+        [self.contacts removeObjectAtIndex:indexPath.row];
+        
+        DLog(@"Log : Contacts list after removal is - %@", self.contacts);
+        [self.contacts insertObject:contact atIndex:APPMANAGER.selectedContacts.count];
+
+        DLog(@"Log : Contacts list after addition is - %@", self.contacts);
     }
     else
     {
-        cell.imageView.image = [UIImage imageNamed:@"selected"];
-        cell.tag = 1;
-        [self.selectedIndices addObject:@(indexPath.row)];
+        DLog(@"Log : New contact selected.. Reshift it and reload the table...");
+        [contact setValue:@(YES) forKey:@"isSelected"];
+        [self.contacts removeObjectAtIndex:indexPath.row];
+        [self.contacts insertObject:contact atIndex:APPMANAGER.selectedContacts.count];
+        [APPMANAGER.selectedContacts addObject:contact];
     }
     
     [self.contactsList reloadData];
+//    if( cell.tag )
+//    {
+//        cell.imageView.image = nil;
+//        cell.tag = 0;
+//        
+//        for( int i=0; i<self.selectedIndices.count; i++)
+//        {
+//            if( [self.selectedIndices[i] isEqual:@(indexPath.row)] )
+//            {
+//                DLog(@"Log : Entering in removig the object - %@", self.selectedIndices);
+//                [self.selectedIndices removeObjectAtIndex:i];
+//                DLog(@"Log : Entering in removig the object after removal - %@", self.selectedIndices);
+//                break;
+//            }
+//        }
+//    }
+//    else
+//    {
+//        cell.imageView.image = [UIImage imageNamed:@"selected"];
+//        cell.tag = 1;
+//        [self.selectedIndices addObject:@(indexPath.row)];
+//    }
+//    
+//    [self.contactsList reloadData];
 }
 
 @end

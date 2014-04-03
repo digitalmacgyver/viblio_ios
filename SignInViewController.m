@@ -101,14 +101,18 @@
                  [self.activity stopAnimating];
                  
                  DLog(@"Error : Could not Login the user");
-                 [ViblioHelper displayAlertWithTitle:@"" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
+                 
+                 if(error.code == -1009)
+                     [ViblioHelper displayAlertWithTitle:@"" messageBody:@"The Internet is my life force and you don’t seem to be connected. Get connected quick!" viewController:self cancelBtnTitle:@"OK"];
+                 else
+                     [ViblioHelper displayAlertWithTitle:@"" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
              }];
         }
         else
-            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Please enter valid email" viewController:self cancelBtnTitle:@"OK"];
+            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"I don't recognize that email format. Wanna try agian ?" viewController:self cancelBtnTitle:@"OK"];
     }
     else
-        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Email/Password is blank" viewController:self cancelBtnTitle:@"OK"];
+        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"hmmm. Something's missing... email or password perhaps? Let's try it again." viewController:self cancelBtnTitle:@"OK"];
     
     //[self performSegueWithIdentifier:Viblio_wideNonWideSegue(@"LogInNav") sender:self];
 }
@@ -132,7 +136,7 @@
              {
                  [self.activity stopAnimating];
                  
-                 [ViblioHelper displayAlertWithTitle:@"Success" messageBody:[NSString stringWithFormat:@"Your new password will be sent to your mail %@", self.txtUserName.text] viewController:self cancelBtnTitle:@"OK"];
+                 [ViblioHelper displayAlertWithTitle:@"Success" messageBody:[NSString stringWithFormat:@"Look out for an email at %@ from me to know your new reset password", self.txtUserName.text] viewController:self cancelBtnTitle:@"OK"];
              }failure:^(NSError *error)
              {
                  [self.activity stopAnimating];
@@ -141,10 +145,10 @@
              }];
         }
         else
-            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Please enter valid Email Id " viewController:self cancelBtnTitle:@"OK"];
+            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"I don't recognize that email format. Wanna try agian ?" viewController:self cancelBtnTitle:@"OK"];
     }
     else
-        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Email Id cannot be blank" viewController:self cancelBtnTitle:@"OK"];
+        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"hmmm. Something's missing... email or password perhaps? Let's try it again." viewController:self cancelBtnTitle:@"OK"];
 }
 
 
@@ -166,48 +170,96 @@
             
             [self.activity startAnimating];
             
-            [APPCLIENT createNewUserAccountWithFB:fbAccessToken type:@"facebook" success:^(NSString *msg)
+            [APPCLIENT authenticateUserWithFacebook:fbAccessToken type:@"facebook" success:^(NSString *msg)
+             {
+                 DLog(@"Log : user details obtained is - %@", UserClient.userName);
+                 // Stop activity indicator
+                 [self.activity stopAnimating];
+                 
+                 // Persist the user details in the DB until the user logs out
+                 [DBCLIENT persistUserDetailsWithEmail:UserClient.emailId password:nil userID:UserClient.userID isNewUser:UserClient.isNewUser isFbUser:UserClient.isFbUser sessionCookie:UserClient.sessionCookie fbAccessToken:UserClient.fbAccessToken userName:UserClient.userName];
+                 
+                 APPMANAGER.turnOffUploads = NO;
+                 APPMANAGER.user = [[DBCLIENT getUserDataFromDB] firstObject];
+                 DLog(@"Log : The user details are - %@", APPMANAGER.user);
+                 // Perform an DB update for storing the assetsas well
+                 
+                 [DBCLIENT updateDB:^(NSString *msg)
+                  {
+                      DLog(@"Log : DB update successfull.. Proceed");
+                      LandingViewController *lvc = (LandingViewController*)self.navigationController.presentingViewController;
+                      [self.navigationController dismissViewControllerAnimated:NO completion:^(void)
+                       {
+//                           if( [APPMANAGER.user.isNewUser integerValue] )
+//                           {
+//                               DLog(@"LOG : New user tutorials have to be shown");
+//                               [lvc performSegueWithIdentifier:Viblio_wideNonWideSegue(@"tutorialNav") sender:self];
+//                           }
+//                           else
+//                           {
+                               DLog(@"LOG : Not new user... Take him to dashboard");
+                               [lvc performSegueWithIdentifier:(@"dashboardNav") sender:self];
+//                           }
+                       }];
+                  }failure:^(NSError *error)
+                  {
+                      DLog(@"Log : Error is - %@", error);
+                      [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"cameradenial")] animated:YES];
+                  }];
+
+                 
+             }failure:^(NSError *error)
             {
-                // Stop activity indicator
-                [self.activity stopAnimating];
-                
-                // Persist the user details in the DB until the user logs out
-                [DBCLIENT persistUserDetailsWithEmail:UserClient.emailId password:nil userID:UserClient.userID isNewUser:UserClient.isNewUser isFbUser:UserClient.isFbUser sessionCookie:UserClient.sessionCookie fbAccessToken:UserClient.fbAccessToken userName:UserClient.userName];
-                
-                APPMANAGER.turnOffUploads = NO;
-                APPMANAGER.user = [[DBCLIENT getUserDataFromDB] firstObject];
-                DLog(@"Log : The user details are - %@", APPMANAGER.user);
-                // Perform an DB update for storing the assetsas well
-                
-                [DBCLIENT updateDB:^(NSString *msg)
-                 {
-                     DLog(@"Log : DB update successfull.. Proceed");
-                     LandingViewController *lvc = (LandingViewController*)self.navigationController.presentingViewController;
-                     [self.navigationController dismissViewControllerAnimated:NO completion:^(void)
-                      {
-                          if( [APPMANAGER.user.isNewUser integerValue] )
+                if( error.code == 401 )
+                {
+                    [APPCLIENT createNewUserAccountWithFB:fbAccessToken type:@"facebook" success:^(NSString *msg)
+                     {
+                         // Stop activity indicator
+                         [self.activity stopAnimating];
+                         
+                         // Persist the user details in the DB until the user logs out
+                         [DBCLIENT persistUserDetailsWithEmail:UserClient.emailId password:nil userID:UserClient.userID isNewUser:UserClient.isNewUser isFbUser:UserClient.isFbUser sessionCookie:UserClient.sessionCookie fbAccessToken:UserClient.fbAccessToken userName:UserClient.userName];
+                         
+                         APPMANAGER.turnOffUploads = NO;
+                         APPMANAGER.user = [[DBCLIENT getUserDataFromDB] firstObject];
+                         DLog(@"Log : The user details are - %@", APPMANAGER.user);
+                         // Perform an DB update for storing the assetsas well
+                         
+                         [DBCLIENT updateDB:^(NSString *msg)
                           {
-                              DLog(@"LOG : New user tutorials have to be shown");
-                              [lvc performSegueWithIdentifier:Viblio_wideNonWideSegue(@"tutorialNav") sender:self];
-                          }
-                          else
+                              DLog(@"Log : DB update successfull.. Proceed");
+                              LandingViewController *lvc = (LandingViewController*)self.navigationController.presentingViewController;
+                              [self.navigationController dismissViewControllerAnimated:NO completion:^(void)
+                               {
+//                                   if( [APPMANAGER.user.isNewUser integerValue] )
+//                                   {
+//                                       DLog(@"LOG : New user tutorials have to be shown");
+//                                       [lvc performSegueWithIdentifier:Viblio_wideNonWideSegue(@"tutorialNav") sender:self];
+//                                   }
+//                                   else
+//                                   {
+                                       DLog(@"LOG : Not new user... Take him to dashboard");
+                                       [lvc performSegueWithIdentifier:(@"dashboardNav") sender:self];
+//                                   }
+                               }];
+                          }failure:^(NSError *error)
                           {
-                              DLog(@"LOG : Not new user... Take him to dashboard");
-                              [lvc performSegueWithIdentifier:(@"dashboardNav") sender:self];
-                          }
-                      }];
-                 }failure:^(NSError *error)
-                 {
-                     DLog(@"Log : Error is - %@", error);
-                     [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"cameradenial")] animated:YES];
-                 }];
-                
-            }failure:^(NSError *error)
-            {
-                [self.activity stopAnimating];
-                
-                [ViblioHelper displayAlertWithTitle:@"Error" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
+                              DLog(@"Log : Error is - %@", error);
+                              [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"cameradenial")] animated:YES];
+                          }];
+                         
+                     }failure:^(NSError *error)
+                     {
+                         [self.activity stopAnimating];
+                         
+                         [ViblioHelper displayAlertWithTitle:@"Error" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
+                     }];
+
+                }
+                else
+                    [ViblioHelper displayAlertWithTitle:@"Error" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
             }];
+
         }
         
         } inView:self.view];

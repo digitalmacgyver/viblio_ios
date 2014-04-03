@@ -51,10 +51,15 @@
     self.vwBody.layer.borderColor = [[UIColor lightGrayColor]CGColor];
     self.vwBody.layer.borderWidth = 1.0f;
     self.txtVwBody.font = [UIFont fontWithName:@"Avenir-Roman" size:14];
+    
+    self.vwToList.layer.borderColor = [[UIColor lightGrayColor]CGColor];
+    self.vwToList.layer.borderWidth = 1.0f;
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
+    
+    [self.emailList reloadData];
     self.thumbImgVw.image = APPMANAGER.posterImageForVideoSharing;
     //[self.thumbImgVw setImageWithURL:[NSURL URLWithString:((SharedVideos*)APPMANAGER.videoToBeShared).posterURL]];
     
@@ -66,10 +71,25 @@
                                                   [UIButton navigationRightItemWithTarget:self action:@selector(send) withImage:@"" withTitle:@"Send" ]];
         [self.btnMail setImage:[UIImage imageNamed:@"bttn_mail"] forState:UIControlStateNormal];
         self.btnMail.tag = 1;
-        //[self.btnFB setImage:[UIImage imageNamed:@"bttn_facebook"] forState:UIControlStateNormal];
+        
+        NSMutableDictionary *contact = [APPMANAGER.selectedContacts firstObject];
+        
+        if( APPMANAGER.selectedContacts.count > 1 )
+        {
+            if( APPMANAGER.selectedContacts.count > 2 )
+                    self.lblToList.text = [NSString stringWithFormat:@"%@ and %d others",[[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]], APPMANAGER.selectedContacts.count-1 ];
+            else
+                    self.lblToList.text = [NSString stringWithFormat:@"%@ and %d other",[[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]], APPMANAGER.selectedContacts.count-1 ];
+        }
+        else
+            self.lblToList.text = [[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]];
+
+        contact = nil;
+        
     }
     else
     {
+        self.lblToList.text = @"Select People";
         if( self.btnFB.tag == 0 )
             self.navigationItem.rightBarButtonItem = nil;
         //[self.btnFB setImage:[UIImage imageNamed:@"bttn_facebook_normal"] forState:UIControlStateNormal];
@@ -106,20 +126,18 @@
 
 -(void)send
 {
-    //[self likeButtonPressed:self];
-//    [self postWithText:self.txtSubject.text ImageName:@"Sample Video" URL:[NSURL URLWithString:@"https://staging.viblio.com/"] Caption:@"" Name:self.txtFiledTitle.text andDescription:self.txtVwBody.text];
+    
+
     NSString *fileId ;
-    BOOL isShared = NO;
     
     if( self.btnFB.tag )
     {
-        isShared = YES;
         DLog(@"Log : Has to be shared via FB too...");
+        [self likeButtonPressed:self];
     }
     
     if( self.btnMail.tag )
     {
-        isShared = YES;
         DLog(@"Log : Has to be shared via Mail too...");
         if( [APPMANAGER.VideoToBeShared isKindOfClass:[VideoCell class] ] )
             fileId = ((VideoCell*)APPMANAGER.VideoToBeShared).video.uuid;
@@ -132,21 +150,15 @@
                    }failure:^(NSError *error)
                    {
                        DLog(@"Log : Error - %@", error);
-                       //                   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-                       //                                                                   message:@"Error while sharing the video. Do you want to try again ?"
-                       //                                                                  delegate:self
-                       //                                                         cancelButtonTitle:@"Cancel"
-                       //                                                         otherButtonTitles:@"Try Again", nil];
-                       //                   [alert show];
-                       //                   alert = nil;
                    }];
+        
+        if( !self.btnFB.tag )
+        {
+            [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
+        }
     }
 
-    if( isShared )
-        [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
-    else
-        [ViblioHelper displayAlertWithTitle:@"Alert" messageBody:@"Please select an option to share the video" viewController:self cancelBtnTitle:@"OK"];
-}
+        }
 
 
 
@@ -172,6 +184,9 @@
 
 - (IBAction)titleEditingStarted:(id)sender {
     
+    if( APPMANAGER.selectedContacts != nil && APPMANAGER.selectedContacts.count > 0 )
+        [self.emailList setHidden:NO];
+    
     DLog(@"Log : title editing started...");
     self.txtFiledTitle.text = nil;
     self.txtFiledTitle.font = [UIFont fontWithName:@"Avenir-Roman" size:14];
@@ -180,6 +195,8 @@
 
 
 - (IBAction)titleEditingDidEnd:(id)sender {
+    
+    [self.emailList setHidden:YES];
     
     DLog(@"Log : title editing end");
     if( ![self.txtFiledTitle.text isValid] )
@@ -204,6 +221,7 @@
     {
         self.txtVwBody.tag = 1;
         [self.thumbImgVw setHidden:YES];
+        [self.txtFiledTitle setHidden:YES];
         
         CGRect txtVwFrame = self.vwBody.frame;
         txtVwFrame.size.height -= 215;
@@ -247,109 +265,9 @@
 
 -(void)postSharingVideoToFBTimeline
 {
-//    [self likeButtonPressed:self];
-//        [self postWithText:self.txtSubject.text ImageName:@"Sample Video" URL:[NSURL URLWithString:@"https://staging.viblio.com/"] Caption:@"" Name:self.txtFiledTitle.text andDescription:self.txtVwBody.text];
+    [self likeButtonPressed:self];
 }
 
-
-//-(void) postWithText: (NSString*) message
-//           ImageName: (NSString*) image
-//                 URL: (NSString*) url
-//             Caption: (NSString*) caption
-//                Name: (NSString*) name
-//      andDescription: (NSString*) description
-//{
-//    DLog(@"LOg : Checpoint -1");
-//    if ([[FBSession activeSession] isOpen])
-//    {
-//            DLog(@"LOg : Checpoint -1.2");
-//        NSMutableDictionary* params = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-//                                       url, @"link",
-//                                       name, @"name",
-//                                       caption, @"caption",
-//                                       description, @"description",
-//                                       message, @"message",
-//                                       UIImagePNGRepresentation([UIImage imageNamed: image]), @"picture",
-//                                       nil];
-//        
-//        if ([FBSession.activeSession.permissions indexOfObject:@"publish_actions"] == NSNotFound)
-//        {
-//                DLog(@"LOg : Checpoint -1.1");
-//            // No permissions found in session, ask for it
-//            [FBSession.activeSession requestNewPublishPermissions: [NSArray arrayWithObject:@"publish_actions"]
-//                                                  defaultAudience: FBSessionDefaultAudienceFriends
-//                                                completionHandler: ^(FBSession *session, NSError *error)
-//             {
-//                 if (!error)
-//                 {
-//                     // If permissions granted and not already posting then publish the story
-//                     if (!m_postingInProgress)
-//                     {
-//                         [self postToWall: params];
-//                     }
-//                 }
-//             }];
-//        }
-//        else
-//        {
-//                DLog(@"LOg : Checpoint -1.4");
-//            // If permissions present and not already posting then publish the story
-//            if (!m_postingInProgress)
-//            {
-//                    DLog(@"LOg : Checpoint -1.5");
-//                [self postToWall: params];
-//            }
-//        }
-//    }
-//    else
-//    {
-//        [self fbSessionEsteblish:@[@"basic_info" ] :self.view :^(NSError* error, NSString* fbAccessToken)
-//         {
-//                 DLog(@"LOg : Checpoint -1.6");
-//             //cblock(error, fbAccessToken);
-//         }];
-//    }
-//
-//}
-//
-//-(void) postToWall: (NSMutableDictionary*) params
-//{
-//    m_postingInProgress = YES; //for not allowing multiple hits
-//    
-//    NSMutableDictionary* params1 = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-//                                   @"url", @"link",
-//                                   @"BirthDayBash", @"name",
-//                                   @"caption", @"caption",
-//                                   @"My birthday", @"description",
-//                                   @"message", @"message",
-//                                   UIImagePNGRepresentation(self.thumbImgVw.image), @"BirthDayBash",
-//                                   nil];
-//    
-//    DLog(@"LOg : Checpoint -2.1");
-//    [FBRequestConnection startWithGraphPath:@"me/feed"
-//                                 parameters:params1
-//                                 HTTPMethod:@"POST"
-//                          completionHandler:^(FBRequestConnection *connection,
-//                                              id result,
-//                                              NSError *error)
-//     {
-//             DLog(@"LOg : Checpoint -1.7");
-//         //DLog(@"Log : The result is - %@", result);
-//         if (error)
-//         {
-//                 DLog(@"LOg : Checpoint -1.8");
-//             //showing an alert for failure
-//             UIAlertView *alertView = [[UIAlertView alloc]
-//                                       initWithTitle:@"Post Failed"
-//                                       message:error.localizedDescription
-//                                       delegate:nil
-//                                       cancelButtonTitle:@"OK"
-//                                       otherButtonTitles:nil];
-//             [alertView show];
-//         }
-//         m_postingInProgress = NO;
-//     }];
-//}
 
 -(IBAction)likeButtonPressed:(id)sender
 {
@@ -388,35 +306,6 @@
                                           }
                                       
                                       }];
-//        
-//        [FBSession sessionOpenWithPermissions:[NSArray arrayWithObjects:@"publish_stream", nil]
-//                            completionHandler:
-//         ^(FBSession *session,
-//           FBSessionState status,
-//           NSError *error)
-//         {
-//             // if login fails for any reason, we alert
-//             if (error)
-//             {
-//                 NSLog(@"    login failed");
-//                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-//                                                                 message:error.localizedDescription
-//                                                                delegate:nil
-//                                                       cancelButtonTitle:@"OK"
-//                                                       otherButtonTitles:nil];
-//                 [alert show];
-//                 // if otherwise we check to see if the session is open, an alternative to
-//                 // to the FB_ISSESSIONOPENWITHSTATE helper-macro would be to check the isOpen
-//                 // property of the session object; the macros are useful, however, for more
-//                 // detailed state checking for FBSession objects
-//             }
-//             else if (FB_ISSESSIONOPENWITHSTATE(status))
-//             {
-//                 NSLog(@"    sending post on wall request...");
-//                 // send our requests if we successfully logged in
-//                 [self postOnWall];
-//             }
-//         }];
     };
 }
 
@@ -503,14 +392,23 @@
     
     if (error)
     {
-        NSLog(@"    error");
-        UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        NSLog(@"    error -- %@", error.userInfo);
+        NSString *message;
+        if( error.userInfo != nil )
+        {
+           message  = error.userInfo[@"com.facebook.sdk:ParsedJSONResponseKey"][@"body"][@"error"][@"message"];
+        }
+        else
+            message = error.localizedDescription;
+        
+        UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"error" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
         // error contains details about why the request failed
         [alert show];
     }
     else
     {
         NSLog(@"   ok");
+        [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
     };
 }
 
@@ -577,6 +475,7 @@
             self.vsSharingOpitons.frame = shareVwFrame;
         }
         
+        [self.txtFiledTitle setHidden:NO];
         [self.thumbImgVw setHidden:NO];
         [textView resignFirstResponder];
     }
@@ -586,7 +485,7 @@
 
 -(void)MailSharingClicked : (id)sender
 {
-    DLog(@" Log : Mail Clicked - 2");
+    //DLog(@" Log : Mail Clicked - 2");
     ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
     
     if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
@@ -596,7 +495,7 @@
     }
     else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
         
-        DLog(@" Log : Mail Clicked - 3");
+        // DLog(@" Log : Mail Clicked - 3");
         CFErrorRef *error = NULL;
         ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
         CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
@@ -608,12 +507,12 @@
             APPMANAGER.contacts = nil;
         }
         
-        DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
+        //DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
         APPMANAGER.contacts = [NSMutableArray new];
         
         for(int i = 0; i < numberOfPeople; i++) {
             
-            DLog(@"Log : In processing contact - %d", i);
+            //DLog(@"Log : In processing contact - %d", i);
             ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
             
             NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
@@ -622,17 +521,17 @@
             ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
             NSMutableArray *emailIds = [NSMutableArray new];
             
-            DLog(@" Log : Mail Clicked 6 - %@", email);
+            //DLog(@" Log : Mail Clicked 6 - %@", email);
             
             for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
                 NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
-                DLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
+                //sDLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
                 [emailIds addObject:phoneNumber];
             }
 
             if( emailIds.count > 0 )
             {
-                DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
+                //DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
                 
                 if( [firstName isValid] && [lastName isValid] )
                     [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
@@ -644,7 +543,7 @@
            // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
         }
         
-        DLog(@" Log : Mail Clicked - 5");
+        //DLog(@" Log : Mail Clicked - 5");
         [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
     }
     else {
@@ -652,6 +551,84 @@
         
         [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
     }
+}
+
+
+#pragma table view methods
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
+{
+    if( APPMANAGER.selectedContacts != nil && APPMANAGER.selectedContacts.count > 0 )
+        return APPMANAGER.selectedContacts.count;
+    else
+        return 0;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+        return 40;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *cellIdentifier = @"ContactsCell";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    // cell.tag = 0;
+    
+    if( ![self isIndexSelected:@(indexPath.row)] )
+    {
+        cell.imageView.image = nil;
+        cell.tag = 0;
+    }
+    else
+    {
+        cell.tag = 1;
+        cell.imageView.image = [UIImage imageNamed:@"selected"];
+    }
+    
+    if( [((NSDictionary*)APPMANAGER.selectedContacts[indexPath.row])[@"fname"] isValid] &&  ((NSDictionary*)APPMANAGER.selectedContacts[indexPath.row])[@"lname"] )
+    {
+        cell.textLabel.text = [[((NSDictionary*)APPMANAGER.selectedContacts[indexPath.row])[@"fname"] stringByAppendingString:@" "] stringByAppendingString:((NSDictionary*)APPMANAGER.selectedContacts[indexPath.row])[@"lname"]];
+    }
+    else
+    {
+        cell.textLabel.text =  [((NSArray*)((NSDictionary*)APPMANAGER.selectedContacts[indexPath.row])[@"email"]) firstObject];
+    }
+    
+    cell.textLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
+    cell.textLabel.textColor = [UIColor grayColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    return cell;
+}
+
+- (IBAction)naviagteToContacts:(id)sender {
+    
+    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+}
+
+-(BOOL)isIndexSelected : (NSNumber*)currentIndex
+{
+    return YES;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+//    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    DLog(@"Log : Selection detected..");
+
+    [APPMANAGER.selectedContacts removeObjectAtIndex:indexPath.row];
+    
+    if( APPMANAGER.selectedContacts.count == 0 )
+    {
+        if( self.btnFB.tag == 0 )
+            self.navigationItem.rightBarButtonItem = nil;
+        
+        [self.btnMail setImage:[UIImage imageNamed:@"bttn_mail_normal"] forState:UIControlStateNormal];
+        self.btnMail.tag = 0;
+    }
+
+    [self.emailList reloadData];
 }
 
 @end

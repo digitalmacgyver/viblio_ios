@@ -22,10 +22,16 @@
 @property (nonatomic) BOOL turnOffUploads;
 @property (nonatomic, strong) NSMutableArray *contacts, *selectedContacts;
 //@property (nonatomic, strong) cloudVideos *video;
-@property (nonatomic, strong) NSDictionary *resultCategorized;
+@property (nonatomic, strong) NSDictionary *resultCategorized, *sharedSortedList;
 @property (nonatomic, strong) UIImage *posterImageForVideoSharing;
 @property (nonatomic, strong) id VideoToBeShared;
 @property (assign) BOOL restoreMyViblio;
+
+@property (nonatomic, strong) NSMutableArray *orderedKeys, *sharedOrderedKeys, *sharedOwnerOrderedKeys ;
+@property (nonatomic, assign) int errorCode ;
+@property (nonatomic, assign) NSIndexPath *indexOfSharedListSelected;
+
+@property (nonatomic, strong) NSMutableArray *sharedVideoList;
 
 + (AppManager *)sharedClient;
 -(NSArray*)getSettings;

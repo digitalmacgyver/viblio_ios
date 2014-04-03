@@ -110,6 +110,7 @@
 		85F8B47D188A5E2200E92380 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B47C188A5E2200E92380 /* AppManager.m */; };
 		85F8B488188AAC9D00E92380 /* VideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B487188AAC9D00E92380 /* VideoCell.m */; };
 		85F8B48A188ABD9E00E92380 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85F8B489188ABD9E00E92380 /* AVFoundation.framework */; };
+		CB325DD318EA996C00DB9AFF /* viblio.der in Resources */ = {isa = PBXBuildFile; fileRef = CB325DD218EA996C00DB9AFF /* viblio.der */; };
 		CB65D4B718B3A7A000A69B95 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */; };
 		CB65D4BB18B3ECFA00A69B95 /* selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB65D4BA18B3ECFA00A69B95 /* selected@2x.png */; };
 		CB65D4BE18B9EB9800A69B95 /* AssetsCollectionReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CB65D4BD18B9EB9800A69B95 /* AssetsCollectionReusableView.m */; };
@@ -143,6 +144,8 @@
 		CBD049C518BE306B00B9A962 /* Settings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD049BF18BE306B00B9A962 /* Settings@2x.png */; };
 		CBD049C618BE306B00B9A962 /* Tell A Friend@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD049C018BE306B00B9A962 /* Tell A Friend@2x.png */; };
 		CBD049C718BE306B00B9A962 /* Terms Of Use@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD049C118BE306B00B9A962 /* Terms Of Use@2x.png */; };
+		CBEC7DD818D9BA1B00B15C8B /* SharedVideoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CBEC7DD718D9BA1B00B15C8B /* SharedVideoListViewController.m */; };
+		CBEC7DDA18D9BDDF00B15C8B /* icon_arrow_left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBEC7DD918D9BDDF00B15C8B /* icon_arrow_left@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -307,6 +310,7 @@
 		85F8B486188AAC9D00E92380 /* VideoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoCell.h; sourceTree = "<group>"; };
 		85F8B487188AAC9D00E92380 /* VideoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoCell.m; sourceTree = "<group>"; };
 		85F8B489188ABD9E00E92380 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		CB325DD218EA996C00DB9AFF /* viblio.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = viblio.der; sourceTree = "<group>"; };
 		CB65D4B518B3A7A000A69B95 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
 		CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsViewController.m; sourceTree = "<group>"; };
 		CB65D4BA18B3ECFA00A69B95 /* selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "selected@2x.png"; sourceTree = "<group>"; };
@@ -357,6 +361,9 @@
 		CBD049BF18BE306B00B9A962 /* Settings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Settings@2x.png"; sourceTree = "<group>"; };
 		CBD049C018BE306B00B9A962 /* Tell A Friend@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Tell A Friend@2x.png"; sourceTree = "<group>"; };
 		CBD049C118BE306B00B9A962 /* Terms Of Use@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Terms Of Use@2x.png"; sourceTree = "<group>"; };
+		CBEC7DD618D9BA1B00B15C8B /* SharedVideoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedVideoListViewController.h; sourceTree = "<group>"; };
+		CBEC7DD718D9BA1B00B15C8B /* SharedVideoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharedVideoListViewController.m; sourceTree = "<group>"; };
+		CBEC7DD918D9BDDF00B15C8B /* icon_arrow_left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_arrow_left@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -395,6 +402,7 @@
 		2A22F3D6187AAD8E002F71F8 = {
 			isa = PBXGroup;
 			children = (
+				CB325DD218EA996C00DB9AFF /* viblio.der */,
 				CBA770DE18AE56DD00240D49 /* SDWebImage */,
 				85F70A471897B76300696E1E /* iCarousel */,
 				85F8B47E188AA04B00E92380 /* Views */,
@@ -587,6 +595,7 @@
 		2AD637F41886CAB400012A86 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				CBEC7DD918D9BDDF00B15C8B /* icon_arrow_left@2x.png */,
 				CBAAAF5A18C9DCC400DC4A21 /* Tutorial */,
 				CBD049BB18BE306B00B9A962 /* icons */,
 				CBD049B018BC818600B9A962 /* nav_logo.png */,
@@ -685,6 +694,8 @@
 				85ED80571891D8B200CEAE85 /* InProgressViewController.m */,
 				CB9F191E18ACF386009398F6 /* SharedViewController.h */,
 				CB9F191F18ACF386009398F6 /* SharedViewController.m */,
+				CBEC7DD618D9BA1B00B15C8B /* SharedVideoListViewController.h */,
+				CBEC7DD718D9BA1B00B15C8B /* SharedVideoListViewController.m */,
 			);
 			name = DashBoardControllers;
 			sourceTree = "<group>";
@@ -1029,6 +1040,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CBEC7DDA18D9BDDF00B15C8B /* icon_arrow_left@2x.png in Resources */,
 				CBD0496118BB87D400B9A962 /* icon_share_selected@2x.png in Resources */,
 				85ED7FFF188EBB8C00CEAE85 /* Aleo-Bold.otf in Resources */,
 				CBD049C418BE306B00B9A962 /* Rate Us In App Store@2x.png in Resources */,
@@ -1042,6 +1054,7 @@
 				85ED8034189130E300CEAE85 /* icon_cancel@2x.png in Resources */,
 				85F70AB218992C3E00696E1E /* bttn_google_plus_normal@2x.png in Resources */,
 				85F70AB018992C3E00696E1E /* bttn_facebook_normal@2x.png in Resources */,
+				CB325DD318EA996C00DB9AFF /* viblio.der in Resources */,
 				85F70ACA189A870800696E1E /* icon_stop_list@2x.png in Resources */,
 				85F70AB618992C3E00696E1E /* bttn_twitter_normal@2x.png in Resources */,
 				85F70AB718992C3E00696E1E /* bttn_twitter_tap@2x.png in Resources */,
@@ -1192,6 +1205,7 @@
 				85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */,
 				CB65D4B718B3A7A000A69B95 /* ContactsViewController.m in Sources */,
 				85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */,
+				CBEC7DD818D9BA1B00B15C8B /* SharedVideoListViewController.m in Sources */,
 				2AD637D11886566A00012A86 /* Info.m in Sources */,
 				2A63158D187FDF2800D864FC /* Videos.xcdatamodeld in Sources */,
 				CB9AF88F18AA442900E83A7F /* cloudVideos.m in Sources */,

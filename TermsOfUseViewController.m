@@ -52,6 +52,7 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
+    self.wvTerms.opaque = YES;
     [APPCLIENT fetchTermsAndConditions:^(NSString *terms)
      {
          DLog(@"Log : Terms fetched is - %@", terms);
@@ -63,9 +64,23 @@
      }];
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
+//- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+//{
+//    return YES;
+//}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    
+    NSLog(@"Loaded");
+    
+    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+        NSURL *url = request.URL;
+        NSString *urlString = url.absoluteString;
+        DLog(@"Log : The url string is - %@", urlString);
+    }
+
     return YES;
+    
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView

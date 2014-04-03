@@ -12,7 +12,7 @@
 
 @property(nonatomic, strong) NSString *mediaUUID;
 @property(nonatomic, strong) NSString *ownerUUID;
-@property(nonatomic, assign) NSString *viewCount;
+@property(nonatomic, assign) NSNumber *viewCount;
 @property(nonatomic, strong) NSString *createdDate;
 @property(nonatomic, strong) NSString *ownerName;
 @property(nonatomic, strong) NSString *posterURL;

@@ -76,7 +76,7 @@
         }
         else
         {
-            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"The feedback content is not valid. Please enter valid content to proceed" viewController:nil cancelBtnTitle:@"OK"];
+            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"I love feedback but it doesn’t look like you’ve typed any in. Type in your feedback before pressing send." viewController:nil cancelBtnTitle:@"OK"];
         }
     }
 }

@@ -107,6 +107,8 @@
         [cell.btnPause setHidden:NO];
     }
     
+    
+    DLog(@"Log : The uploaded bytes received are - %f", cell.video.uploadedBytes.doubleValue);
     if( cell.video.uploadedBytes.doubleValue > 0 )
         cell.progressBar.progress = cell.video.uploadedBytes.doubleValue/cell.asset.defaultRepresentation.size;
     else

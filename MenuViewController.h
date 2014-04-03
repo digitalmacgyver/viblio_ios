@@ -24,6 +24,7 @@
 
 @interface MenuViewController : UIViewController<UIAlertViewDelegate>
 
+@property (weak, nonatomic) IBOutlet UILabel *lblSize;
 @property (weak, nonatomic) IBOutlet UITableView *menuList;
 @property (weak, nonatomic) IBOutlet UIImageView *uploadingImg;
 @property (weak, nonatomic) IBOutlet UIProgressView *progressView;

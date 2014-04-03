@@ -18,7 +18,7 @@
   completionHandler:(void (^)())completionHandler {
 	self.backgroundSessionCompletionHandler = completionHandler;
     //add notification
-  //  [self presentNotification];
+   // [self presentNotification];
 }
 
 -(void)presentNotification{
@@ -29,7 +29,7 @@
     if(rem > 0)
         chunk++;
     
-    localNotification.alertBody = [NSString stringWithFormat:@"%d chunks of %d completed", (int)APPCLIENT.uploadedSize/1048576, chunk];
+    localNotification.alertBody = @"Video Upload Complete !!";
     localNotification.alertAction = @"Background Transfer Upload!";
     
     //On sound

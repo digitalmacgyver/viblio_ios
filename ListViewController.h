@@ -20,5 +20,6 @@
 @property (nonatomic, strong) NSMutableDictionary *result;
 
 @property (nonatomic, strong)UIView *popUp;
+@property (nonatomic, strong)NSArray *orderedKeys;
 
 @end

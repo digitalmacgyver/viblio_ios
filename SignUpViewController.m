@@ -102,15 +102,23 @@
              }failure:^(NSError *error)
              {
                  [self.sinUpActivity stopAnimating];
-                 DLog(@"Log : Error could not sign up the user");
-                 [ViblioHelper displayAlertWithTitle:@"" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
+                 
+                 if( error.code == -1009 )
+                     [ViblioHelper displayAlertWithTitle:@"" messageBody:@"The Internet is my life force and you don’t seem to be connected. Get connected quick!" viewController:self cancelBtnTitle:@"OK"];
+                 else
+                     [ViblioHelper displayAlertWithTitle:@"" messageBody:error.localizedDescription viewController:self cancelBtnTitle:@"OK"];
              }];
         }
         else
-            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Please fill valid email id" viewController:self cancelBtnTitle:@"OK"];
+            [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"I don't recognize that email format. Wanna try agian ?" viewController:self cancelBtnTitle:@"OK"];
     }
     else
-        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Please fill all fields" viewController:self cancelBtnTitle:@"OK"];
+        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"I know it’s a pain but I can’t sign you up until all fields are filled in." viewController:self cancelBtnTitle:@"OK"];
+}
+
+
+- (IBAction)openPrivacyPolicy:(id)sender {
+    [self presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"terms")] animated:YES completion:nil];
 }
 
 - (IBAction)BackClick:(id)sender {

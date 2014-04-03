@@ -27,6 +27,9 @@
 }
 
 - (IBAction)SeeMoreClicked:(id)sender {
+    
+    APPMANAGER.indexOfSharedListSelected = self.indexPath;
+    [[NSNotificationCenter defaultCenter] postNotificationName:showSharingView object:@{@"owner name" : self.lblOwnerName.text}];
 }
 
 
@@ -47,7 +50,13 @@
          self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]]; //self.asset.defaultRepresentation.url];
          self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
          //self.moviePlayer.movieSourceType = MPMovieSourceTypeStreaming;
-         self.moviePlayer.view.frame = CGRectMake(0, self.frame.origin.y + 40, 320, self.frame.size.height-40); //self.frame;  //self.imgVwPoster.frame;
+         
+         
+         int padding = 0;
+         if( APPMANAGER.indexOfSharedListSelected == nil )
+             padding = 40;
+         
+         self.moviePlayer.view.frame = CGRectMake(0, self.frame.origin.y + padding, 320, self.frame.size.height- padding); //self.frame;  //self.imgVwPoster.frame;
          [self.superview addSubview:self.moviePlayer.view];
          //[self.imgVwPoster.superview addSubview:self.moviePlayer.view];
          [self.moviePlayer.view addSubview:self.spinningWheel];

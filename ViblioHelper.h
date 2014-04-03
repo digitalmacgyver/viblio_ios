@@ -28,6 +28,8 @@ extern NSString * const showContactsScreen;
 extern NSString * const removeContactsScreen;
 extern NSString * const logoutUser;
 extern NSString * const reloadListView;
+extern NSString * const showSharingView;
+extern NSString * const removeOwnerSharingView;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 
@@ -73,5 +75,6 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 +(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList;
 
 +(void)MailSharingClicked : (id)sender;
++(NSArray*)getReOrderedListOfKeys :(NSArray*)keys;
 
 @end

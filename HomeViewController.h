@@ -13,6 +13,7 @@
 #import "ListViewController.h"
 #import "SharedViewController.h"
 #import "LandingViewController.h"
+#import "SharedVideoListViewController.h"
 
 @interface HomeViewController : UIViewController<UICollectionViewDataSource, UICollectionViewDelegate, UIAlertViewDelegate>
 
@@ -31,4 +32,6 @@
 
 @property (nonatomic, strong)UIView *popUp;
 @property (weak, nonatomic) IBOutlet UIView *vwShare;
+@property (nonatomic, strong) SharedVideoListViewController *sharedOwnerList;
+
 @end

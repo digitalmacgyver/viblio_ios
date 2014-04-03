@@ -16,7 +16,7 @@ NSString *const uploadComplete = @"com.viblio.app : uploadComplete";
 NSString * const uploadVideoPaused = @"com.viblio.app : uploadVideoPaused";
 NSString *const playVideo = @"com.viblio.app : playVideo";
 NSString * const stopVideo = @"com.viblio.app : stopVideo";
-NSString * const showingSharingView = @"com.viblio.app : showSharingView";
+NSString * const showingSharingView = @"com.viblio.app : showingSharingView";
 NSString * const removeSharingView = @"com.viblio.app : removeSharingView";
 NSString * const showListSharingVw = @"com.viblio.app : showListSharingView";
 NSString * const removeListSharinVw = @"com.viblio.app : removeListSharingView";
@@ -24,6 +24,8 @@ NSString * const showContactsScreen = @"com.viblio.app : showContactsScreen";
 NSString * const removeContactsScreen = @"com.viblio.app : removeContactsScreen";
 NSString * const logoutUser = @"com.viblio.app : logoutUser";
 NSString * const reloadListView = @"com.viblio.app : reloadListView";
+NSString * const showSharingView = @"com.viblio.app : showSharingView";
+NSString * const removeOwnerSharingView = @"com.viblio.app : removeOwnerSharingView";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {
@@ -65,6 +67,8 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     [VCLIENT.cloudVideoList removeAllObjects];
     VCLIENT.cloudVideoList = nil;
 
+    VCLIENT.resCategorized = nil;
+    
     [DBCLIENT deleteUserEntity];
     APPMANAGER.user = nil;
     UserClient.emailId = nil; UserClient.password = nil; UserClient.sessionCookie = nil;
@@ -288,6 +292,9 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 +(NSString*)getMonthInWords : (NSString*)month
 {
     DLog(@"Log : The value received is - %@", month);
+    if( month.length < 2 )
+        month = [@"0" stringByAppendingString:month];
+    
     NSDictionary *months = @{ @"01" : @"Jan",
                               @"02" : @"Feb",
                               @"03" : @"Mar",
@@ -305,6 +312,27 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     return [months valueForKey:month];
 }
 
++(int)getDigitizedMonth : (NSString*)month
+{
+    DLog(@"Log : The value received is - %@", month);
+    
+    NSDictionary *months = @{ @"Jan" : @"01" ,
+                              @"Feb" : @"02" ,
+                              @"Mar" : @"03" ,
+                              @"April" : @"04",
+                              @"May" : @"05",
+                              @"June" : @"06",
+                              @"July" : @"07",
+                              @"Aug" : @"08",
+                              @"Sep" : @"09",
+                              @"Oct" : @"10",
+                              @"Nov" : @"11",
+                              @"Dec" : @"12" };
+    
+    DLog(@"Log : Value being returned is - %@", [months valueForKey:month]);
+    return ((NSString*)[months valueForKey:month]).intValue;
+}
+
 // Function to find differece between two dates
 
 + (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2 {
@@ -316,14 +344,21 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList
 {
+    
+    DLog(@"Log : The videolist is - %@", videoList);
+    
+    
+    //return  nil;
+    
+    
     NSDate *curDate = [NSDate date];
     NSMutableDictionary *result = [NSMutableDictionary new];
+
+    [result setValue:@[] forKey:@"Today"];
+    [result setValue:@[] forKey:@"This Week"];
+    [result setValue:@[] forKey:@"This Month"];
     
-    [result setValue:@[@"Today"] forKey:@"SectionA"];
-    [result setValue:@[@"This Week"] forKey:@"SectionB"];
-    [result setValue:@[@"This Month"] forKey:@"SectionC"];
-    [result setValue:@[@"This Year"] forKey:@"SectionD"];
-    [result setValue:@[@"Older"] forKey:@"SectionE"];
+    DLog(@"Log : The video list count is - %d", videoList.count);
     
     for( int i=0; i < videoList.count; i++ )
     {
@@ -337,10 +372,19 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         // 2014-01-30 18:20:34
         
         DLog(@"Log : The class of object is - %@", NSStringFromClass([video class]));
-        if( [video isKindOfClass:[cloudVideos class]] )
-            dateStr = ((cloudVideos*)video).createdDate;
+        
+        if( APPMANAGER.indexOfSharedListSelected != nil )
+        {
+            dateStr = ((NSDictionary*)videoList[i])[@"shared_date"];
+        }
         else
-            dateStr = ((SharedVideos*)video).sharedDate;
+        {
+            if( [video isKindOfClass:[cloudVideos class]] )
+                dateStr = ((cloudVideos*)video).createdDate;
+            else
+                dateStr = ((NSDictionary*)[video[@"media"] firstObject])[@"shared_date"];
+        }
+
         
         NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
         [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -361,29 +405,48 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
                 if( videoDateComponents.weekOfMonth == currentDateComponents.weekOfMonth )
                 {
                     if( videoDateComponents.day == currentDateComponents.day )
-                        result = [self addObjectToArray:@"SectionA" :video toRsult:result];
+                        result = [self addObjectToArray:@"Today" :video toRsult:result];
                     else
-                        result = [self addObjectToArray:@"SectionB" :video toRsult:result];
+                        result = [self addObjectToArray:@"This Week" :video toRsult:result];
                 }
                 else
-                    result = [self addObjectToArray:@"SectionC" :video toRsult:result];
+                    result = [self addObjectToArray:@"This Month" :video toRsult:result];
+                
             }
             else
-                result = [self addObjectToArray:@"SectionD" :video toRsult:result];
+            {
+                DLog(@"Log : video belongs to older month.. Create a section for that month...");
+                
+                // Check whether the section with that month already exists
+                
+                NSString *month = [self getMonthInWords:[NSString stringWithFormat:@"%d",videoDateComponents.month]];
+                NSString *year = [NSString stringWithFormat:@"%d", videoDateComponents.year];
+                NSString *sectionHeader = [[month stringByAppendingString:@", "] stringByAppendingString:year];
+                
+                DLog(@"Log : section header is - %@", sectionHeader);
+                if( result[ sectionHeader ] == nil )
+                {
+                    DLog(@"Log : A key for the month does not exist...");
+                    [result setValue:@[] forKey:sectionHeader];
+                }
+                
+                result = [self addObjectToArray:sectionHeader :video toRsult:result];
+            }
         }
         else
-            result = [self addObjectToArray:@"SectionE" :video toRsult:result];
-        
-//        if( videoDateComponents.day == currentDateComponents.day )
-//            result = [self addObjectToArray:@"Today" :video toRsult:result];
-//        else if (videoDateComponents.weekOfMonth == currentDateComponents.weekOfMonth)
-//            result = [self addObjectToArray:@"This Week" :video toRsult:result];
-//        else if (videoDateComponents.month == currentDateComponents.month)
-//            result = [self addObjectToArray:@"This Month" :video toRsult:result];
-//        else if (videoDateComponents.year == currentDateComponents.year)
-//            result = [self addObjectToArray:@"This Year" :video toRsult:result];
-//        else
-        
+        {
+            DLog(@"Log : Video belongs to some older year... Create a header of that year");
+            
+            // Check whether the section with that year already exists
+            
+            if( result[[NSString stringWithFormat:@"%d",videoDateComponents.year]] == nil )
+            {
+                DLog(@"Log : A key for the year does not exist...");
+                [result setValue:@[] forKey:[NSString stringWithFormat:@"%d",videoDateComponents.year]];
+            }
+                
+            result = [self addObjectToArray:[NSString stringWithFormat:@"%d",videoDateComponents.year] :video toRsult:result];
+        }
         
         videoDateComponents = nil;
         currentDateComponents = nil;
@@ -391,12 +454,12 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         videoDate = nil;
         video = nil;
     }
-    
+//
     NSMutableArray *array = [NSMutableArray new];
     for ( NSString *category in result )
     {
-        if( ((NSArray*)result[category]).count <= 1 )
-           [array addObject:category]; //[result removeObjectForKey:category];
+        if( ((NSArray*)result[category]).count <= 0 )
+           [array addObject:category]; 
     }
     
     DLog(@"Log : The result before for loop is - %@", result);
@@ -423,7 +486,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(void)MailSharingClicked : (id)sender
 {
-    DLog(@" Log : Mail Clicked - 2");
+   // DLog(@" Log : Mail Clicked - 2");
     ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
     
     if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
@@ -433,7 +496,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     }
     else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
         
-        DLog(@" Log : Mail Clicked - 3");
+      //  DLog(@" Log : Mail Clicked - 3");
         CFErrorRef *error = NULL;
         ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
         CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
@@ -445,12 +508,12 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
             APPMANAGER.contacts = nil;
         }
         
-        DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
+      //  DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
         APPMANAGER.contacts = [NSMutableArray new];
         
         for(int i = 0; i < numberOfPeople; i++) {
             
-            DLog(@"Log : In processing contact - %d", i);
+           // DLog(@"Log : In processing contact - %d", i);
             ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
             
             NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
@@ -459,17 +522,17 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
             ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
             NSMutableArray *emailIds = [NSMutableArray new];
             
-            DLog(@" Log : Mail Clicked 6 - %@", email);
+           // DLog(@" Log : Mail Clicked 6 - %@", email);
             
             for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
                 NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
-                DLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
+              //  DLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
                 [emailIds addObject:phoneNumber];
             }
             
             if( emailIds.count > 0 )
             {
-                DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
+               // DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
                 
                 if( [firstName isValid] && [lastName isValid] )
                     [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
@@ -481,7 +544,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
             // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
         }
         
-        DLog(@" Log : Mail Clicked - 5");
+      //  DLog(@" Log : Mail Clicked - 5");
 //        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
         //APPMANAGER.video = self.video;
         //[[NSNotificationCenter defaultCenter] postNotificationName:showContactsScreen object:nil];
@@ -491,6 +554,78 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         
         [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
     }
+}
+
++(NSArray*)getReOrderedListOfKeys :(NSArray*)keys
+{
+    DLog(@"Log : The keys obtained are - %@", keys);
+    NSMutableArray *priorityFirst = [[NSMutableArray alloc]init];
+    NSMutableArray *prioritySecond = [[NSMutableArray alloc]init];
+    NSMutableArray *priorityThird = [[NSMutableArray alloc]init];
+    
+    NSMutableArray *sortedList = [[NSMutableArray alloc] init];
+    
+    NSCharacterSet* digits = [NSCharacterSet decimalDigitCharacterSet];
+    
+    for( NSString *str in keys )
+    {
+        DLog(@"Log : Str obtained is - %@", str);
+        
+        if( [str isEqualToString:@"Today"] || [str isEqualToString:@"This Week"] || [str isEqualToString:@"This Month"] )
+        {
+            [priorityFirst addObject:str];
+        }
+        else
+        {
+            if( [digits characterIsMember: [str characterAtIndex:0]]  )
+                [priorityThird addObject:str];
+            else
+                [prioritySecond addObject:str];
+        }
+    }
+    
+    sortedList = [[sortedList arrayByAddingObjectsFromArray:[[priorityFirst reverseObjectEnumerator] allObjects]] mutableCopy];
+    priorityFirst = nil;
+    
+    sortedList = [[sortedList arrayByAddingObjectsFromArray: [self getOrderedListForMonth:prioritySecond]] mutableCopy];
+    prioritySecond = nil;
+    
+    sortedList = [[sortedList arrayByAddingObjectsFromArray:[[priorityThird reverseObjectEnumerator] allObjects]] mutableCopy];
+    priorityThird = nil;
+    
+    return sortedList;
+}
+
++(NSArray*)getOrderedListForMonth : (NSMutableArray*)monthArray
+{
+    DLog(@"Log : The month array is - %@", monthArray);
+    
+    NSMutableArray *sortedRes = [NSMutableArray new];
+    for(int i =0 ; i < monthArray.count; i++ )
+    {
+        NSString *str = [[monthArray[i] componentsSeparatedByString:@", "] firstObject];
+        if( i > 0 )
+        {
+            BOOL isInserted = NO;
+            for( int i=0; i < sortedRes.count; i++ )
+            {
+                if( [self getDigitizedMonth:[[monthArray[i] componentsSeparatedByString:@", "] firstObject]] < [self getDigitizedMonth:str] )
+                {
+                    [sortedRes insertObject:monthArray[i] atIndex:i];
+                    isInserted = YES;
+                    break;
+                }
+            }
+            
+            if(!isInserted)
+                [sortedRes addObject:monthArray[i]];
+        }
+        else
+            [sortedRes addObject:monthArray[i]];
+    }
+    
+    DLog(@"Log : The sorted res - %@", sortedRes);
+    return sortedRes;
 }
 
 

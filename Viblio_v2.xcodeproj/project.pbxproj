@@ -110,6 +110,7 @@
 		85F8B47D188A5E2200E92380 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B47C188A5E2200E92380 /* AppManager.m */; };
 		85F8B488188AAC9D00E92380 /* VideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B487188AAC9D00E92380 /* VideoCell.m */; };
 		85F8B48A188ABD9E00E92380 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85F8B489188ABD9E00E92380 /* AVFoundation.framework */; };
+		CB24000E18ED30A7007D2E00 /* CLLocationManger.m in Sources */ = {isa = PBXBuildFile; fileRef = CB24000D18ED30A7007D2E00 /* CLLocationManger.m */; };
 		CB325DD318EA996C00DB9AFF /* viblio.der in Resources */ = {isa = PBXBuildFile; fileRef = CB325DD218EA996C00DB9AFF /* viblio.der */; };
 		CB65D4B718B3A7A000A69B95 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */; };
 		CB65D4BB18B3ECFA00A69B95 /* selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB65D4BA18B3ECFA00A69B95 /* selected@2x.png */; };
@@ -310,6 +311,8 @@
 		85F8B486188AAC9D00E92380 /* VideoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoCell.h; sourceTree = "<group>"; };
 		85F8B487188AAC9D00E92380 /* VideoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoCell.m; sourceTree = "<group>"; };
 		85F8B489188ABD9E00E92380 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		CB24000C18ED30A7007D2E00 /* CLLocationManger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLLocationManger.h; sourceTree = "<group>"; };
+		CB24000D18ED30A7007D2E00 /* CLLocationManger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLLocationManger.m; sourceTree = "<group>"; };
 		CB325DD218EA996C00DB9AFF /* viblio.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = viblio.der; sourceTree = "<group>"; };
 		CB65D4B518B3A7A000A69B95 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
 		CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsViewController.m; sourceTree = "<group>"; };
@@ -509,6 +512,8 @@
 				85F8B47C188A5E2200E92380 /* AppManager.m */,
 				85ED8023189058E900CEAE85 /* UserManager.h */,
 				85ED8024189058E900CEAE85 /* UserManager.m */,
+				CB24000C18ED30A7007D2E00 /* CLLocationManger.h */,
+				CB24000D18ED30A7007D2E00 /* CLLocationManger.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -1203,6 +1208,7 @@
 				CB9F192018ACF386009398F6 /* SharedViewController.m in Sources */,
 				CB65D4BE18B9EB9800A69B95 /* AssetsCollectionReusableView.m in Sources */,
 				85DCB4EC1887F5CC0068E738 /* TutFirstViewController.m in Sources */,
+				CB24000E18ED30A7007D2E00 /* CLLocationManger.m in Sources */,
 				CB65D4B718B3A7A000A69B95 /* ContactsViewController.m in Sources */,
 				85DCB4F21887F60D0068E738 /* TutThirdViewController.m in Sources */,
 				CBEC7DD818D9BA1B00B15C8B /* SharedVideoListViewController.m in Sources */,

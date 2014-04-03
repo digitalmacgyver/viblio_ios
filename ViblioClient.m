@@ -1247,7 +1247,10 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     NSDictionary *queryParams = @{ @"page" : page,
                                    @"rows" : rowsInAPage,
-                                  @"views[]": vwStyle };
+                                  @"views[]": vwStyle,
+                                   @"include_tags" : @"0",
+                                   @"include_shared" : @"1",
+                                   @"include_contact_info" : @"1"};
     
     NSString *path = [NSString stringWithFormat:@"/services/mediafile/list?%@",[ViblioHelper stringBySerializingQueryParameters:queryParams]];
     
@@ -1271,6 +1274,12 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                       NSDictionary *videoObj = [videoList objectAtIndex:i];
                                                       cloudVideos *video = [[cloudVideos alloc]init];
                                                       video.uuid = [videoObj valueForKey:@"uuid"];
+                                                      
+                                                      if( (videoObj[@"views"][@"face"] != nil) && ((NSArray*)videoObj[@"views"][@"face"]).count > 0  )
+                                                      {
+                                                          video.faces = videoObj[@"views"][@"face"];
+                                                      }
+                                                      video.shareCount = ((NSNumber*)videoObj[@"shared"]).intValue;
                                                       
                                                       id poster = [videoObj valueForKey:@"views"][@"poster"];
                                                       

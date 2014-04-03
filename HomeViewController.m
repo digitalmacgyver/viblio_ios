@@ -412,17 +412,22 @@
     
     // Logic to decide whether share tag is to be shown or not
     
-    [APPCLIENT hasAMediaFileBeenSharedByTheUSerWithUUID:cell.video.uuid success:^(BOOL isShared)
-     {
-         if( !isShared )
-            [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_selected"] forState:UIControlStateNormal];
-         else
-            [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_grid"] forState:UIControlStateNormal];
-             
-     }failure:^(NSError *error)
-     {
-         
-     }];
+    if( cell.video.shareCount > 0 )
+        [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_grid"] forState:UIControlStateNormal];
+    else
+        [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_selected"] forState:UIControlStateNormal];
+    
+//    [APPCLIENT hasAMediaFileBeenSharedByTheUSerWithUUID:cell.video.uuid success:^(BOOL isShared)
+//     {
+//         if( !isShared )
+//            [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_selected"] forState:UIControlStateNormal];
+//         else
+//            [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_grid"] forState:UIControlStateNormal];
+//             
+//     }failure:^(NSError *error)
+//     {
+//         
+//     }];
     
     
     if( indexPath.section == VCLIENT.resCategorized.allKeys.count-1 )

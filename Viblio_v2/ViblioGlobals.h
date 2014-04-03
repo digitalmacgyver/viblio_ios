@@ -62,6 +62,7 @@
 #import "VideoManager.h"
 #import "AppManager.h"
 #import "UserManager.h"
+#import "VblLocationManager.h"
 
 //Modals
 #import "User.h"

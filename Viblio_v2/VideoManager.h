@@ -24,12 +24,15 @@
 @property(nonatomic, retain)NSMutableArray *chunks;
 @property(nonatomic,strong)ALAsset *asset;
 @property(nonatomic, strong)Videos *videoUploading;
-@property(nonatomic, assign)BOOL shouldProceedWithNextFile, isToBePaused;
+@property(nonatomic, assign)BOOL shouldProceedWithNextFile, isToBePaused, backgroundAlertShown;
 @property(nonatomic, assign)NSInteger totalRecordsCount, pageCount;
 @property (nonatomic, retain)NSDictionary *resCategorized;
 @property (nonatomic, assign)int totalChunksSent;
+@property (nonatomic, retain) NSString *Videouuid;
 
-
+@property (nonatomic, assign)int backgroundStartChunk;
+@property (nonatomic, assign)UIBackgroundTaskIdentifier bgTask;
+@property (nonatomic, assign)BOOL isBkgrndTaskEnded;
 
 + (VideoManager *)sharedClient;
 -(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success

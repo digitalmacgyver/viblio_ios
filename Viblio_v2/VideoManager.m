@@ -9,7 +9,7 @@
 #import "VideoManager.h"
 #import "NSString+Additions.h"
 
-#define BUFFER_LEN 1024*256*1
+#define BUFFER_LEN 1024*1024*1
 
 @interface VideoManager ()
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
@@ -31,28 +31,52 @@
     __block NSData *chunkData = nil;
     if (self.asset){
         
-        self.totalChunksSent++;
-        DLog(@"Log : Total chunks sent - %d", self.totalChunksSent);
-        
-        static const NSUInteger BufferSize = BUFFER_LEN; // 256Kb chunk
-        ALAssetRepresentation *rep = [self.asset defaultRepresentation];
-        uint8_t *buffer = calloc(BufferSize, sizeof(*buffer));
-        NSUInteger bytesRead = 0;
-        NSError *error = nil;
-        
-        @try
+        if( self.asset.defaultRepresentation.size > 0 )
         {
-            bytesRead = [rep getBytes:buffer fromOffset:offsetOfUpload length:BufferSize error:&error];
-            chunkData = [NSData dataWithData:[NSData dataWithBytesNoCopy:buffer length:bytesRead freeWhenDone:NO]];
-        }
-        @catch (NSException *exception)
-        {
+            self.totalChunksSent++;
+            DLog(@"Log : Total chunks sent - %d", self.totalChunksSent);
+            
+            static const NSUInteger BufferSize = BUFFER_LEN; // 256Kb chunk
+            ALAssetRepresentation *rep = [self.asset defaultRepresentation];
+            uint8_t *buffer = calloc(BufferSize, sizeof(*buffer));
+            NSUInteger bytesRead = 0;
+            NSError *error = nil;
+            
+            @try
+            {
+                bytesRead = [rep getBytes:buffer fromOffset:offsetOfUpload length:BufferSize error:&error];
+                chunkData = [NSData dataWithData:[NSData dataWithBytesNoCopy:buffer length:bytesRead freeWhenDone:NO]];
+            }
+            @catch (NSException *exception)
+            {
+                free(buffer);
+                chunkData = nil;
+                // Handle the exception here...
+            }
+            
             free(buffer);
-            chunkData = nil;
-            // Handle the exception here...
+        }
+        else
+        {
+            DLog(@"Log : File has been deleted...");
+            
+            DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
+            [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
+            
+            if( VCLIENT.asset != nil )
+            {
+                DLog(@"Log : Deleting the files from App DB that have been deleted..... %@", VCLIENT.videoUploading.fileLocation);
+                [APPCLIENT deleteTheFileWithID:VCLIENT.videoUploading.fileLocation success:^(BOOL hasFileBeenDeleted)
+                 {
+                    // [self startNewFileUpload];
+                 }failure:^(NSError *error)
+                 {
+                    // [self deleteFile];
+                 }];
+            }
+            [APPCLIENT invalidateUploadTaskWithoutPausing];
         }
         
-        free(buffer);
     } else {
         DLog(@"failed to retrive Asset");
     }
@@ -118,7 +142,7 @@
 {
     DLog(@"Log : The offset obtained is - %@", offsetObtained);
     offset = offsetObtained.intValue;
-    self.totalChunksSent = (offset)/(1024*256*1);
+    self.totalChunksSent = (offset)/(1024*1024*1);
     DLog(@"Log : total chunks sent count is - %d", self.totalChunksSent);
     APPCLIENT.uploadedSize = offset;
     [self videoFromNSData];
@@ -279,6 +303,17 @@
                 
                 // Ensure that offset doesnt jump in multiples of chunkdata length
                 
+//                if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground )
+//                {
+//                    DLog(@"Log : App is in background and the chunks transferred in backgrounds are - %d", self.backgroundStartChunk);
+//                    if( self.backgroundStartChunk > 4 && !self.backgroundAlertShown )
+//                    {
+//                        self.backgroundAlertShown = YES;
+//                        [((AppDelegate*)([UIApplication sharedApplication].delegate)) presentNotification];
+//                    }
+//                    self.backgroundStartChunk++;
+//                }
+                
                 DLog(@"LOG : ------------- OFFSET and ChunkData cross reference ------------");
                 DLog(@"Log : Offset is --- %f, chunkdata uploaded is ----- %d", offset, (self.totalChunksSent-1)*BUFFER_LEN);
                 if( offset > (self.totalChunksSent-1) * BUFFER_LEN )
@@ -370,12 +405,14 @@
             {
                 DLog(@"Log : New file.. File location will not be existing...");
                 [self startNewFileUpload];
+                VCLIENT.isBkgrndTaskEnded = YES;
             }
             else
             {
                 DLog(@"Log : File already syncing and has been stopped at certain offset....");
                 DLog(@"Log : The video and asset details are as follows - %@ --------- %@", self.videoUploading, self.asset);
                 [self getOffsetFromTheHeadService];
+                VCLIENT.isBkgrndTaskEnded = YES;
             }
         }
         else

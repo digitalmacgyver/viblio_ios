@@ -26,6 +26,16 @@ void(^_failure)(NSError *error);
     return _sharedClient;
 }
 
+- (DataModel *)dataModel
+{
+    if (!_dataModel)
+    {
+        _dataModel = [[DataModel alloc] init];
+    }
+    
+    return _dataModel;
+}
+
 // Battery status notification handler
 - (void)batteryChanged:(NSNotification *)notification
 {
@@ -91,7 +101,7 @@ void(^_failure)(NSError *error);
                     APPMANAGER.errorCode = 1001;
                     DLog(@"Log : Internet reachability went off.. Pausing the upload..");
                     [ViblioHelper displayAlertWithTitle:@"Not on WiFi" messageBody:@"Uploading paused until WiFi connection established" viewController:nil cancelBtnTitle:@"OK"];
-                    //APPMANAGER.turnOffUploads = YES;
+                    APPMANAGER.turnOffUploads = YES;
                     [APPCLIENT invalidateUploadTaskWithoutPausing];
                     //[APPCLIENT invalidateFileUploadTask];
                 }
@@ -449,6 +459,8 @@ void(^_failure)(NSError *error);
 }
 
 
+
+
 -(void)startUploadingFileInBackgroundForUserId : (NSString*)userUUId
                      fileLocalPath : (NSString*)fileLocalPath
                           fileSize : (NSString*)fileSize
@@ -459,6 +471,7 @@ void(^_failure)(NSError *error);
               beginBackgroundTaskWithExpirationHandler:
               ^{
                   [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+                 // [((AppDelegate*)[UIApplication sharedApplication].delegate) presentNotification];
               }];
     
     NSDictionary *params = @{
@@ -509,6 +522,8 @@ void(^_failure)(NSError *error);
         bgTask = UIBackgroundTaskInvalid;
     }
 }
+
+
 
 
 // Get the offset of the file
@@ -592,17 +607,39 @@ void(^_failure)(NSError *error);
                     failure:(void(^)(NSError *error))failureCallback
 {
     
-    if( ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) && offset == 0 )
+    if( VCLIENT.isBkgrndTaskEnded == YES )
     {
-        DLog(@"Log : Application state background.... Registering for background operation");
-        
-        bgTask = [[UIApplication sharedApplication]
-                  beginBackgroundTaskWithExpirationHandler:
-                  ^{
-                      [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-                  }];
-        
+        DLog(@"Log : New bkground task being created......");
+        VCLIENT.isBkgrndTaskEnded = NO;
+        VCLIENT.bgTask = [[UIApplication sharedApplication]
+                          beginBackgroundTaskWithExpirationHandler:
+                          ^{
+                              
+                              [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+                              //bgTask = -1;
+                              VCLIENT.isBkgrndTaskEnded = YES;
+                              
+                              if( VCLIENT.asset != nil )
+                              {
+                                  DLog(@"Log : Have to show the notification.......");
+                                  [((AppDelegate*)[UIApplication sharedApplication].delegate) presentNotification];
+                              }
+                              
+                          }];
     }
+
+    NSTimer *bckGrndTime = [NSTimer scheduledTimerWithTimeInterval:150 target:self selector:@selector(createNewBckGrndTask) userInfo:nil repeats:NO];
+//    if( ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) && offset == 0 )
+//    {
+//        DLog(@"Log : Application state background.... Registering for background operation");
+//        
+//        bgTask = [[UIApplication sharedApplication]
+//                  beginBackgroundTaskWithExpirationHandler:
+//                  ^{
+//                      [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+//                  }];
+//        
+//    }
     
    // NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
     NSMutableURLRequest* afRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://staging.viblio.com/files/%@",fileLocationID ]]]; //[self requestWithMethod:@"PATCH" path:path parameters:nil];
@@ -611,47 +648,135 @@ void(^_failure)(NSError *error);
     [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [afRequest setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
     [afRequest setValue: offset  forHTTPHeaderField:@"Offset"];
+    [afRequest setHTTPBody:chunk];
+    
+//    NSError *error;
+//    
+//    NSHTTPURLResponse  *response = nil;
+    
+    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:afRequest success:
+                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                  {
+                                      NSLog(@"LOG : check - 2.4");
+                                      
+                                      
+                                      
+                                      successCallback(@"");
+                                      DLog(@"Log : --- %@", JSON);
+                                      // [MBProgressHUD tl_fadeOutHUDInView:view withSuccessText:@"Image saved !"];
+                                     // success([JSON valueForKeyPath:@"payload.picture_id"]);
+                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                  {
+                                      DLog(@"Log : ----- %@", error);
+                                     // [MBProgressHUD tl_fadeOutHUDInView:view withFailureText:@"Saving image failed !"];
+                                     // failure(error);
+                                  }];
+    
+    [op setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        NSLog(@"Sent %lld of %lld bytes", totalBytesWritten, totalBytesExpectedToWrite);
+        
+        //if(  )
+
+    }];
+    
+    [op start];
     
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"/tempFile"];
-    [chunk writeToFile:dataPath atomically:YES];
+//    NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:afRequest delegate:self];
+//    
+//    [conn start];
+//    [NSURLConnection sendAsynchronousRequest:afRequest queue:nil completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+//     {
+//         DLog(@"Log : %@ -- %@", response, data);
+//         if ([data length] > 0 && error == nil){
+//             //[self receivedData:data];
+//         }else if ([data length] == 0 && error == nil){
+//             //[self emptyReply];
+//         }else if (error != nil && error.code == NSURLErrorTimedOut){ //used this NSURLErrorTimedOut from foundation error responses
+//             //[self timedOut];
+//         }else if (error != nil){
+//             //[self downloadError:error];
+//         }
+//     }];
     
-    _success = successCallback;
-    _failure = failureCallback;
-    self.filePath = dataPath;
     
-    if( self.session == nil )
-    {
-        DLog(@"Log : Session might have been invalidated.. Create new session instance..");
-        self.session = [self backgroundSession];
-    }
     
-    if( self.uploadTask.state != NSURLSessionTaskStateSuspended )
-    {
-        self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromFile:[NSURL fileURLWithPath:dataPath]];
-        [self.uploadTask resume];
-    }
-    else
-    {
-        DLog(@"Log : ------------------------------*****************/////// The upload task is suspended ///////..........*****************");
-        [self.uploadTask resume];
-    }
+//    [NSURLConnection sendAsynchronousRequest:afRequest queue:nil completionHandler:<#^(NSURLResponse *response, NSData *data, NSError *connectionError)handler#> sendSynchronousRequest:afRequest
+//                          returningResponse:&response
+//                                      error:&error];
     
-    DLog(@"Log : The location of the file uploaded is - %@", VCLIENT.videoUploading.fileLocation);
-    DLog(@"Log : The task id of the current performing task is - %d", self.uploadTask.taskIdentifier);
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+//    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"/tempFile"];
+//    [chunk writeToFile:dataPath atomically:YES];
     
-    if( ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) && offset == 0 )
-    {
-        DLog(@"Log : Application state background....");
-        if (bgTask != UIBackgroundTaskInvalid)
-        {
-            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-            bgTask = UIBackgroundTaskInvalid;
-        }
-    }
+//    _success = successCallback;
+//    _failure = failureCallback;
+//    self.filePath = dataPath;
+    
+    
+    
+//    if( self.session == nil )
+//    {
+//        DLog(@"Log : Session might have been invalidated.. Create new session instance..");
+//        self.session = [self backgroundSession];
+//    }
+    
+//    if( self.uploadTask.state != NSURLSessionTaskStateSuspended )
+//    {
+//        self.uploadTask = [self.session uploadTaskWithRequest:afRequest fromFile:[NSURL fileURLWithPath:dataPath]];
+//        [self.uploadTask resume];
+//    }
+//    else
+//    {
+//        DLog(@"Log : ------------------------------*****************/////// The upload task is suspended ///////..........*****************");
+//        [self.uploadTask resume];
+//    }
+//    
+//    DLog(@"Log : The location of the file uploaded is - %@", VCLIENT.videoUploading.fileLocation);
+//    DLog(@"Log : The task id of the current performing task is - %d", self.uploadTask.taskIdentifier);
+    
+//    if( ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) && offset == 0 )
+//    {
+//        DLog(@"Log : Application state background....");
+//        if (bgTask != UIBackgroundTaskInvalid)
+//        {
+//            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+//            bgTask = UIBackgroundTaskInvalid;
+//        }
+//    }
 }
+
+
+-(void)startNewBckgrndTask
+{
+    DLog(@"Log : New Background upload task ----");
+    
+}
+
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    // The request is complete and data has been received
+    // You can parse the stuff in your instance variable now
+    DLog(@"Log : Connection is - %@", connection);
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    // The request has failed for some reason!
+    // Check the error var
+    DLog(@"Log : Error is - %@", error);
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    DLog(@"Log : Response received is - %@", response);
+}
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    DLog(@"Log : The data obtained is - %@", data);
+    DLog(@"Log : The string is - %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+}
+
 
 
 #pragma download delegates
@@ -872,6 +997,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
             if([[NSFileManager defaultManager] fileExistsAtPath:self.filePath])
                 [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:&error];
             
+            if( ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) && VCLIENT.backgroundStartChunk < 0 )
+            {
+                VCLIENT.backgroundStartChunk = 1;
+            }
+            
             if(self.uploadTask != nil)
                 _success(@"");
             
@@ -1088,6 +1218,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     DLog(@"Log : Task id of the suspended task is - %d", self.uploadTask.taskIdentifier);
     DLog(@"Log : Tha state of the task is - %d", self.uploadTask.state);
+    
     //DLog(@"Log : The state of the uploadtask is - %@", self.uploadTask.state);
  
     //self.session = nil;
@@ -1109,9 +1240,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         
       //  [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
     
-    APPMANAGER.turnOffUploads = YES;
+    //APPMANAGER.turnOffUploads = YES;
     DLog(@"Log : Initialising upload Pause ---- 1");
-    [self.uploadTask suspend];
+    [self.uploadTask cancel];
      DLog(@"Log : Initialising upload Pause ---- 2");
         NSError *error = nil;
     
@@ -1279,6 +1410,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                       {
                                                           video.faces = videoObj[@"views"][@"face"];
                                                       }
+
                                                       video.shareCount = ((NSNumber*)videoObj[@"shared"]).intValue;
                                                       
                                                       id poster = [videoObj valueForKey:@"views"][@"poster"];
@@ -1656,5 +1788,113 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                           }];
     [op start];
 }
+
+
+-(void)postDeviceTokenToTheServer : (NSString*)deviceToken
+                          success : (void(^)(NSString *msg))success
+                          failure : (void(^)(NSError *error))failure
+{
+    NSString *path = [NSString stringWithFormat:@"/services/user/add_device?network=APNS&deviceid=%@",deviceToken];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              success(@"");
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
+
+
+-(void)clearBadge : (NSString*)deviceToken
+                          success : (void(^)(NSString *msg))success
+                          failure : (void(^)(NSError *error))failure
+{
+    
+    
+    NSString *path = [NSString stringWithFormat:@"/services/user/clear_badge?network=APNS&deviceid=%@",deviceToken];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              success(@"");
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
+
+-(void)getMetadataOfTheMediaFileWithUUID : (NSString*)uuid
+                                 success : (void(^)(cloudVideos *mediaObj))success
+                                 failure : (void(^)(NSError *error))failure
+{
+   // uuid = @"1f6e8f60-ba56-11e3-970c-ffeeadd61129";
+    NSDictionary *queryParams = @{
+                                  @"mid" : uuid,
+                                   @"views[]": @"poster",
+                                   @"include_tags" : @"0",
+                                   @"include_shared" : @"1",
+                                   @"include_contact_info" : @"1"};
+    NSString *path = [NSString stringWithFormat:@"/services/mediafile/get?%@", [ViblioHelper stringBySerializingQueryParameters:queryParams]];
+    
+    NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+    [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+    [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+    
+    __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+                                          ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                          {
+                                              //success(@"");
+                                              DLog(@"Log : The result is - %@", JSON);
+                                              NSDictionary *videoObj = JSON[@"media"];
+                                              
+                                              cloudVideos *video = [[cloudVideos alloc]init];
+                                              video.uuid = [videoObj valueForKey:@"uuid"];
+                                              
+                                              if( (videoObj[@"views"][@"face"] != nil) && ((NSArray*)videoObj[@"views"][@"face"]).count > 0  )
+                                              {
+                                                  video.faces = videoObj[@"views"][@"face"];
+                                              }
+                                              video.shareCount = ((NSNumber*)videoObj[@"shared"]).intValue;
+                                              
+                                              id poster = [videoObj valueForKey:@"views"][@"poster"];
+                                              
+                                              if( [poster isKindOfClass:[NSDictionary class]] ||  [poster isKindOfClass:[NSMutableDictionary class]])
+                                                  video.url = poster[@"url"];
+                                              else if ( [poster isKindOfClass:[NSArray class]] ||  [poster isKindOfClass:[NSMutableArray class]] )
+                                                  video.url = [poster firstObject][@"url"];
+                                              
+                                              video.createdDate = [videoObj valueForKey:@"recording_date"];
+                                              
+                                              NSString *lat = [videoObj valueForKey:@"lat"];
+                                              NSString *longitude = [videoObj valueForKey:@"lng"];
+                                              
+                                              if( ![lat isEqual:[NSNull null]] && [lat isValid] )
+                                                  video.lat = lat;
+                                              
+                                              if( ![lat isEqual:[NSNull null]] && [longitude isValid] )
+                                                  video.longitude = longitude;
+                                              
+                                              success(video);
+                                              
+                                          } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                          {
+                                              failure(error);
+                                          }];
+    [op start];
+}
+
 
 @end

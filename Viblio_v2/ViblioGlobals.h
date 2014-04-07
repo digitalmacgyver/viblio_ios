@@ -63,6 +63,7 @@
 #import "AppManager.h"
 #import "UserManager.h"
 #import "VblLocationManager.h"
+#import "DataModel.h"
 
 //Modals
 #import "User.h"

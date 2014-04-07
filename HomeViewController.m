@@ -34,6 +34,8 @@
     
     APPMANAGER.indexOfSharedListSelected = nil;
     [ViblioHelper MailSharingClicked:self];
+    [[VblLocationManager sharedClient] setUp];
+    [[VblLocationManager sharedClient] fetchLatitudeAndLongitude];
     
     [self.navigationController.navigationBar setBackgroundImage:[ViblioHelper setUpNavigationBarBackgroundImage] forBarMetrics:UIBarMetricsDefault];
     [self.navigationItem setTitleView:[ViblioHelper vbl_navigationTitleView]];
@@ -53,9 +55,16 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    
     // Get the list of videos in cloud and render them in the UI
     // The fetched list of videos are mapped to the cloudVideoList model and are stored in an cloudList array in VCLIENT
+    
+    [APPCLIENT postDeviceTokenToTheServer:APPCLIENT.dataModel.deviceToken success:^(NSString *msg)
+     {
+         
+     }failure:^(NSError *error)
+     {
+         DLog(@"Log : Sending device token to the server failed with error - %@", error);
+     }];
     
     [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d", VCLIENT.pageCount] rows:ROW_COUNT success:^(NSMutableArray *result)
      {
@@ -74,8 +83,6 @@
          
          VCLIENT.cloudVideoList = result;
          VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
-         
-        // DLog(@"Log : Keys sorted order is - %@", [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]);
          
          APPMANAGER.orderedKeys = [[ViblioHelper getReOrderedListOfKeys:[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]] mutableCopy];
          
@@ -156,15 +163,33 @@
      {
      }];
     
+    // Inform the server to clear the badge count
+    
+//    [APPCLIENT clearBadge:APPCLIENT.dataModel.deviceToken success:^(NSString *msg)
+//    {
+//        [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+//        
+//    }failure:^(NSError *error)
+//    {
+//        DLog(@"Log : Clear badge failed-----");
+//    }];
+    
     if( APPMANAGER.restoreMyViblio )
         [self MyViblioClicked:nil];
     
     APPMANAGER.restoreMyViblio = NO;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshScreen) name:newVideoAvailable object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSharingScreen:) name:showingSharingView object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshScreen) name:uploadComplete object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showOwnerSharedList) name:showSharingView object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOwnerShareView) name:removeOwnerSharingView object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshScreenOnComingToFGFromBG) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
+
+//-(void)reloadViews
+//{
+//    [self.videoList reloadData];
+//}
 
 -(void)removeOwnerShareView
 {
@@ -185,23 +210,93 @@
     [self.view addSubview:self.sharedOwnerList.view];
 }
 
+
+-(void)refreshScreenOnComingToFGFromBG
+{
+  //  [self viewDidAppear:YES];
+    
+
+    [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d", VCLIENT.pageCount] rows:ROW_COUNT success:^(NSMutableArray *result)
+     {
+         if( self.errorAlert.tag == 1 )
+         {
+             self.errorAlert.tag = 0;
+             [self.errorAlert dismissWithClickedButtonIndex:0 animated:NO];
+             self.errorAlert = nil;
+         }
+         
+         if( VCLIENT.cloudVideoList != nil )
+         {
+             [VCLIENT.cloudVideoList removeAllObjects];
+             VCLIENT.cloudVideoList = nil;
+         }
+         
+         VCLIENT.cloudVideoList = result;
+         VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
+         
+         APPMANAGER.orderedKeys = [[ViblioHelper getReOrderedListOfKeys:[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]] mutableCopy];
+         
+         DLog(@"Log : Sorted list of keys obtained are ************************* %@", APPMANAGER.orderedKeys);
+         
+         // If list view was pushed on then publish notification and dont reload the home view
+         if( self.segment.tag )
+             [[NSNotificationCenter defaultCenter] postNotificationName:reloadListView object:nil];
+         else
+             [self.videoList reloadData];
+         
+         [self refreshScreen];
+         
+     }failure:^(NSError *error)
+     {
+         DLog(@"Log : Error obtained is - %@", error.localizedDescription);
+     }];
+}
+
+
 -(void)refreshScreen
 {
     DLog(@"Log : An upload has been completed... Refresh the screen now...");
     
-    if( VCLIENT.cloudVideoList.count < ROW_COUNT.integerValue )
+    if( [VCLIENT.Videouuid isValid] )
     {
-        [self viewDidAppear:YES];
+        [APPCLIENT getMetadataOfTheMediaFileWithUUID:VCLIENT.Videouuid success:^(cloudVideos *resultObj)
+         {
+             DLog(@"Log : The result obj is - %@", resultObj);
+             [VCLIENT.cloudVideoList insertObject:resultObj atIndex:0];
+             VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
+             
+             if( self.segment.tag )
+                 [[NSNotificationCenter defaultCenter] postNotificationName:reloadListView object:nil];
+             else
+                 [self.videoList reloadData];
+             
+         }failure:^(NSError *error)
+         {
+             DLog(@"LOg : Could not get the details of new video");
+         }];
     }
-    else
-    {
-        if( self.segment.tag )
-            [[NSNotificationCenter defaultCenter] postNotificationName:reloadListView object:nil];
-        else
-            [self.videoList reloadData];
-    }
+    
+    
+    [APPCLIENT clearBadge:APPCLIENT.dataModel.deviceToken success:^(NSString *msg)
+     {
+         
+     }failure:^(NSError *error)
+     {
+         
+     }];
+    
+//    if( VCLIENT.cloudVideoList.count < ROW_COUNT.integerValue )
+//    {
+//        [self viewDidAppear:YES];
+//    }
+//    else
+//    {
+//        if( self.segment.tag )
+//            [[NSNotificationCenter defaultCenter] postNotificationName:reloadListView object:nil];
+//        else
+//            [self.videoList reloadData];
+//    }
 }
-
 
 -(void)okTapped
 {

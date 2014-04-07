@@ -111,6 +111,7 @@
 		85F8B488188AAC9D00E92380 /* VideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 85F8B487188AAC9D00E92380 /* VideoCell.m */; };
 		85F8B48A188ABD9E00E92380 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85F8B489188ABD9E00E92380 /* AVFoundation.framework */; };
 		CB24001118ED6017007D2E00 /* VblLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB24001018ED6017007D2E00 /* VblLocationManager.m */; };
+		CB24001418EDDD28007D2E00 /* DataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CB24001318EDDD28007D2E00 /* DataModel.m */; };
 		CB325DD318EA996C00DB9AFF /* viblio.der in Resources */ = {isa = PBXBuildFile; fileRef = CB325DD218EA996C00DB9AFF /* viblio.der */; };
 		CB65D4B718B3A7A000A69B95 /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */; };
 		CB65D4BB18B3ECFA00A69B95 /* selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB65D4BA18B3ECFA00A69B95 /* selected@2x.png */; };
@@ -313,6 +314,8 @@
 		85F8B489188ABD9E00E92380 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		CB24000F18ED6017007D2E00 /* VblLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VblLocationManager.h; sourceTree = "<group>"; };
 		CB24001018ED6017007D2E00 /* VblLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VblLocationManager.m; sourceTree = "<group>"; };
+		CB24001218EDDD28007D2E00 /* DataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataModel.h; sourceTree = "<group>"; };
+		CB24001318EDDD28007D2E00 /* DataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataModel.m; sourceTree = "<group>"; };
 		CB325DD218EA996C00DB9AFF /* viblio.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = viblio.der; sourceTree = "<group>"; };
 		CB65D4B518B3A7A000A69B95 /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsViewController.h; sourceTree = "<group>"; };
 		CB65D4B618B3A7A000A69B95 /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsViewController.m; sourceTree = "<group>"; };
@@ -697,6 +700,8 @@
 				85ED80541891C59E00CEAE85 /* ListViewController.m */,
 				85ED80561891D8B200CEAE85 /* InProgressViewController.h */,
 				85ED80571891D8B200CEAE85 /* InProgressViewController.m */,
+				CB24001218EDDD28007D2E00 /* DataModel.h */,
+				CB24001318EDDD28007D2E00 /* DataModel.m */,
 				CB9F191E18ACF386009398F6 /* SharedViewController.h */,
 				CB9F191F18ACF386009398F6 /* SharedViewController.m */,
 				CBEC7DD618D9BA1B00B15C8B /* SharedVideoListViewController.h */,
@@ -1168,6 +1173,7 @@
 				CBA770F818AE56DD00240D49 /* SDWebImageCompat.m in Sources */,
 				85F70ABA189930A900696E1E /* TellAFriendViewController.m in Sources */,
 				2A631476187E701600D864FC /* SignInViewController.m in Sources */,
+				CB24001418EDDD28007D2E00 /* DataModel.m in Sources */,
 				85ED802818907AE600CEAE85 /* CameraRollDenialControler.m in Sources */,
 				85ED805B1892862E00CEAE85 /* TermsOfUseViewController.m in Sources */,
 				2AD637F21886BC5400012A86 /* SignUpViewController.m in Sources */,

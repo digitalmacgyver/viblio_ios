@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 #import "User.h"
+#import "DataModel.h"
+#import "cloudVideos.h"
 //#import <CoreFoundation/CoreFoundation.h>
 
 #define APPCLIENT [ViblioClient sharedClient]
@@ -25,6 +27,7 @@
 @property (nonatomic) NSURLSessionUploadTask *uploadTask;
 @property (nonatomic) NSURLSessionDownloadTask *downloadTask;
 @property (nonatomic) NSString *filePath;
+@property (nonatomic, strong) DataModel *dataModel;
 
 + (ViblioClient *)sharedClient;
 
@@ -157,5 +160,17 @@
                                     sessionCookie : (NSString*)sessionCookie
                                           success : (void (^)(NSNumber *offset))success
                                           failure : (void(^)(NSError *error))failure;
+
+-(void)postDeviceTokenToTheServer : (NSString*)deviceToken
+                          success : (void(^)(NSString *msg))success
+                          failure : (void(^)(NSError *error))failure;
+
+-(void)clearBadge : (NSString*)deviceToken
+          success : (void(^)(NSString *msg))success
+          failure : (void(^)(NSError *error))failure;
+
+-(void)getMetadataOfTheMediaFileWithUUID : (NSString*)uuid
+                                 success : (void(^)(cloudVideos *mediaObj))success
+                                 failure : (void(^)(NSError *error))failure;
 
 @end

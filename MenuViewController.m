@@ -64,23 +64,48 @@
 
 -(void)refreshProgressBar
 {
-    DLog(@"Log : Refreshing the progress bar for file");
-    DLog(@"Log : uploaded size is - %f", APPCLIENT.uploadedSize);
-    DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
-    DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
+//    if(  )
+//    {
+//        
+//    }
     
-    self.lblSize.text = [NSString stringWithFormat:@"%.2fMb of %.2fMb(%.2f%%)", (APPCLIENT.uploadedSize/(1024*1024)), (float)VCLIENT.asset.defaultRepresentation.size/(1024*1024), (APPCLIENT.uploadedSize/VCLIENT.asset.defaultRepresentation.size)*100];
-    self.lblSize.adjustsFontSizeToFitWidth = YES;
-    
-    self.progressView.progress = APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size;
-    self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
-    
-//    NSString *dateString = [NSDateFormatter localizedStringFromDate:[VCLIENT.asset valueForProperty:ALAssetPropertyDate]
-//                                                          dateStyle:NSDateFormatterShortStyle
-//                                                          timeStyle:NSDateFormatterFullStyle];
-//    dateString = (NSString*)[[dateString componentsSeparatedByString:@" "] firstObject];
-//    DLog(@"Log : The date sring about to be set is - %@", dateString);
-    self.lblProgressTitle.text = @"Uploading";
+    if( !VCLIENT.isToBePaused )
+    {
+        DLog(@"Log : Refreshing the progress bar for file");
+        DLog(@"Log : uploaded size is - %f", APPCLIENT.uploadedSize);
+        DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
+        DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
+        
+        self.lblSize.text = [NSString stringWithFormat:@"%.2fMb of %.2fMb(%.2f%%)", (APPCLIENT.uploadedSize/(1024*1024)), (float)VCLIENT.asset.defaultRepresentation.size/(1024*1024), (APPCLIENT.uploadedSize/VCLIENT.asset.defaultRepresentation.size)*100];
+        self.lblSize.adjustsFontSizeToFitWidth = YES;
+        
+        self.progressView.progress = APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size;
+        self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
+        self.lblProgressTitle.text = @"Uploading";
+    }
+    else
+    {
+        DLog(@"Log : Video has been paused.. Dont update the UI");
+        
+//        NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
+//        if( videoList != nil && videoList.count > 0 )
+//        {
+//            Videos *videoUploading = (Videos*)[videoList objectAtIndex:1];
+//            ALAsset *asset = [VCLIENT getAssetFromFilteredVideosForUrl: videoUploading.fileURL];
+//            
+//            [self.vwSyncingFile setHidden:NO];
+//            [self.lblSyncNotInProgress setHidden:YES];
+//            
+//            self.uploadingImg.image = [UIImage imageWithCGImage:[asset thumbnail]];
+//            self.progressView.progress = 0;
+//        }
+//        else
+//        {
+//            [self.vwSyncingFile setHidden:YES];
+//            [self.lblSyncNotInProgress setHidden:NO];
+//            self.lblSyncNotInProgress.text = @"No new videos to upload";
+//        }
+    }
 }
 
 - (IBAction)progressBarClicked:(id)sender {

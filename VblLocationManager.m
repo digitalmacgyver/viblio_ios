@@ -61,11 +61,26 @@
 {
     DLog(@"Log : Application launched in backgorund ----- ");
     
-    if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground  )
-    {
-        [UIApplication sharedApplication].applicationIconBadgeNumber += 1;
-    }
-    [VCLIENT videoUploadIntelligence];
+//    if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground  )
+//    {
+//        [UIApplication sharedApplication].applicationIconBadgeNumber += 1;
+//    }
+    
+    [DBCLIENT updateDB:^(NSString *msg)
+     {
+         // Clean up all the entries in the DB for those not found in the camera roll
+         // DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
+         //  [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
+         
+         DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
+         if([APPMANAGER.user.userID isValid])
+             [VCLIENT videoUploadIntelligence];
+         
+     }failure:^(NSError *error)
+     {
+         DLog(@"Log : Camera roll access denied case...");
+     }];
+    //[VCLIENT videoUploadIntelligence];
 }
 
 -(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error

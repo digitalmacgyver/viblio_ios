@@ -30,6 +30,7 @@ extern NSString * const logoutUser;
 extern NSString * const reloadListView;
 extern NSString * const showSharingView;
 extern NSString * const removeOwnerSharingView;
+extern NSString * const newVideoAvailable;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 

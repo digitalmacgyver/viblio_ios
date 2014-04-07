@@ -189,6 +189,11 @@
         ALAsset *asset = [VCLIENT getAssetFromFilteredVideosForUrl:video.fileURL];
         if( asset == nil )
         {
+            if( video.fileURL == VCLIENT.videoUploading.fileURL )
+            {
+                DLog(@"Log : Uploading file has been deleted...");
+                
+            }
             DLog(@"Log : There is no corresponding entry for the video in Camera roll.. Delete it from DB");
             [DBCLIENT deleteOperationOnDB:video.fileURL];
         }

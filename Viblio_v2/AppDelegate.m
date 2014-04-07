@@ -29,8 +29,8 @@
     if(rem > 0)
         chunk++;
     
-    localNotification.alertBody = @"Video Upload Complete !!";
-    localNotification.alertAction = @"Background Transfer Upload!";
+    localNotification.alertBody = @"Fasten Viblio Uploads !!";
+    //localNotification.alertAction = @"Background Transfer Upload!";
     
     //On sound
     localNotification.soundName = UILocalNotificationDefaultSoundName;
@@ -51,7 +51,7 @@
     DLog(@"Log : The launch options of the application is - %@", launchOptions);
     
     self.isMoviePlayer = NO;
-    
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:MPMoviePlayerWillEnterFullscreenNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disableOrientation) name:MPMoviePlayerWillExitFullscreenNotification object:nil];
     
@@ -92,6 +92,7 @@
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
+    VCLIENT.backgroundAlertShown = NO;
     [[VblLocationManager sharedClient] fetchLatitudeAndLongitude];
 }
 
@@ -105,7 +106,9 @@
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
     [[VblLocationManager sharedClient] stopFetchingLatitudeAndLongitude];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
+    VCLIENT.backgroundStartChunk = -1;
     NSArray *userResults = [DBCLIENT getUserDataFromDB];
     if( userResults != nil && userResults.count > 0 )
     {
@@ -113,8 +116,8 @@
         [DBCLIENT updateDB:^(NSString *msg)
         {
             // Clean up all the entries in the DB for those not found in the camera roll
-           // DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
-           //  [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
+            DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
+             [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
             
             DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
             if([APPMANAGER.user.userID isValid])
@@ -172,8 +175,32 @@
     
     else
         return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
+{
+    DataModel *dataModel = APPCLIENT.dataModel;
+	NSString *newToken = [deviceToken description];
+	newToken = [newToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+	newToken = [newToken stringByReplacingOccurrencesOfString:@" " withString:@""];
+	[dataModel setDeviceToken:newToken];
+    NSLog(@"Log : Device token is - %@", newToken);
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+{}
+
+- (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo
+{
+	NSLog(@"Received notification: %@", userInfo);
     
-    
+    if( [[userInfo[@"custom"][@"type"] lowercaseString] isEqualToString: [@"NEWVIDEO" lowercaseString]] )
+    {
+        DLog(@"Log : Refresh the UI");
+        
+        VCLIENT.Videouuid = userInfo[@"custom"][@"uuid"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:newVideoAvailable object:nil];
+    }
 }
 
 @end

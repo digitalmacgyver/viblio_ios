@@ -26,6 +26,7 @@ NSString * const logoutUser = @"com.viblio.app : logoutUser";
 NSString * const reloadListView = @"com.viblio.app : reloadListView";
 NSString * const showSharingView = @"com.viblio.app : showSharingView";
 NSString * const removeOwnerSharingView = @"com.viblio.app : removeOwnerSharingView";
+NSString * const newVideoAvailable = @"com.viblio.app : newVideoAvailable";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {

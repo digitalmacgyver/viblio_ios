@@ -28,7 +28,7 @@
 @property(nonatomic, assign)NSInteger totalRecordsCount, pageCount;
 @property (nonatomic, retain)NSDictionary *resCategorized;
 @property (nonatomic, assign)int totalChunksSent;
-@property (nonatomic, retain) NSString *Videouuid;
+@property (nonatomic, retain) NSString *Videouuid, *fileIdToBeDeleted;
 
 @property (nonatomic, assign)int backgroundStartChunk;
 @property (nonatomic, assign)UIBackgroundTaskIdentifier bgTask;

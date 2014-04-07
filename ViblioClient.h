@@ -22,6 +22,7 @@
     UIBackgroundTaskIdentifier bgTask;
 }
 @property(nonatomic, assign) double uploadedSize;
+@property (nonatomic, retain) AFJSONRequestOperation *uploadRequest;
 
 @property (nonatomic) NSURLSession *session;
 @property (nonatomic) NSURLSessionUploadTask *uploadTask;

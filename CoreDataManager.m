@@ -132,43 +132,57 @@
     DLog(@"Log : Performing an update on the DB");
     [VCLIENT loadAssetsFromCameraRoll:^(NSArray *filteredVideoList)
     {
+        //DLog(@"Log : Loadin assets from camera roll.... %@", filteredVideoList);
+     //   NSLog(@"Log : Loadin assets from camera roll.... %@ -----   %@", filteredVideoList, [self listAllEntitiesinTheDB]);
+        //NSLog(@"")
         VCLIENT.filteredVideoList = [filteredVideoList mutableCopy];
         for( ALAsset *asset in filteredVideoList )
         {
             if( asset != nil )
             {
+               // if(  )
+                
                 NSDate* date = [asset valueForProperty:ALAssetPropertyDate];
-                NSComparisonResult result = [date compare:[self getDateOfLastSync]];
-                switch (result)
-                {
-                    case NSOrderedDescending:
-                    case NSOrderedSame:
-                    {
-                        DLog(@"LOG : New video found... Adding it to the DB");
-                        Videos *video = [NSEntityDescription
-                                         insertNewObjectForEntityForName:@"Videos"
-                                         inManagedObjectContext:[self managedObjectContext]];
-                        
-                        video.fileURL = [asset.defaultRepresentation.url absoluteString];
-                        video.sync_status = [NSNumber numberWithInt:0];
-                        video.sync_time = @([date timeIntervalSince1970]);
-                        video.fileLocation = nil;
-                        
-                        NSError *error;
-                        if (![[self managedObjectContext] save:&error]) {
-                            DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+//                NSComparisonResult result = [date compare:[self getDateOfLastSync]];
+//                switch (result)
+//                {
+//                    case NSOrderedDescending:
+//                    case NSOrderedSame:
+//                    {
+//                        NSLog(@"LOG : New video found... Adding it to the DB - %@", asset.defaultRepresentation.url);
+//                      //  NSLog(@"LOG : The filetred video set is - %@", VCLIENT.filteredVideoList);
+//                        NSLog(@"LOG : The asset already found ??? - %@", [self getWhetherAFileWithUUIDExistsInDB:asset.defaultRepresentation.url.absoluteString ]);
+//                        
+                        if( [self getTheCountOfRecordsInDBWithFileURL:asset.defaultRepresentation.url.absoluteString ] <= 0  ) //[VCLIENT getAssetFromFilteredVideosForUrl:asset.defaultRepresentation.url.absoluteString ] == nil)
+                        {
+                         //   NSLog(@"Log : Avoiding duplicates... Video does not exist in the DB.. So adding it..");
+                            Videos *video = [NSEntityDescription
+                                             insertNewObjectForEntityForName:@"Videos"
+                                             inManagedObjectContext:[self managedObjectContext]];
+                            
+                            video.fileURL = [asset.defaultRepresentation.url absoluteString];
+                            video.sync_status = [NSNumber numberWithInt:0];
+                            video.sync_time = @([date timeIntervalSince1970]);
+                            video.fileLocation = nil;
+                            
+                            NSError *error;
+                            if (![[self managedObjectContext] save:&error]) {
+                                DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+                            }
+                            video = nil;
                         }
-                        video = nil;
-                        break;
-                    }
-                    case NSOrderedAscending:
-                        break;
-                    default: DLog(@"erorr dates "); break;
-                }
-                date = nil;
+                        else
+                            NSLog(@"Log : Video already exists in the DB.. Dont add it...");
+//                        break;
+//                    }
+//                    case NSOrderedAscending:
+//                        break;
+//                    default: DLog(@"erorr dates "); break;
+//                }
+//                date = nil;
             }
         }
-        [self updateLastSyncDate];
+//        [self updateLastSyncDate];
         success(@"success");
         
     }failure:^(NSError *error) {
@@ -227,7 +241,8 @@
     
     NSError *error = nil;
     NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
-    DLog(@"Log : The earlier time stamp is - %@", results);
+    //DLog(@"Log : The earlier time stamp is - %@", results);
+    NSLog(@"Log : The earlier time stamp is - %@", results);
     
     if( [results firstObject] )
     {
@@ -242,6 +257,7 @@
         Info *info = [results firstObject];
         [info setValue:[NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970]] forKey:@"sync_time"];
         
+        NSLog(@"Log : The updated time stamp is - %@", [NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970]]);
         if (![self.managedObjectContext save:&error]) {
             DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
         }

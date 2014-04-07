@@ -58,15 +58,17 @@
         }
         else
         {
+            DLog(@"Log : The entries in asset and uploading are - %@,,,,,,,,,,,,,,%@", VCLIENT.asset, VCLIENT.videoUploading);
             DLog(@"Log : File has been deleted...");
-            
+            self.fileIdToBeDeleted = VCLIENT.videoUploading.fileLocation;
             DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
             [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
             
             if( VCLIENT.asset != nil )
             {
+                DLog(@"Log : Second list - The entries in asset and uploading are - %@,,,,,,,,,,,,,,%@", VCLIENT.asset, VCLIENT.videoUploading);
                 DLog(@"Log : Deleting the files from App DB that have been deleted..... %@", VCLIENT.videoUploading.fileLocation);
-                [APPCLIENT deleteTheFileWithID:VCLIENT.videoUploading.fileLocation success:^(BOOL hasFileBeenDeleted)
+                [APPCLIENT deleteTheFileWithID:self.fileIdToBeDeleted success:^(BOOL hasFileBeenDeleted)
                  {
                     // [self startNewFileUpload];
                  }failure:^(NSError *error)
@@ -328,18 +330,18 @@
                          DLog(@"LOG : Uploading next chunk---- completed upload till offset - %f",offset);
                          DLog(@"LOG : 1 / %f th part uploading..... ", offset/self.asset.defaultRepresentation.size);
                          
-                         if( VCLIENT.isToBePaused )
-                         {
-                             [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
-                             [self uploadFailureFallBack:nil];
-                             VCLIENT.isToBePaused = NO;
-                         }
-                         else
-                         {
+//                         if( VCLIENT.isToBePaused )
+//                         {
+//                             [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
+//                             [self uploadFailureFallBack:nil];
+//                             VCLIENT.isToBePaused = NO;
+//                         }
+//                         else
+//                         {
                              offset += chunkData.length;
                              APPCLIENT.uploadedSize = offset;
                              [self videoFromNSData];
-                         }
+//                         }
                          
                      }failure:^(NSError *error)
                      {
@@ -369,7 +371,7 @@
         [DBCLIENT updateFailStatusOfFile:self.asset.defaultRepresentation.url toStatus:@(1)];
         
         // Commit the uploaded bytes to the DB
-        [DBCLIENT updateUploadedBytesForFile:self.asset.defaultRepresentation.url toBytes:@(APPCLIENT.uploadedSize)];
+        [DBCLIENT updateUploadedBytesForFile:self.asset.defaultRepresentation.url toBytes:@( ((self.totalChunksSent-1)*1024*1024) + APPCLIENT.uploadedSize)];
         
         self.asset = nil; self.videoUploading = nil; APPCLIENT.uploadedSize = 0;
         
@@ -390,6 +392,14 @@
 
 -(void)videoUploadIntelligence
 {
+    [DBCLIENT updateDB:^(NSString *msg)
+    {
+        DLog(@"Log : The DB has been successfully updated");
+    }failure:^(NSError *error)
+    {
+        DLog(@"Log : Error in updating DB");
+    }];
+    
     if( self.asset == nil && !APPMANAGER.turnOffUploads)
     {
         NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];

@@ -55,11 +55,17 @@
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadList) name:uploadComplete object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadListProgress) name:UIApplicationDidBecomeActiveNotification object:nil];
+
 }
+
+//-(void)
 
 -(void)viewWillDisappear:(BOOL)animated
 {
+    NSLog(@"LOg : View will disappear in list progress being called......");
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadList) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -139,7 +145,7 @@
         uploadProgress *cell = (uploadProgress*)[self.tblInProgress cellForRowAtIndexPath:[NSIndexPath indexPathForRow:self.celIndex inSection:0]];
         
         if( [cell.video.fileURL isEqualToString:VCLIENT.videoUploading.fileURL] )
-            cell.progressBar.progress = APPCLIENT.uploadedSize/VCLIENT.asset.defaultRepresentation.size;
+            cell.progressBar.progress = (((VCLIENT.totalChunksSent - 1)*1024*1024) + APPCLIENT.uploadedSize)/VCLIENT.asset.defaultRepresentation.size;
     }
 }
 

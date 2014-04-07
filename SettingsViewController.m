@@ -71,6 +71,7 @@
     else
         [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
     
+    [VCLIENT videoUploadIntelligence];
     [(DashBoardNavController*)self.slidingViewController.topViewController popViewControllerAnimated:YES];
 }
 

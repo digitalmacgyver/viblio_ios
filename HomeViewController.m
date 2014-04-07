@@ -86,7 +86,7 @@
          
          APPMANAGER.orderedKeys = [[ViblioHelper getReOrderedListOfKeys:[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]] mutableCopy];
          
-         DLog(@"Log : Sorted list of keys obtained are ************************* %@", APPMANAGER.orderedKeys);
+  //       DLog(@"Log : Sorted list of keys obtained are ************************* %@", APPMANAGER.orderedKeys);
          
          // If list view was pushed on then publish notification and dont reload the home view
          if( self.segment.tag )
@@ -491,7 +491,7 @@
     
    // [resArrayOfVideoObjects  removeObjectAtIndex:0];
     
-    DLog(@"Log : The resultant array obtained is - %@", resArrayOfVideoObjects);
+  //  DLog(@"Log : The resultant array obtained is - %@", resArrayOfVideoObjects);
     if( indexPath.section < VCLIENT.resCategorized.allKeys.count )
     {
         if( indexPath.row < resArrayOfVideoObjects.count )
@@ -527,11 +527,11 @@
     
     if( indexPath.section == VCLIENT.resCategorized.allKeys.count-1 )
     {
-        DLog(@"Log : Coming into section....");
-        DLog(@"Log : Index path row is - %d and count is - %d", indexPath.row, resArrayOfVideoObjects.count);
+   //     DLog(@"Log : Coming into section....");
+   //     DLog(@"Log : Index path row is - %d and count is - %d", indexPath.row, resArrayOfVideoObjects.count);
         if( (indexPath.row == resArrayOfVideoObjects.count-1) && VCLIENT.totalRecordsCount > VCLIENT.cloudVideoList.count )
         {
-            DLog(@"Log : Lazy load next set of records...");
+  //          DLog(@"Log : Lazy load next set of records...");
             [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d",(int)(VCLIENT.cloudVideoList.count/ROW_COUNT.integerValue)+1] rows:ROW_COUNT success:^(NSMutableArray *result)
              {
                  DLog(@"Log : Coming in response");
@@ -540,7 +540,7 @@
                  
                  APPMANAGER.orderedKeys = [[ViblioHelper getReOrderedListOfKeys:[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]] mutableCopy];
                  
-                 DLog(@"Log : Sorted list of keys obtained are ************************* %@", APPMANAGER.orderedKeys);
+   //              DLog(@"Log : Sorted list of keys obtained are ************************* %@", APPMANAGER.orderedKeys);
                  
                  [self.videoList reloadData];
              }failure:^(NSError *error)

@@ -346,7 +346,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 +(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList
 {
     
-    DLog(@"Log : The videolist is - %@", videoList);
+ //   DLog(@"Log : The videolist is - %@", videoList);
     
     
     //return  nil;
@@ -359,11 +359,11 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     [result setValue:@[] forKey:@"This Week"];
     [result setValue:@[] forKey:@"This Month"];
     
-    DLog(@"Log : The video list count is - %d", videoList.count);
+  //  DLog(@"Log : The video list count is - %d", videoList.count);
     
     for( int i=0; i < videoList.count; i++ )
     {
-        DLog(@"Log : Result dictionary is - %@", result);
+     //   DLog(@"Log : Result dictionary is - %@", result);
         
         id video = videoList[i];
         NSDate *videoDate;
@@ -372,7 +372,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         // 2014-02-07 14:21:00
         // 2014-01-30 18:20:34
         
-        DLog(@"Log : The class of object is - %@", NSStringFromClass([video class]));
+     //   DLog(@"Log : The class of object is - %@", NSStringFromClass([video class]));
         
         if( APPMANAGER.indexOfSharedListSelected != nil )
         {
@@ -397,7 +397,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         
         NSDateComponents *currentDateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitWeekOfMonth |NSCalendarUnitMonth | NSCalendarUnitYear fromDate:curDate];
         
-        DLog(@"Log : Video week - %d, current week - %d", videoDateComponents.weekOfMonth, currentDateComponents.weekOfMonth);
+    //    DLog(@"Log : Video week - %d, current week - %d", videoDateComponents.weekOfMonth, currentDateComponents.weekOfMonth);
         
         if( videoDateComponents.year == currentDateComponents.year )
         {
@@ -416,7 +416,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
             }
             else
             {
-                DLog(@"Log : video belongs to older month.. Create a section for that month...");
+     //           DLog(@"Log : video belongs to older month.. Create a section for that month...");
                 
                 // Check whether the section with that month already exists
                 
@@ -436,8 +436,8 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         }
         else
         {
-            DLog(@"Log : Video belongs to some older year... Create a header of that year");
-            
+   //         DLog(@"Log : Video belongs to some older year... Create a header of that year");
+   
             // Check whether the section with that year already exists
             
             if( result[[NSString stringWithFormat:@"%d",videoDateComponents.year]] == nil )
@@ -463,13 +463,13 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
            [array addObject:category]; 
     }
     
-    DLog(@"Log : The result before for loop is - %@", result);
+  //  DLog(@"Log : The result before for loop is - %@", result);
     for( int i=0; i<array.count; i++ )
     {
         [result removeObjectForKey:array[i]];
     }
     
-    DLog(@"Log : The result is - %@", result);
+   // DLog(@"Log : The result is - %@", result);
     
     return result;
 }
@@ -559,7 +559,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(NSArray*)getReOrderedListOfKeys :(NSArray*)keys
 {
-    DLog(@"Log : The keys obtained are - %@", keys);
+   // DLog(@"Log : The keys obtained are - %@", keys);
     NSMutableArray *priorityFirst = [[NSMutableArray alloc]init];
     NSMutableArray *prioritySecond = [[NSMutableArray alloc]init];
     NSMutableArray *priorityThird = [[NSMutableArray alloc]init];
@@ -570,7 +570,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     
     for( NSString *str in keys )
     {
-        DLog(@"Log : Str obtained is - %@", str);
+    //    DLog(@"Log : Str obtained is - %@", str);
         
         if( [str isEqualToString:@"Today"] || [str isEqualToString:@"This Week"] || [str isEqualToString:@"This Month"] )
         {
@@ -599,7 +599,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(NSArray*)getOrderedListForMonth : (NSMutableArray*)monthArray
 {
-    DLog(@"Log : The month array is - %@", monthArray);
+  //  DLog(@"Log : The month array is - %@", monthArray);
     
     NSMutableArray *sortedRes = [NSMutableArray new];
     for(int i =0 ; i < monthArray.count; i++ )
@@ -625,7 +625,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
             [sortedRes addObject:monthArray[i]];
     }
     
-    DLog(@"Log : The sorted res - %@", sortedRes);
+   // DLog(@"Log : The sorted res - %@", sortedRes);
     return sortedRes;
 }
 

@@ -54,6 +54,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoUploadDescretion) name:uploadVideoPaused object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoUploadDescretion) name:uploadComplete object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoUploadDescretion) name:UIApplicationDidBecomeActiveNotification object:nil];
     [self videoUploadDescretion];
 }
 
@@ -64,22 +65,24 @@
 
 -(void)refreshProgressBar
 {
-//    if(  )
-//    {
-//        
-//    }
-    
     if( !VCLIENT.isToBePaused )
     {
-        DLog(@"Log : Refreshing the progress bar for file");
-        DLog(@"Log : uploaded size is - %f", APPCLIENT.uploadedSize);
-        DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
-        DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
+  //      DLog(@"Log : Refreshing the progress bar for file");
+  //      DLog(@"Log : uploaded size is - %f", APPCLIENT.uploadedSize);
+  //      DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
+  //      DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
         
-        self.lblSize.text = [NSString stringWithFormat:@"%.2fMb of %.2fMb(%.2f%%)", (APPCLIENT.uploadedSize/(1024*1024)), (float)VCLIENT.asset.defaultRepresentation.size/(1024*1024), (APPCLIENT.uploadedSize/VCLIENT.asset.defaultRepresentation.size)*100];
+        int sentBytes = ((VCLIENT.totalChunksSent - 1)*1024*1024);
+        float progressBytes = sentBytes + APPCLIENT.uploadedSize;
+        
+  //      DLog(@"Log : The progress should be - %.2f", progressBytes/(1024*1024));
+        
+        self.lblSize.text = [NSString stringWithFormat:@"%.2fMb of %.2fMb(%.2f%%)", progressBytes/(1024*1024), (float)VCLIENT.asset.defaultRepresentation.size/(1024*1024), (progressBytes/(float)VCLIENT.asset.defaultRepresentation.size)*100];
+        
+//        self.lblSize.text = [NSString stringWithFormat:@"%.2fMb of %.2fMb(%.2f%%)", (APPCLIENT.uploadedSize/(1024*1024)), (float)VCLIENT.asset.defaultRepresentation.size/(1024*1024), (APPCLIENT.uploadedSize/VCLIENT.asset.defaultRepresentation.size)*100];
         self.lblSize.adjustsFontSizeToFitWidth = YES;
         
-        self.progressView.progress = APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size;
+        self.progressView.progress = progressBytes / VCLIENT.asset.defaultRepresentation.size;
         self.uploadingImg.image = [UIImage imageWithCGImage:[VCLIENT.asset thumbnail]];
         self.lblProgressTitle.text = @"Uploading";
     }

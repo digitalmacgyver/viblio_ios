@@ -29,8 +29,8 @@
     if(rem > 0)
         chunk++;
     
-    localNotification.alertBody = @"Fasten Viblio Uploads !!";
-    //localNotification.alertAction = @"Background Transfer Upload!";
+    localNotification.alertBody = @"Viblio Uploads Paused !!";
+    localNotification.alertAction = @"Launch Viblio to resume uploads if not uploads will continue in optimal conditions";
     
     //On sound
     localNotification.soundName = UILocalNotificationDefaultSoundName;
@@ -105,6 +105,8 @@
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
+    //[NSNotificationCenter defaultCenter] postNotificationName:<#(NSString *)#> object:<#(id)#>
+    
     [[VblLocationManager sharedClient] stopFetchingLatitudeAndLongitude];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
@@ -116,7 +118,7 @@
         [DBCLIENT updateDB:^(NSString *msg)
         {
             // Clean up all the entries in the DB for those not found in the camera roll
-            DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
+             DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
              [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
             
             DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
@@ -152,7 +154,7 @@
     DLog(@"Log : App is terminating");
     
     APPMANAGER.turnOffUploads = YES;
-    [APPCLIENT invalidateFileUploadTask];
+    [APPCLIENT invalidateUploadTaskWithoutPausing];
     APPCLIENT.uploadTask = nil;
     [FBSession.activeSession close];
 }
@@ -199,7 +201,7 @@
         DLog(@"Log : Refresh the UI");
         
         VCLIENT.Videouuid = userInfo[@"custom"][@"uuid"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:newVideoAvailable object:nil];
+       // [[NSNotificationCenter defaultCenter] postNotificationName:newVideoAvailable object:nil];
     }
 }
 

@@ -33,6 +33,13 @@
     [self.navigationItem setTitleView:[ViblioHelper vbl_navigationShareTitleView:@"Settings"]];
 }
 
+-(void)viewDidAppear:(BOOL)animated
+{
+    DLog(@"Log : The values in Active session are - ");
+    
+    DLog(@"Log : The wifi upload status is - %d", APPMANAGER.activeSession.wifiupload.integerValue);
+}
+
 -(void)cancelChanges
 {
     DLog(@"Log : Changes Cancelled initiated");
@@ -54,7 +61,7 @@
     
     for( NSString *key in listAllKeys )
     {
-        [DBCLIENT updateSessionSettingsForKey:key forValue:((NSNumber*)sessionVariables[key]).integerValue];
+        [DBCLIENT updateSessionSettingsForKey:key forValue:((NSNumber*)sessionVariables[key]).boolValue];
     }
     
     DLog(@"Log : Check for the changes ---------");
@@ -65,12 +72,13 @@
     APPMANAGER.activeSession = [DBCLIENT getSessionSettings];
     
     // Set device idle time based on the latest values
-    
-    if( APPMANAGER.activeSession.autolockdisable.integerValue )
+
+    if( APPMANAGER.activeSession.autolockdisable.boolValue )
         [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
     else
         [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
     
+    DLog(@"Log : The uploader status is - %d", APPMANAGER.activeSession.wifiupload.boolValue);
     [VCLIENT videoUploadIntelligence];
     [(DashBoardNavController*)self.slidingViewController.topViewController popViewControllerAnimated:YES];
 }
@@ -107,7 +115,6 @@
     {
         CGRect HeadTxtFrame = cell.lblSettingsHeading.frame;
         HeadTxtFrame.origin.y -= 10;
-        //subTxtFrame.size.height += 10;
         cell.lblSettingsHeading.frame = HeadTxtFrame;
         
         CGRect subTxtFrame = cell.lblSettingsSubTitle.frame;
@@ -118,7 +125,6 @@
     
     cell.lblSettingsSubTitle.text = subText;
     subText = nil;
-    
     
     cell.settingSwitch.tag = indexPath.row;
     [self setSwitchStatusForCell:cell atIndexPath:indexPath];
@@ -132,18 +138,16 @@
 {
     switch (indexPath.row) {
         case 0:
-            [cell.settingSwitch setOn:APPMANAGER.activeSession.autoSyncEnabled.boolValue animated:YES] ;
-            break;
-        case 1:
+            DLog(@"Log : The value of wifi uploader is - %d", APPMANAGER.activeSession.wifiupload.boolValue);
             [cell.settingSwitch setOn:APPMANAGER.activeSession.wifiupload.boolValue animated:YES];
             break;
-        case 2:
+        case 1:
             [cell.settingSwitch setOn:APPMANAGER.activeSession.backgroundSyncEnabled.boolValue animated:YES];
             break;
-        case 3:
+        case 2:
             [cell.settingSwitch setOn:APPMANAGER.activeSession.batterSaving.boolValue animated:YES];
             break;
-        case 4:
+        case 3:
             [cell.settingSwitch setOn:APPMANAGER.activeSession.autolockdisable.boolValue animated:YES];
             break;
         default:

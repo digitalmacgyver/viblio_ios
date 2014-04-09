@@ -31,6 +31,7 @@
 @property (nonatomic, assign) int errorCode ;
 @property (nonatomic, assign) NSIndexPath *indexOfSharedListSelected;
 
+@property (nonatomic, assign) AFNetworkReachabilityStatus signalStatus;
 @property (nonatomic, strong) NSMutableArray *sharedVideoList;
 
 + (AppManager *)sharedClient;

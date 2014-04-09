@@ -31,6 +31,7 @@ extern NSString * const reloadListView;
 extern NSString * const showSharingView;
 extern NSString * const removeOwnerSharingView;
 extern NSString * const newVideoAvailable;
+extern NSString * const wifiSignalLost;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 

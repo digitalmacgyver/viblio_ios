@@ -399,62 +399,96 @@
 
 -(void)videoUploadIntelligence
 {
-    [DBCLIENT updateDB:^(NSString *msg)
+    if( APPMANAGER.signalStatus != 0 )
     {
-        DLog(@"Log : The DB has been successfully updated");
-        
-        VCLIENT.isBkgrndTaskEnded = YES;
-        //    if (VCLIENT.bgTask != UIBackgroundTaskInvalid)
-        //    {
-        //        [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
-        //        VCLIENT.bgTask = UIBackgroundTaskInvalid;
-        //    }
-        if( self.asset == nil && !APPMANAGER.turnOffUploads)
+        if( APPMANAGER.activeSession.wifiupload.integerValue && APPMANAGER.signalStatus == 2 )
         {
-            NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
-            DLog(@"Log : The list of videos to be uploaded are - %@", videoList);
-            if( videoList != nil && videoList.count > 0 )
+            DLog(@"Log : Connected over Wifi... Upload only on Wifi enabled too...");
+            [self fetchVideosForUploadingAndStartUpload];
+        }
+        else
+        {
+            DLog(@"Log : ");
+            if( ( APPMANAGER.activeSession.wifiupload.integerValue == 0 ) )
             {
-                DLog(@"Log : The autoSyncStatus is - %@", APPMANAGER.activeSession.autoSyncEnabled);
-                
-                self.videoUploading = (Videos*)[videoList firstObject];
-                self.asset = [self getAssetFromFilteredVideosForUrl: self.videoUploading.fileURL];
-                
-                if([self.videoUploading.sync_status  isEqual: @(0)] || ![self.videoUploading.fileLocation isValid])
-                {
-                    DLog(@"Log : New file.. File location will not be existing...");
-                    [self startNewFileUpload];
-                    //VCLIENT.isBkgrndTaskEnded = YES;
-                }
-                else
-                {
-                    DLog(@"Log : File already syncing and has been stopped at certain offset....");
-                    DLog(@"Log : The video and asset details are as follows - %@ --------- %@", self.videoUploading, self.asset);
-                    [self getOffsetFromTheHeadService];
-                    //VCLIENT.isBkgrndTaskEnded = YES;
-                }
+                DLog(@"Log : Connected via cellular data and wifi only upload is disabled too.... ");
+                APPMANAGER.turnOffUploads = NO;
+                [self fetchVideosForUploadingAndStartUpload];
             }
             else
             {
-                DLog(@"Log : All videos are synced.. No videos to be uploaded");
-                self.asset = nil;
-                self.videoUploading = nil;
-                
-                // Enable auto lock as there are no uploads in progress
-                [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+                if( VCLIENT.asset != nil )
+                {
+                    if( [UIApplication sharedApplication].applicationState == UIApplicationStateActive )
+                    {
+                        [ViblioHelper displayAlertWithTitle:@"Not on WiFi" messageBody:@"Uploading paused until WiFi connection established" viewController:nil cancelBtnTitle:@"OK"];
+                    }
+                    [APPCLIENT invalidateUploadTaskWithoutPausing];
+                    APPMANAGER.turnOffUploads = YES;
+                }
+
+                DLog(@"Log : Settings for upload and uploader connectivity status does not match....");
             }
         }
-        else
-            DLog(@"Log : An upload in progress..... or uploads are turned off");
-        
-    }failure:^(NSError *error)
-    {
-        DLog(@"Log : Error in updating DB");
-    }];
-    
-    
-
+    }
 }
+
+-(void)fetchVideosForUploadingAndStartUpload
+{
+    [DBCLIENT updateDB:^(NSString *msg)
+     {
+         DLog(@"Log : The DB has been successfully updated");
+         
+         VCLIENT.isBkgrndTaskEnded = YES;
+         //    if (VCLIENT.bgTask != UIBackgroundTaskInvalid)
+         //    {
+         //        [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
+         //        VCLIENT.bgTask = UIBackgroundTaskInvalid;
+         //    }
+         if( self.asset == nil && !APPMANAGER.turnOffUploads)
+         {
+             NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
+             DLog(@"Log : The list of videos to be uploaded are - %@", videoList);
+             if( videoList != nil && videoList.count > 0 )
+             {
+                 DLog(@"Log : The autoSyncStatus is - %@", APPMANAGER.activeSession.autoSyncEnabled);
+                 
+                 self.videoUploading = (Videos*)[videoList firstObject];
+                 self.asset = [self getAssetFromFilteredVideosForUrl: self.videoUploading.fileURL];
+                 
+                 if([self.videoUploading.sync_status  isEqual: @(0)] || ![self.videoUploading.fileLocation isValid])
+                 {
+                     DLog(@"Log : New file.. File location will not be existing...");
+                     [self startNewFileUpload];
+                     //VCLIENT.isBkgrndTaskEnded = YES;
+                 }
+                 else
+                 {
+                     DLog(@"Log : File already syncing and has been stopped at certain offset....");
+                     DLog(@"Log : The video and asset details are as follows - %@ --------- %@", self.videoUploading, self.asset);
+                     [self getOffsetFromTheHeadService];
+                     //VCLIENT.isBkgrndTaskEnded = YES;
+                 }
+             }
+             else
+             {
+                 DLog(@"Log : All videos are synced.. No videos to be uploaded");
+                 self.asset = nil;
+                 self.videoUploading = nil;
+                 
+                 // Enable auto lock as there are no uploads in progress
+                 [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+             }
+         }
+         else
+             DLog(@"Log : An upload in progress..... or uploads are turned off");
+         
+     }failure:^(NSError *error)
+     {
+         DLog(@"Log : Error in updating DB");
+     }];
+}
+
 
 /*------------------------------------------------------- Function to get the ALAsset by passing asset URL -----------------------------------------*/
 

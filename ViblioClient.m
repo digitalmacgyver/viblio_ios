@@ -91,7 +91,7 @@ void(^_failure)(NSError *error);
     [self setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status)
     {
         DLog(@"LOG : Reachability of the base URL changed to - %d",status);
-        
+        APPMANAGER.signalStatus = status;
         
         // Check whether a valid user session exists. Then check whether wifi only upload has been set as the preference.
         if( [APPMANAGER.user.userID isValid] )
@@ -107,7 +107,12 @@ void(^_failure)(NSError *error);
                 {
                     APPMANAGER.errorCode = 1001;
                     DLog(@"Log : Internet reachability went off.. Pausing the upload..");
-                    [ViblioHelper displayAlertWithTitle:@"Not on WiFi" messageBody:@"Uploading paused until WiFi connection established" viewController:nil cancelBtnTitle:@"OK"];
+                    
+                    if( [UIApplication sharedApplication].applicationState == UIApplicationStateActive )
+                    {
+                        [ViblioHelper displayAlertWithTitle:@"Not Connected" messageBody:@"Internet is my life and you dont seem to be connected. Connect  to help me upload videos quick." viewController:nil cancelBtnTitle:@"OK"];
+                    }
+
                     APPMANAGER.turnOffUploads = YES;
                     [APPCLIENT invalidateUploadTaskWithoutPausing];
                     //[APPCLIENT invalidateFileUploadTask];
@@ -129,7 +134,20 @@ void(^_failure)(NSError *error);
                         [VCLIENT videoUploadIntelligence];
                     }
                     else
+                    {
                         DLog(@"Log : Wifi only upload has been set.. Cannot initiate upload on cellular data");
+                        if( VCLIENT.asset != nil )
+                        {
+                            [APPCLIENT invalidateUploadTaskWithoutPausing];
+                            APPMANAGER.turnOffUploads = YES;
+                            
+                            if( [UIApplication sharedApplication].applicationState == UIApplicationStateActive )
+                            {
+                                [ViblioHelper displayAlertWithTitle:@"Not on WiFi" messageBody:@"Uploading paused until WiFi connection established" viewController:nil cancelBtnTitle:@"OK"];
+                            }
+
+                        }
+                    }
                 }
                 else
                 {

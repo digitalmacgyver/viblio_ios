@@ -637,7 +637,6 @@
 
 #pragma session entity functions
 
-
 -(Session*)getSessionSettings
 {
     DLog(@"Log : Fetching default session settings");

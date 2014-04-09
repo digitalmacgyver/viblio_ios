@@ -756,8 +756,7 @@ void(^_failure)(NSError *error);
     
     
     
-//    [NSURLConnection sendAsynchronousRequest:afRequest queue:nil completionHandler:<#^(NSURLResponse *response, NSData *data, NSError *connectionError)handler#> sendSynchronousRequest:afRequest
-//                          returningResponse:&response
+//    [NSURLConnection sendAsynchronousRequest:afRequest queue:nil
 //                                      error:&error];
     
 //    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

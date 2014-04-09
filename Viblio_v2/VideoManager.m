@@ -439,6 +439,9 @@
                 DLog(@"Log : All videos are synced.. No videos to be uploaded");
                 self.asset = nil;
                 self.videoUploading = nil;
+                
+                // Enable auto lock as there are no uploads in progress
+                [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
             }
         }
         else

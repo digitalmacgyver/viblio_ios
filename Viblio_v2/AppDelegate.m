@@ -158,6 +158,10 @@
     }
     
     APPMANAGER.activeSession = (Session*)[DBCLIENT getSessionSettings];
+    if( APPMANAGER.activeSession.autolockdisable.integerValue )
+        [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
+    else
+        [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
     userResults = nil;
     [FBSession.activeSession handleDidBecomeActive];
 }

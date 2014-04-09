@@ -628,24 +628,37 @@ void(^_failure)(NSError *error);
     
     if( VCLIENT.isBkgrndTaskEnded == YES )
     {
+//        if( VCLIENT.bgTask != UIBackgroundTaskInvalid )
+//        {
+//            DLog(@"Log : Cleaning up other background tasks before creating new one....");
+//            [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
+//            VCLIENT.bgTask = UIBackgroundTaskInvalid;
+//        }
+        
         DLog(@"Log : New bkground task being created......");
         VCLIENT.isBkgrndTaskEnded = NO;
-        VCLIENT.bgTask = [[UIApplication sharedApplication]
+         VCLIENT.bgTask = [[UIApplication sharedApplication]
                           beginBackgroundTaskWithExpirationHandler:
                           ^{
                               
-                              [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+                              [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
+                              VCLIENT.bgTask = UIBackgroundTaskInvalid;
                               //bgTask = -1;
                               VCLIENT.isBkgrndTaskEnded = YES;
                               
                               if( VCLIENT.asset != nil )
                               {
                                   DLog(@"Log : Have to show the notification.......");
-                                  [((AppDelegate*)[UIApplication sharedApplication].delegate) presentNotification];
+                                  
+                                  if( ! VCLIENT.notifcationShown )
+                                  {
+                                      [((AppDelegate*)[UIApplication sharedApplication].delegate) presentNotification];
+                                      VCLIENT.notifcationShown = YES;
+                                  }
                               }
                               
                           }];
-    }
+//    }
 
 //    NSTimer *bckGrndTime = [NSTimer scheduledTimerWithTimeInterval:150 target:self selector:@selector(startNewBckgrndTask) userInfo:nil repeats:NO];
 //    if( ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) && offset == 0 )
@@ -658,7 +671,9 @@ void(^_failure)(NSError *error);
 //                      [[UIApplication sharedApplication] endBackgroundTask:bgTask];
 //                  }];
 //        
-//    }
+    }
+    
+  //  bckgrndTimer = [NSTimer scheduledTimerWithTimeInterval:175 target:self selector:@selector(cleanBackgrndTasks) userInfo:nil repeats:NO];
     
    // NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
     NSMutableURLRequest* afRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://staging.viblio.com/files/%@",fileLocationID ]]]; //[self requestWithMethod:@"PATCH" path:path parameters:nil];
@@ -698,6 +713,14 @@ void(^_failure)(NSError *error);
         
         if(totalBytesWritten != totalBytesExpectedToWrite)
             self.uploadedSize = totalBytesWritten;
+        
+//        if( [UIApplication sharedApplication].backgroundTimeRemaining > 175 )
+//        {
+//            [((AppDelegate*)[UIApplication sharedApplication].delegate) presentNotification];
+//            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+//            bgTask = UIBackgroundTaskInvalid;
+//        }
+        
         
         [[NSNotificationCenter defaultCenter] postNotificationName:refreshProgress object:nil];
         
@@ -777,6 +800,23 @@ void(^_failure)(NSError *error);
 //            bgTask = UIBackgroundTaskInvalid;
 //        }
 //    }
+}
+
+
+-(void)cleanBackgrndTasks
+{
+    DLog(@"Log : Clening the background task before the app crashes.....");
+    if( VCLIENT.bgTask != UIBackgroundTaskInvalid )
+    {
+        DLog(@"Log : Cleaning up other background tasks before creating new one....");
+        
+        [((AppDelegate*)[UIApplication sharedApplication].delegate) presentNotification];
+        [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
+        VCLIENT.bgTask = UIBackgroundTaskInvalid;
+    }
+    
+    [bckgrndTimer invalidate];
+    bckgrndTimer = nil;
 }
 
 

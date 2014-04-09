@@ -62,7 +62,13 @@
             DLog(@"Log : File has been deleted...");
             self.fileIdToBeDeleted = VCLIENT.videoUploading.fileLocation;
             DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
-            [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
+            [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound:^(NSString *msg)
+             {
+                 
+             }failure:^(NSError *error)
+             {
+                 DLog(@"Log : Deleting record did fail with error - %@", error);
+             }];
             
             if( VCLIENT.asset != nil )
             {
@@ -256,7 +262,8 @@
                 {
                     DLog(@"LOG : File transmission done");
                     DLog(@"Log : Remove the file record from DB ----");
-                    [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
+                   // [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
+                    [DBCLIENT updateIsCompletedStatusOfFile:self.asset.defaultRepresentation.url forCompletedState:YES];
                     
                     // Clean the video uploaded size
                     APPCLIENT.uploadedSize = 0;
@@ -265,7 +272,7 @@
                     self.videoUploading = nil;
                     
                     DLog(@"Log : Trying to fetch more files for uploading");
-
+                    
                     [self videoUploadIntelligence];
                     
                     if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive )
@@ -395,45 +402,55 @@
     [DBCLIENT updateDB:^(NSString *msg)
     {
         DLog(@"Log : The DB has been successfully updated");
+        
+        VCLIENT.isBkgrndTaskEnded = YES;
+        //    if (VCLIENT.bgTask != UIBackgroundTaskInvalid)
+        //    {
+        //        [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
+        //        VCLIENT.bgTask = UIBackgroundTaskInvalid;
+        //    }
+        if( self.asset == nil && !APPMANAGER.turnOffUploads)
+        {
+            NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
+            DLog(@"Log : The list of videos to be uploaded are - %@", videoList);
+            if( videoList != nil && videoList.count > 0 )
+            {
+                DLog(@"Log : The autoSyncStatus is - %@", APPMANAGER.activeSession.autoSyncEnabled);
+                
+                self.videoUploading = (Videos*)[videoList firstObject];
+                self.asset = [self getAssetFromFilteredVideosForUrl: self.videoUploading.fileURL];
+                
+                if([self.videoUploading.sync_status  isEqual: @(0)] || ![self.videoUploading.fileLocation isValid])
+                {
+                    DLog(@"Log : New file.. File location will not be existing...");
+                    [self startNewFileUpload];
+                    //VCLIENT.isBkgrndTaskEnded = YES;
+                }
+                else
+                {
+                    DLog(@"Log : File already syncing and has been stopped at certain offset....");
+                    DLog(@"Log : The video and asset details are as follows - %@ --------- %@", self.videoUploading, self.asset);
+                    [self getOffsetFromTheHeadService];
+                    //VCLIENT.isBkgrndTaskEnded = YES;
+                }
+            }
+            else
+            {
+                DLog(@"Log : All videos are synced.. No videos to be uploaded");
+                self.asset = nil;
+                self.videoUploading = nil;
+            }
+        }
+        else
+            DLog(@"Log : An upload in progress..... or uploads are turned off");
+        
     }failure:^(NSError *error)
     {
         DLog(@"Log : Error in updating DB");
     }];
     
-    if( self.asset == nil && !APPMANAGER.turnOffUploads)
-    {
-        NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
-        
-        if( videoList != nil && videoList.count > 0 )
-        {
-            DLog(@"Log : The autoSyncStatus is - %@", APPMANAGER.activeSession.autoSyncEnabled);
-            DLog(@"Log : The list of videos to be uploaded are - %@", videoList);
-            self.videoUploading = (Videos*)[videoList firstObject];
-            self.asset = [self getAssetFromFilteredVideosForUrl: self.videoUploading.fileURL];
-            
-            if([self.videoUploading.sync_status  isEqual: @(0)] || ![self.videoUploading.fileLocation isValid])
-            {
-                DLog(@"Log : New file.. File location will not be existing...");
-                [self startNewFileUpload];
-                VCLIENT.isBkgrndTaskEnded = YES;
-            }
-            else
-            {
-                DLog(@"Log : File already syncing and has been stopped at certain offset....");
-                DLog(@"Log : The video and asset details are as follows - %@ --------- %@", self.videoUploading, self.asset);
-                [self getOffsetFromTheHeadService];
-                VCLIENT.isBkgrndTaskEnded = YES;
-            }
-        }
-        else
-        {
-            DLog(@"Log : All videos are synced.. No videos to be uploaded");
-            self.asset = nil;
-            self.videoUploading = nil;
-        }
-    }
-    else
-        DLog(@"Log : An upload in progress..... or uploads are turned off");
+    
+
 }
 
 /*------------------------------------------------------- Function to get the ALAsset by passing asset URL -----------------------------------------*/

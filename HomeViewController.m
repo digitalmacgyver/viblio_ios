@@ -34,7 +34,7 @@
     
     APPMANAGER.indexOfSharedListSelected = nil;
     [ViblioHelper MailSharingClicked:self];
-    [[VblLocationManager sharedClient] setUp];
+   // [[VblLocationManager sharedClient] setUp];
     [[VblLocationManager sharedClient] fetchLatitudeAndLongitude];
     
     [self.navigationController.navigationBar setBackgroundImage:[ViblioHelper setUpNavigationBarBackgroundImage] forBarMetrics:UIBarMetricsDefault];
@@ -402,6 +402,8 @@
 }
 
 - (IBAction)sharedWithMeClicked:(id)sender {
+    
+  //  APPMANAGER.restoreMyViblio = YES;
         [self setBackGroundColorsForButtons:NO];
     
     if( self.sharedList == nil )
@@ -425,6 +427,12 @@
     {
         [self.sharedList.view removeFromSuperview];
         self.sharedList = nil;
+    }
+    
+    if( self.sharedOwnerList != nil )
+    {
+        [self.sharedOwnerList.view removeFromSuperview];
+        self.sharedOwnerList = nil;
     }
 }
 

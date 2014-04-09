@@ -24,10 +24,10 @@
 -(void)presentNotification{
     UILocalNotification* localNotification = [[UILocalNotification alloc] init];
     
-    int chunk = (int)(VCLIENT.asset.defaultRepresentation.size / 1048576);
-    int rem = VCLIENT.asset.defaultRepresentation.size % 1048576;
-    if(rem > 0)
-        chunk++;
+//    int chunk = (int)(VCLIENT.asset.defaultRepresentation.size / 1048576);
+//    int rem = VCLIENT.asset.defaultRepresentation.size % 1048576;
+//    if(rem > 0)
+//        chunk++;
     
     localNotification.alertBody = @"Viblio Uploads Paused !!";
     localNotification.alertAction = @"Launch Viblio to resume uploads if not uploads will continue in optimal conditions";
@@ -36,7 +36,7 @@
     localNotification.soundName = UILocalNotificationDefaultSoundName;
     
     //increase the badge number of application plus 1
-    localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+ //   localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
     
     
     
@@ -50,6 +50,12 @@
     
     DLog(@"Log : The launch options of the application is - %@", launchOptions);
     
+    if ([launchOptions objectForKey:UIApplicationLaunchOptionsLocationKey]) {
+     
+        //[[VblLocationManager sharedClient] setUp];
+        [[VblLocationManager sharedClient] fetchLatitudeAndLongitude];
+    }
+    
     self.isMoviePlayer = NO;
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:MPMoviePlayerWillEnterFullscreenNotification object:nil];
@@ -62,6 +68,7 @@
     
     Session *session = [DBCLIENT getSessionSettings];
     APPMANAGER.turnOffUploads = NO;
+    APPMANAGER.activeSession = (Session*)[DBCLIENT getSessionSettings];
     
     if( session == nil )
     {
@@ -107,6 +114,15 @@
     
     //[NSNotificationCenter defaultCenter] postNotificationName:<#(NSString *)#> object:<#(id)#>
     
+    VCLIENT.notifcationShown = NO;
+//    VCLIENT.isBkgrndTaskEnded = YES;
+    
+//    if( VCLIENT.bgTask != UIBackgroundTaskInvalid )
+//    {
+//        [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
+//        VCLIENT.bgTask = UIBackgroundTaskInvalid;
+//    }
+
     [[VblLocationManager sharedClient] stopFetchingLatitudeAndLongitude];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
@@ -119,7 +135,13 @@
         {
             // Clean up all the entries in the DB for those not found in the camera roll
              DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
-             [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
+             [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound:^(NSString *msg)
+              {
+                  
+              }failure:^(NSError *error)
+              {
+                  DLog(@"Log : Error while deleting the record - %@", error);
+              }];
             
             DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
             if([APPMANAGER.user.userID isValid])

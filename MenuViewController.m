@@ -60,6 +60,8 @@
 
 -(void)refreshBar
 {
+    [self.lblSyncNotInProgress setHidden:YES];
+    [self.vwSyncingFile setHidden:NO];
     [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:NO];
 }
 
@@ -72,9 +74,17 @@
   //      DLog(@"Log : File size is - %lld", VCLIENT.asset.defaultRepresentation.size);
   //      DLog(@"Log : Uploaded percentage should be - %f", APPCLIENT.uploadedSize / VCLIENT.asset.defaultRepresentation.size);
         
+        if(VCLIENT.totalChunksSent < 1 )
+        {
+            VCLIENT.totalChunksSent = 1;
+        }
         int sentBytes = ((VCLIENT.totalChunksSent - 1)*1024*1024);
         float progressBytes = sentBytes + APPCLIENT.uploadedSize;
         
+//        if( progressBytes < 0 )
+//        {
+//            progressBytes = 0;
+//        }
   //      DLog(@"Log : The progress should be - %.2f", progressBytes/(1024*1024));
         
         self.lblSize.text = [NSString stringWithFormat:@"%.2fMb of %.2fMb(%.2f%%)", progressBytes/(1024*1024), (float)VCLIENT.asset.defaultRepresentation.size/(1024*1024), (progressBytes/(float)VCLIENT.asset.defaultRepresentation.size)*100];

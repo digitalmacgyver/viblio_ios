@@ -32,7 +32,7 @@
 
 @property (nonatomic, assign)int backgroundStartChunk;
 @property (nonatomic, assign)UIBackgroundTaskIdentifier bgTask;
-@property (nonatomic, assign)BOOL isBkgrndTaskEnded;
+@property (nonatomic, assign)BOOL isBkgrndTaskEnded, notifcationShown;
 
 + (VideoManager *)sharedClient;
 -(void)loadAssetsFromCameraRoll:(void (^)(NSArray *filteredVideoList))success

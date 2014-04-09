@@ -41,7 +41,7 @@
        such files are found we do take up newer files for uploading. Older files are given priority over the newer files meaning, older files will
        be synced first on priority. Blocks of 3 files will be taken for upload which means we will be making upload request for 3 files together */
     
-    NSMutableArray *filteredDBSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:0 andIsPaused:0];
+    NSMutableArray *filteredDBSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:0 andIsPaused:0 andIsCompletedStatus:0];
     
     if( filteredDBSet != nil && filteredDBSet.count == BLOCK_REQ_SIZE )
         return filteredDBSet;
@@ -51,7 +51,9 @@
         
         DLog(@"LOG : Querying DB for sync initialised failed videos to fill up the Block size");
         
-        NSMutableArray *failedSyncingSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:1 andIsPaused:0];
+        NSMutableArray *failedSyncingSet = [self getFilteredDBEntriesBasedOnSyncStatus:1 andHasFailed:1 andIsPaused:0 andIsCompletedStatus:0];
+        DLog(@"Log : The returned array is - %@", failedSyncingSet);
+        
         if( failedSyncingSet != nil && failedSyncingSet.count > 0 )
         {
             for( Videos *video in failedSyncingSet )
@@ -65,8 +67,11 @@
         [failedSyncingSet removeAllObjects];
         failedSyncingSet = nil;
         
+        DLog(@"Log : The autosync enabled status is - %@", APPMANAGER.activeSession.autoSyncEnabled);
+        
         if( APPMANAGER.activeSession.autoSyncEnabled )
         {
+            DLog(@"Log : Auto Sync enabled and therefore coming inside......");
             /*------------------------------------------------------------------------------------------------*/
         
             // If sufficient videos are not found then next priority is given for non sync initialized videos
@@ -75,7 +80,9 @@
             {
                 DLog(@"LOG : Querying DB for non sync initialised videos to fill up the Block size");
             
-                NSMutableArray *filteredNewSet = [self getFilteredDBEntriesBasedOnSyncStatus:0 andHasFailed:0 andIsPaused:0];
+                NSMutableArray *filteredNewSet = [self getFilteredDBEntriesBasedOnSyncStatus:0 andHasFailed:0 andIsPaused:0 andIsCompletedStatus:0];
+                
+                DLog(@"Log : Filtered new set is - %@", filteredNewSet);
                 if( filteredNewSet != nil && filteredNewSet.count > 0 )
                 {
                     for( Videos *video in filteredNewSet )
@@ -97,7 +104,7 @@
 
 /* Function returning the filtered DB entries based on failure, sync in progress and not initiated sync */
 
--(NSMutableArray*)getFilteredDBEntriesBasedOnSyncStatus : (NSUInteger)sync_status andHasFailed : (NSUInteger)hasFailed andIsPaused : (NSUInteger)isPaused
+-(NSMutableArray*)getFilteredDBEntriesBasedOnSyncStatus : (NSUInteger)sync_status andHasFailed : (NSUInteger)hasFailed andIsPaused : (NSUInteger)isPaused andIsCompletedStatus : (NSUInteger) isCompleted
 {
     NSFetchRequest * videosResultSet = [[NSFetchRequest alloc] init];
     [videosResultSet setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
@@ -107,7 +114,7 @@
     videosResultSet.fetchLimit = BLOCK_REQ_SIZE;
     
     // Sync_Status of 1 indicates that the file has already been considered for uploading
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"sync_status == %d AND hasFailed = %d AND isPaused = %d", sync_status, hasFailed, isPaused];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"sync_status == %d AND hasFailed == %d AND isPaused == %d AND isCompleted == %d", sync_status, hasFailed, isPaused, isCompleted];
     [videosResultSet setPredicate:predicate];
     
     // Only sort by name if the destination entity actually has a "name" field
@@ -132,8 +139,8 @@
     DLog(@"Log : Performing an update on the DB");
     [VCLIENT loadAssetsFromCameraRoll:^(NSArray *filteredVideoList)
     {
-        //DLog(@"Log : Loadin assets from camera roll.... %@", filteredVideoList);
-     //   NSLog(@"Log : Loadin assets from camera roll.... %@ -----   %@", filteredVideoList, [self listAllEntitiesinTheDB]);
+        DLog(@"Log : Loadin assets from camera roll.... %@", filteredVideoList);
+        NSLog(@"Log : Loadin assets from camera roll.... %@ -----   %@", filteredVideoList, [self listAllEntitiesinTheDB]);
         //NSLog(@"")
         VCLIENT.filteredVideoList = [filteredVideoList mutableCopy];
         for( ALAsset *asset in filteredVideoList )
@@ -155,6 +162,7 @@
 //                        
                         if( [self getTheCountOfRecordsInDBWithFileURL:asset.defaultRepresentation.url.absoluteString ] <= 0  ) //[VCLIENT getAssetFromFilteredVideosForUrl:asset.defaultRepresentation.url.absoluteString ] == nil)
                         {
+                            DLog(@"Log : Video does not exist... Add it to the DB");
                          //   NSLog(@"Log : Avoiding duplicates... Video does not exist in the DB.. So adding it..");
                             Videos *video = [NSEntityDescription
                                              insertNewObjectForEntityForName:@"Videos"
@@ -194,7 +202,8 @@
 
 // Fucntion for deletion descretion. All the entries in DB which are no more found in the camera roll should be deleted. URL is used for comparison
 
--(void)deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound
+-(void)deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound : (void(^)(NSString *msg))success
+                                                              failure : (void(^)(NSError *error)) failure
 {
     NSArray *DBEntries = [DBCLIENT listAllEntitiesinTheDB];
     for( Videos *video in DBEntries )
@@ -373,6 +382,24 @@
     return fetchedObjects;
 }
 
+
+-(NSArray*)listAllEntitiesinTheDBWithCompletedStatus : (NSInteger)isCompleted
+{
+    NSFetchRequest * videos = [[NSFetchRequest alloc] init];
+    [videos setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext ]];
+    [videos setIncludesPropertyValues:NO]; //only fetch the managedObjectID
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isCompleted == %d", isCompleted];
+    [videos setPredicate:predicate];
+    
+    NSError * error = nil;
+    NSArray * videoList = [self.managedObjectContext executeFetchRequest:videos error:&error];
+    videos = nil;
+    
+    return videoList; //firstObject];
+}
+
+
 -(Videos *)listTheDetailsOfObjectWithURL:(NSString*)fileURL
 {
     NSFetchRequest * videos = [[NSFetchRequest alloc] init];
@@ -490,6 +517,30 @@
     
     request = nil;
 }
+
+
+-(void)updateIsCompletedStatusOfFile:(NSURL*)assetUrl forCompletedState:(BOOL)isCompleted
+{
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Videos" inManagedObjectContext:self.managedObjectContext]];
+    
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"fileURL == %@", assetUrl];
+    [request setPredicate:predicate];
+    
+    NSArray *results = [self.managedObjectContext executeFetchRequest:request error:&error];
+    DLog(@"LOG : The results obtained are - %@", results);
+    
+    Videos *video = [results firstObject];
+    [video setValue:@(isCompleted) forKey:@"isCompleted"];
+    
+    if (![self.managedObjectContext save:&error]) {
+        DLog(@"Whoops, couldn't save: %@", [error localizedDescription]);
+    }
+    
+    request = nil;
+}
+
 
 -(void)updateFileLocationFile:(NSURL*)assetUrl toLocation:(NSString*)locationID
 {

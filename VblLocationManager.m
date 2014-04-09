@@ -22,6 +22,11 @@
 }
 
 - (id)init {
+    
+    DLog(@"Log : Init of location manger called ------------");
+    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    _locationManager.delegate = self;
     self = [super init];
     if (!self) {
         return nil;
@@ -41,7 +46,6 @@
 
 -(void)setUp
 {
-    _locationManager = [[CLLocationManager alloc] init];
     _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     _locationManager.delegate = self;
 }
@@ -57,6 +61,18 @@
     [_locationManager stopMonitoringSignificantLocationChanges];
 }
 
+
+-(void)presentNotification{
+    UILocalNotification* localNotification = [[UILocalNotification alloc] init];
+    localNotification.alertBody = @"Viblio Received Location Changed !!";
+    localNotification.alertAction = @"Launch Viblio to resume uploads if not uploads will continue in optimal conditions";
+    
+    //On sound
+    localNotification.soundName = UILocalNotificationDefaultSoundName;
+    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
+}
+
+
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     DLog(@"Log : Application launched in backgorund ----- ");
@@ -66,12 +82,14 @@
 //        [UIApplication sharedApplication].applicationIconBadgeNumber += 1;
 //    }
     
+//    [self presentNotification];
+    
     [DBCLIENT updateDB:^(NSString *msg)
      {
          // Clean up all the entries in the DB for those not found in the camera roll
          // DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
          //  [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
-         
+             
          DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
          if([APPMANAGER.user.userID isValid])
              [VCLIENT videoUploadIntelligence];
@@ -92,7 +110,27 @@
    didUpdateToLocation:(CLLocation *)newLocation
           fromLocation:(CLLocation *)oldLocation
 {
-    
+//    [self presentNotification];
+//    
+//    [DBCLIENT updateDB:^(NSString *msg)
+//     {
+//         // Clean up all the entries in the DB for those not found in the camera roll
+//         // DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
+//         //  [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
+//         
+////         if ( [UIApplication sharedApplication].applicationState == UIApplicationStateBackground )
+////         {
+////             [UIApplication sharedApplication].applicationIconBadgeNumber = 1000;
+////         }
+//         
+//         DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
+//         if([APPMANAGER.user.userID isValid])
+//             [VCLIENT videoUploadIntelligence];
+//         
+//     }failure:^(NSError *error)
+//     {
+//         DLog(@"Log : Camera roll access denied case...");
+//     }];
     
 //    NSLog(@"LOG : Updating the location manager callbacks");
 //    CLLocation *currentLocation = newLocation;

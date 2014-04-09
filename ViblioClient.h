@@ -20,6 +20,7 @@
 @interface ViblioClient : AFHTTPClient <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDownloadDelegate>
 {
     UIBackgroundTaskIdentifier bgTask;
+    NSTimer *bckgrndTimer;
 }
 @property(nonatomic, assign) double uploadedSize;
 @property (nonatomic, retain) AFJSONRequestOperation *uploadRequest;

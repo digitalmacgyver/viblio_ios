@@ -399,7 +399,7 @@
 
 -(void)videoUploadIntelligence
 {
-    if( APPMANAGER.signalStatus != 0 )
+    if( APPMANAGER.signalStatus == 0 )
     {
         if( APPMANAGER.activeSession.wifiupload.integerValue && APPMANAGER.signalStatus == 2 )
         {

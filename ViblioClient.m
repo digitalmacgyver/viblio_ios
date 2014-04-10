@@ -87,7 +87,6 @@ void(^_failure)(NSError *error);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryChanged:) name:@"UIDeviceBatteryLevelDidChangeNotification" object:device];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(batteryChanged:) name:@"UIDeviceBatteryStateDidChangeNotification" object:device];
     
-    
     [self setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status)
     {
         DLog(@"LOG : Reachability of the base URL changed to - %d",status);

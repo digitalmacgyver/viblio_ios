@@ -227,7 +227,7 @@
         DLog(@"Log : Refresh the UI");
         
         VCLIENT.Videouuid = userInfo[@"custom"][@"uuid"];
-       // [[NSNotificationCenter defaultCenter] postNotificationName:newVideoAvailable object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:newVideoAvailable object:nil];
     }
 }
 

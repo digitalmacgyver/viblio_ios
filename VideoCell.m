@@ -100,14 +100,42 @@
 -(void)myMovieFinishedCallback:(id)sender
 {
     DLog(@"Log : Movie finished...");
-    [self.spinningWheel stopAnimating];
-    [self.moviePlayer.view removeFromSuperview];
-    self.moviePlayer = nil;
-    
-    [self.btnPlay setHidden:NO];
-    [self.btnStop setHidden:YES];
-    
+ 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self.btnPlay setHidden:NO];
+    [self.spinningWheel stopAnimating];
+//    [self.moviePlayer.view removeFromSuperview];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self
+//                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+//                                                  object:self.moviePlayer];
+//    
+//    [[NSNotificationCenter defaultCenter] removeObserver:self
+//                                                    name:MPMoviePlayerDidExitFullscreenNotification
+//                                                  object:self.moviePlayer];
+//    
+//    [[NSNotificationCenter defaultCenter] removeObserver:self
+//                                                    name:MPMoviePlayerLoadStateDidChangeNotification
+//                                                  object:self.moviePlayer];
+//    
+//    [[NSNotificationCenter defaultCenter] removeObserver:self
+//                                                    name:MPMovieDurationAvailableNotification
+//                                                  object:self.moviePlayer];
+    [self.moviePlayer pause];
+    self.moviePlayer.initialPlaybackTime = -1;
+    [self.moviePlayer stop];
+    self.moviePlayer.initialPlaybackTime = -1;
+    [self.moviePlayer.view removeFromSuperview];
+  //  [self.moviePlayer release];
+    
+    
+//    [self.spinningWheel stopAnimating];
+//    [self.moviePlayer.view removeFromSuperview];
+//    self.moviePlayer = nil;
+//    
+//    [self.btnPlay setHidden:NO];
+//    [self.btnStop setHidden:YES];
+//    
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 

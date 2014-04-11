@@ -34,4 +34,6 @@
 @property (weak, nonatomic) IBOutlet UIView *vwShare;
 @property (nonatomic, strong) SharedVideoListViewController *sharedOwnerList;
 
+@property (nonatomic, strong) NSMutableArray *requestQueue;
+
 @end

@@ -1893,7 +1893,7 @@ void(^_failure)(NSError *error);
 }
 
 
--(void)postDeviceTokenToTheServer : (NSString*)deviceToken
+-(AFJSONRequestOperation*)postDeviceTokenToTheServer : (NSString*)deviceToken
                           success : (void(^)(NSString *msg))success
                           failure : (void(^)(NSError *error))failure
 {
@@ -1913,6 +1913,7 @@ void(^_failure)(NSError *error);
                                               failure(error);
                                           }];
     [op start];
+    return op;
 }
 
 

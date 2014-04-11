@@ -58,6 +58,8 @@
     // Get the list of videos in cloud and render them in the UI
     // The fetched list of videos are mapped to the cloudVideoList model and are stored in an cloudList array in VCLIENT
     
+    self.requestQueue = [NSMutableArray new];
+    
     [APPCLIENT postDeviceTokenToTheServer:APPCLIENT.dataModel.deviceToken success:^(NSString *msg)
      {
          
@@ -98,32 +100,32 @@
      {
          
          DLog(@"Log : Error obtained is - %@", error.localizedDescription);
-//         if ( error.code == 401 )
-//         {
-//             APPMANAGER.errorCode = 1002;
-//             //APPMANAGER.turnOffUploads = YES;
-//             [APPCLIENT invalidateUploadTaskWithoutPausing];
-//             [ViblioHelper clearSessionVariables];
-//             LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
-//             [self.presentingViewController dismissViewControllerAnimated:NO completion:^(void)
-//              {
-//                  [lvc performSegueWithIdentifier: Viblio_wideNonWideSegue( @"signInNav" ) sender:self];
-//              }];
-//         }
-//         else
-//         {
-//             [self performSelector:@selector(viewDidAppear:) withObject:Nil afterDelay:5];
-//             if( !self.errorAlert.tag )
-//             {
-//                 self.errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
-//                                                              message:@"Connecting to server..."
-//                                                             delegate:self
-//                                                    cancelButtonTitle:@"OK"
-//                                                    otherButtonTitles:nil];
-//                 [self.errorAlert show];
-//                 self.errorAlert.tag = 1;
-//             }
-//         }
+         if ( error.code == 401 )
+         {
+             APPMANAGER.errorCode = 1002;
+             //APPMANAGER.turnOffUploads = YES;
+             [APPCLIENT invalidateUploadTaskWithoutPausing];
+             [ViblioHelper clearSessionVariables];
+             LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
+             [self.presentingViewController dismissViewControllerAnimated:NO completion:^(void)
+              {
+                  [lvc performSegueWithIdentifier: Viblio_wideNonWideSegue( @"signInNav" ) sender:self];
+              }];
+         }
+         else
+         {
+             [self performSelector:@selector(viewDidAppear:) withObject:Nil afterDelay:7];
+             if( !self.errorAlert.tag )
+             {
+                 self.errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                              message:@"Connecting to server..."
+                                                             delegate:self
+                                                    cancelButtonTitle:@"OK"
+                                                    otherButtonTitles:nil];
+                 [self.errorAlert show];
+                 self.errorAlert.tag = 1;
+             }
+         }
      }];
     
     
@@ -165,14 +167,14 @@
     
     // Inform the server to clear the badge count
     
-//    [APPCLIENT clearBadge:APPCLIENT.dataModel.deviceToken success:^(NSString *msg)
-//    {
-//        [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-//        
-//    }failure:^(NSError *error)
-//    {
-//        DLog(@"Log : Clear badge failed-----");
-//    }];
+    [APPCLIENT clearBadge:APPCLIENT.dataModel.deviceToken success:^(NSString *msg)
+    {
+        [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+        
+    }failure:^(NSError *error)
+    {
+        DLog(@"Log : Clear badge failed-----");
+    }];
     
     if( APPMANAGER.restoreMyViblio )
         [self MyViblioClicked:nil];
@@ -418,7 +420,12 @@
 - (IBAction)MyViblioClicked:(id)sender {
     
     if( VCLIENT.cloudVideoList == nil || VCLIENT.cloudVideoList.count <= 0 )
-        [self viewDidAppear:YES];
+    {
+        if( APPMANAGER.signalStatus != 0 )
+        {
+            [self viewDidAppear:YES];
+        }
+    }
     
     [self setBackGroundColorsForButtons:YES];
     [self.segment setHidden:NO];
@@ -440,6 +447,8 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
    // [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(restoreListView) name:removeContactsScreen object:nil];
+    
+    
 }
 
 - (void)didReceiveMemoryWarning

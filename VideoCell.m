@@ -48,38 +48,43 @@
     [APPCLIENT getTheCloudUrlForVideoStreamingForFileWithUUID:self.video.uuid success:^(NSString *cloudURL)
      {
          DLog(@"Log : Cloud url obtained is - %@", cloudURL);
-         self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]];
-         self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
-         self.moviePlayer.view.frame = self.vwShare.frame;
-         //self.moviePlayer.movieSourceType = MPMovieSourceTypeStreaming;
          
-         [self insertSubview:self.moviePlayer.view belowSubview:self.vwPlayShare];
-         [self addSubview:self.spinningWheel];
-         [self bringSubviewToFront:self.vwPlayShare];
+         self.cloudURL = cloudURL;
          
          [[NSNotificationCenter defaultCenter] postNotificationName:playVideo object:self];
-         [self.spinningWheel startAnimating];
          
-         self.moviePlayer.shouldAutoplay = YES;
-         
-         if( fullScreen )
-             [self playInFullScreen];
-         else
-         {
-             self.moviePlayer.controlStyle = MPMovieControlStyleDefault;
-             self.moviePlayer.scalingMode= MPMovieScalingModeNone;
-         }
-         
-         // Register for the playback finished notification
-         [[NSNotificationCenter defaultCenter] addObserver:self // the object listening / "observing" to the notification
-                                                  selector:@selector(myMovieFinishedCallback:) // method to call when the notification was pushed
-                                                      name:MPMoviePlayerPlaybackDidFinishNotification // notification the observer should listen to
-                                                    object:self.moviePlayer];
-         
-         [self.moviePlayer play];
-         
-         [self.btnPlay setHidden:YES];
-         [self.btnStop setHidden:NO];
+//         self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]];
+//         self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
+//         self.moviePlayer.view.frame = self.vwShare.frame;
+//         //self.moviePlayer.movieSourceType = MPMovieSourceTypeStreaming;
+//         
+//         [self insertSubview:self.moviePlayer.view belowSubview:self.vwPlayShare];
+//         [self addSubview:self.spinningWheel];
+//         [self bringSubviewToFront:self.vwPlayShare];
+//         
+//         [[NSNotificationCenter defaultCenter] postNotificationName:playVideo object:self];
+//         [self.spinningWheel startAnimating];
+//         
+//         self.moviePlayer.shouldAutoplay = YES;
+//         
+//         if( fullScreen )
+//             [self playInFullScreen];
+//         else
+//         {
+//             self.moviePlayer.controlStyle = MPMovieControlStyleDefault;
+//             self.moviePlayer.scalingMode= MPMovieScalingModeNone;
+//         }
+//         
+//         // Register for the playback finished notification
+//         [[NSNotificationCenter defaultCenter] addObserver:self // the object listening / "observing" to the notification
+//                                                  selector:@selector(myMovieFinishedCallback:) // method to call when the notification was pushed
+//                                                      name:MPMoviePlayerPlaybackDidFinishNotification // notification the observer should listen to
+//                                                    object:self.moviePlayer];
+//         
+//         [self.moviePlayer play];
+//         
+//         [self.btnPlay setHidden:YES];
+//         [self.btnStop setHidden:NO];
          
      }failure:^(NSError *error)
      {

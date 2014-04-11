@@ -58,8 +58,8 @@
     
     self.isMoviePlayer = NO;
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:MPMoviePlayerWillEnterFullscreenNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disableOrientation) name:MPMoviePlayerWillExitFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:playVideo object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disableOrientation) name:moviePlayerEnded object:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
@@ -192,6 +192,7 @@
 
 -(void)disableOrientation
 {
+    DLog(@"Log : ************************************* Portrait orientation disabled ************************************");
     self.isMoviePlayer = NO;
 }
 

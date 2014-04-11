@@ -24,6 +24,7 @@
 @property (nonatomic, strong) ListViewController *list;
 @property (nonatomic, strong) SharedViewController *sharedList;
 
+@property (nonatomic, strong)MPMoviePlayerViewController *mpvc;
 @property(nonatomic, strong) UIAlertView *errorAlert;
 @property (weak, nonatomic) IBOutlet UIView *vwShareAnimate;
 
@@ -34,6 +35,7 @@
 @property (weak, nonatomic) IBOutlet UIView *vwShare;
 @property (nonatomic, strong) SharedVideoListViewController *sharedOwnerList;
 
+@property (nonatomic, assign) BOOL iSMoviePlayerPlayed;
 @property (nonatomic, strong) NSMutableArray *requestQueue;
 
 @end

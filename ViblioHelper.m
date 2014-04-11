@@ -28,6 +28,7 @@ NSString * const showSharingView = @"com.viblio.app : showSharingView";
 NSString * const removeOwnerSharingView = @"com.viblio.app : removeOwnerSharingView";
 NSString * const newVideoAvailable = @"com.viblio.app : newVideoAvailable";
 NSString * const wifiSignalLost = @"com.viblio.app : wifiSignalLost";
+NSString * const moviePlayerEnded = @"com.viblio.app : moviePlayerEnded";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {

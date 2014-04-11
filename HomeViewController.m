@@ -60,6 +60,12 @@
     
     self.requestQueue = [NSMutableArray new];
     
+    if( self.iSMoviePlayerPlayed )
+    {
+        self.iSMoviePlayerPlayed = NO;
+        [[NSNotificationCenter defaultCenter] postNotificationName:moviePlayerEnded object:nil];
+    }
+    
     [APPCLIENT postDeviceTokenToTheServer:APPCLIENT.dataModel.deviceToken success:^(NSString *msg)
      {
          
@@ -186,6 +192,35 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showOwnerSharedList) name:showSharingView object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeOwnerShareView) name:removeOwnerSharingView object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshScreenOnComingToFGFromBG) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playVideo:) name:playVideo object:nil];
+}
+
+-(void)playVideo : (NSNotification*)notification
+{
+    DLog(@"Log : Video has to be played now-----");
+    
+    self.iSMoviePlayerPlayed = YES;
+    VideoCell *video = (VideoCell*)notification.object;
+    
+    DLog(@"Log : The cloudUrl of the video to be played is --- %@", video.cloudURL);
+    
+    self.mpvc = [[MPMoviePlayerViewController alloc] initWithContentURL: [NSURL URLWithString:video.cloudURL] ];
+   // self.mpvc.moviePlayer.movieSourceType = MPMovieSourceTypeStreaming;
+    //[mpvc setContentURL : video.cloudURL ];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(moviePlaybackDidFinish:)
+                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                               object:nil];
+    
+    [self presentMoviePlayerViewControllerAnimated:self.mpvc];
+    self.mpvc = nil;
+    //[mpvc release];
+}
+
+-(void)moviePlaybackDidFinish:(id)sender
+{
+    DLog(@"Log : Movie play did finish---------");
+    [[NSNotificationCenter defaultCenter] postNotificationName:moviePlayerEnded object:nil];
 }
 
 //-(void)reloadViews

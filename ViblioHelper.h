@@ -32,6 +32,7 @@ extern NSString * const showSharingView;
 extern NSString * const removeOwnerSharingView;
 extern NSString * const newVideoAvailable;
 extern NSString * const wifiSignalLost;
+extern NSString * const moviePlayerEnded;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 

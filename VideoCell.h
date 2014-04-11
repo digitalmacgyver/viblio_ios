@@ -30,7 +30,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnShare;
 @property (weak, nonatomic) IBOutlet UIButton *btnStop;
 
-
+@property (weak, nonatomic) NSString *cloudURL;
 
 @property (nonatomic, strong) cloudVideos *video;
 

@@ -371,7 +371,13 @@
 - (IBAction)valueOfSegmentChanged:(id)sender {
 
     if( VCLIENT.cloudVideoList == nil || VCLIENT.cloudVideoList.count <= 0 )
-        [self viewDidAppear:YES];
+    {
+        if( APPMANAGER.signalStatus != 0 )
+        {
+            [self viewDidAppear:YES];
+        }
+    }
+     //   [self viewDidAppear:YES];
     
     UISegmentedControl *segmentView = (UISegmentedControl*)sender;
 

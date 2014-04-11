@@ -276,11 +276,15 @@
     // Check to see whether we have already opened a session.
     if (FBSession.activeSession.isOpen)
     {
+        DLog(@"Log : A valid BSession exists ----");
+        
         // login is integrated with the send button -- so if open, we send
         [self postOnWall];
     }
     else
     {
+        DLog(@"Log : FBSession doesnt exist....");
+        
         [FBSession openActiveSessionWithPublishPermissions:[NSArray arrayWithObjects:@"publish_stream", nil] defaultAudience:FBSessionDefaultAudienceEveryone allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
                                       
                                           // if login fails for any reason, we alert
@@ -407,7 +411,6 @@
     }
     else
     {
-        NSLog(@"   ok");
         [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
     };
 }

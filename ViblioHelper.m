@@ -510,53 +510,54 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
             [APPMANAGER.contacts removeAllObjects];
             APPMANAGER.contacts = nil;
         }
-        
-      //  DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
+
         APPMANAGER.contacts = [NSMutableArray new];
         
         for(int i = 0; i < numberOfPeople; i++) {
             
-           // DLog(@"Log : In processing contact - %d", i);
             ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
-            
             NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
             NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
             
             ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
             NSMutableArray *emailIds = [NSMutableArray new];
-            
-           // DLog(@" Log : Mail Clicked 6 - %@", email);
-            
+
             for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
                 NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
-              //  DLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
                 [emailIds addObject:phoneNumber];
             }
             
             if( emailIds.count > 0 )
             {
-               // DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
-                
                 if( [firstName isValid] && [lastName isValid] )
                     [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
                 else
                     [APPMANAGER.contacts addObject:@{ @"email" : emailIds}];
-                
             }
-            
-            // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
         }
         
-      //  DLog(@" Log : Mail Clicked - 5");
-//        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
-        //APPMANAGER.video = self.video;
-        //[[NSNotificationCenter defaultCenter] postNotificationName:showContactsScreen object:nil];
+        DLog(@"Log : The contacts are - %@", APPMANAGER.contacts);
+        APPMANAGER.contacts = (NSMutableArray*)[self getSortedArrayFromArray:APPMANAGER.contacts];
     }
     else {
-        // Send an alert telling user to change privacy setting in settings app
-        
+
         [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
     }
+}
+
+
++(NSArray*)getSortedArrayFromArray : (NSMutableArray*)contacts
+{
+    
+    NSArray *sortedArray;
+    sortedArray = [contacts sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        NSString *Obj1firstName = ((NSDictionary*)a)[@"fname"];
+        NSString *Obj2firstName = ((NSDictionary*)b)[@"fname"];
+        return [Obj1firstName compare:Obj2firstName];
+    }];
+    
+    DLog(@"Log : Sote list is - %@", sortedArray);
+    return sortedArray;
 }
 
 +(NSArray*)getReOrderedListOfKeys :(NSArray*)keys

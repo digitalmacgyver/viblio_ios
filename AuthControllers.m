@@ -31,7 +31,7 @@
 
 - (void)authorizeToGetInfoAboutMeWithCompleteBlock:(void(^)(NSError*, NSString *fbAccessToken))cblock inView:(UIView *)view
 {
-    NSArray *permissions = @[ @"basic_info" ];
+    NSArray *permissions = @[ @"basic_info", @"email" ];
     
     if ([[FBSession activeSession] isOpen])
     {
@@ -43,6 +43,7 @@
                  DLog(@"%@",user);//Displayed with the gender
                  DLog(@"%@",user.name);//Name only displayed
                  DLog(@"%@",[user objectForKey:@"gender"]);//Build error
+                 DLog(@"%@", user[@"email"]);
                  
                  [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
                      if (error == nil)

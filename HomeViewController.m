@@ -60,15 +60,9 @@
     
     self.requestQueue = [NSMutableArray new];
     
-    if( self.iSMoviePlayerPlayed )
-    {
-        self.iSMoviePlayerPlayed = NO;
-        [[NSNotificationCenter defaultCenter] postNotificationName:moviePlayerEnded object:nil];
-    }
-    
     [APPCLIENT postDeviceTokenToTheServer:APPCLIENT.dataModel.deviceToken success:^(NSString *msg)
      {
-         
+         APPMANAGER.internetNotAvailable = NO;
      }failure:^(NSError *error)
      {
          DLog(@"Log : Sending device token to the server failed with error - %@", error);
@@ -76,6 +70,8 @@
     
     [APPCLIENT getTheListOfMediaFilesOwnedByUserWithOptions:@"poster" pageCount:[NSString stringWithFormat:@"%d", VCLIENT.pageCount] rows:ROW_COUNT success:^(NSMutableArray *result)
      {
+         APPMANAGER.internetNotAvailable = NO;
+         
          if( self.errorAlert.tag == 1 )
          {
              self.errorAlert.tag = 0;
@@ -93,8 +89,6 @@
          VCLIENT.resCategorized = [ViblioHelper getDateTimeCategorizedArrayFrom:VCLIENT.cloudVideoList];
          
          APPMANAGER.orderedKeys = [[ViblioHelper getReOrderedListOfKeys:[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)]] mutableCopy];
-         
-  //       DLog(@"Log : Sorted list of keys obtained are ************************* %@", APPMANAGER.orderedKeys);
          
          // If list view was pushed on then publish notification and dont reload the home view
          if( self.segment.tag )
@@ -138,6 +132,8 @@
     // Get the count of media files uploaded by the user as a reference to create the records and lazy load..
     [APPCLIENT getCountOfMediaFilesUploadedByUser:^(int count)
      {
+         APPMANAGER.internetNotAvailable = NO;
+         
          VCLIENT.totalRecordsCount = count;
          if( count == 0 )
          {
@@ -200,33 +196,40 @@
     DLog(@"Log : Video has to be played now-----");
     
     self.iSMoviePlayerPlayed = YES;
-    VideoCell *video = (VideoCell*)notification.object;
     
-    DLog(@"Log : The cloudUrl of the video to be played is --- %@", video.cloudURL);
+    NSString *cloudURL;
     
-    self.mpvc = [[MPMoviePlayerViewController alloc] initWithContentURL: [NSURL URLWithString:video.cloudURL] ];
-   // self.mpvc.moviePlayer.movieSourceType = MPMovieSourceTypeStreaming;
-    //[mpvc setContentURL : video.cloudURL ];
+    if( [notification.object isKindOfClass:[VideoCell class]] )
+    {
+        cloudURL = ((VideoCell*)notification.object).cloudURL;
+    }
+    else
+    {
+        cloudURL = ((SharedVideo*)notification.object).cloudURL;
+    }
+    DLog(@"Log : The cloudUrl of the video to be played is --- %@", cloudURL);
+    
+    self.mpvc = [[MPMoviePlayerViewController alloc] initWithContentURL: [NSURL URLWithString:cloudURL] ];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(moviePlaybackDidFinish:)
-                                                 name:MPMoviePlayerPlaybackDidFinishNotification
+                                                 name:MPMoviePlayerDidExitFullscreenNotification
                                                object:nil];
     
     [self presentMoviePlayerViewControllerAnimated:self.mpvc];
     self.mpvc = nil;
-    //[mpvc release];
 }
 
--(void)moviePlaybackDidFinish:(id)sender
+-(void)moviePlaybackDidFinish:(NSNotification*)notification
 {
-    DLog(@"Log : Movie play did finish---------");
+    self.mpvc = [notification object];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:MPMoviePlayerPlaybackDidFinishNotification
+                                                  object:self.mpvc];
+    
+    
+    DLog(@"Log : ---------------------------------------------------------------------Movie play did finish---------");
     [[NSNotificationCenter defaultCenter] postNotificationName:moviePlayerEnded object:nil];
 }
-
-//-(void)reloadViews
-//{
-//    [self.videoList reloadData];
-//}
 
 -(void)removeOwnerShareView
 {
@@ -527,6 +530,11 @@
         
         headerView.lblTitle.text = APPMANAGER.orderedKeys[indexPath.section]; //([[(NSArray*)[[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)] reverseObjectEnumerator] allObjects])[indexPath.section];
       //  DLog(@"Log : Crashing after this....");
+        
+        if( [headerView.lblTitle.text isEqualToString:@"1970"] )
+        {
+            headerView.lblTitle.text = @"No Date";
+        }
         
         headerView.lblTitle.font = [UIFont fontWithName:@"Avenir-Light" size:14];
         headerView.lblTitle.textColor = [UIColor colorWithRed:0.6156 green:0.6274 blue:0.6745 alpha:1];

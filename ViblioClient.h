@@ -33,6 +33,9 @@
 
 + (ViblioClient *)sharedClient;
 
+-(void)logoutTheUser :(void (^)(NSString *msg))success
+             failure :(void(^)(NSError *error))failure;
+
 - (void)authenticateUserWithEmail : (NSString*)emailID
                          password : (NSString*)password
                              type : (NSString*)loginType

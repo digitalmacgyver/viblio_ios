@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnStop;
 @property (weak, nonatomic) IBOutlet UILabel *lblVwCount;
 
+@property (nonatomic, strong)NSString *cloudURL;
 @property (nonatomic, strong)NSIndexPath *indexPath;
 @property (nonatomic, strong)SharedVideos *video;
 

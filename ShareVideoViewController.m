@@ -73,19 +73,29 @@
         self.btnMail.tag = 1;
         
         NSMutableDictionary *contact = [APPMANAGER.selectedContacts firstObject];
+        NSString *name = [[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]];
+        
+        if( name == nil || name.length <= 0 )
+        {
+            name = [contact[@"email"] firstObject];
+        }
         
         if( APPMANAGER.selectedContacts.count > 1 )
         {
             if( APPMANAGER.selectedContacts.count > 2 )
-                    self.lblToList.text = [NSString stringWithFormat:@"%@ and %d others",[[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]], APPMANAGER.selectedContacts.count-1 ];
+            {
+                self.lblToList.text = [NSString stringWithFormat:@"%@ and %d others",name, APPMANAGER.selectedContacts.count-1 ];
+            }
             else
-                    self.lblToList.text = [NSString stringWithFormat:@"%@ and %d other",[[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]], APPMANAGER.selectedContacts.count-1 ];
+            {
+                self.lblToList.text = [NSString stringWithFormat:@"%@ and %d other",name, APPMANAGER.selectedContacts.count-1 ];
+            }
         }
         else
-            self.lblToList.text = [[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]];
-
+        {
+            self.lblToList.text = name;
+        }
         contact = nil;
-        
     }
     else
     {
@@ -126,8 +136,6 @@
 
 -(void)send
 {
-    
-
     NSString *fileId ;
     
     if( self.btnFB.tag )
@@ -157,8 +165,7 @@
             [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
         }
     }
-
-        }
+}
 
 
 
@@ -171,6 +178,12 @@
     
     [APPMANAGER.selectedContacts removeAllObjects];
     APPMANAGER.selectedContacts = nil;
+    
+    [APPMANAGER.tempContacts removeAllObjects];
+    APPMANAGER.tempContacts = nil;
+    
+    [APPMANAGER.loadContacts removeAllObjects];
+    APPMANAGER.loadContacts = nil;
     
     [self.op cancel];
     [self.navigationController popViewControllerAnimated:YES];
@@ -319,8 +332,17 @@
     APPMANAGER.posterImageForVideoSharing = nil;
     APPMANAGER.videoToBeShared = nil;
     
+    APPMANAGER.posterImageForVideoSharing = nil;
+    APPMANAGER.videoToBeShared = nil;
+    
     [APPMANAGER.selectedContacts removeAllObjects];
     APPMANAGER.selectedContacts = nil;
+    
+    [APPMANAGER.tempContacts removeAllObjects];
+    APPMANAGER.tempContacts = nil;
+    
+    [APPMANAGER.loadContacts removeAllObjects];
+    APPMANAGER.loadContacts = nil;
 
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -546,6 +568,7 @@
            // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
         }
         
+        APPMANAGER.contacts = (NSMutableArray*)[ViblioHelper getSortedArrayFromArray:APPMANAGER.contacts];
         //DLog(@" Log : Mail Clicked - 5");
         [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
     }

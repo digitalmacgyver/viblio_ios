@@ -82,9 +82,9 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(IS_IPHONE_5)
-        return 201;
+        return 240;
     else
-        return 201;
+        return 240;
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section

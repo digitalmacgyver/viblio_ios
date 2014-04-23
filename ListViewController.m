@@ -137,19 +137,13 @@
     [label setFont:[ViblioHelper viblio_Font_Regular_WithSize:13 isBold:NO]];
     label.textColor = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1];
     
-//    NSArray *keysSorted = [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)];
-//    DLog(@"Log : KeySorted are - %@", keysSorted);
-//    NSArray *resArray = VCLIENT.resCategorized[keysSorted[section]];
-//    
-//    if( resArray != nil && resArray.count > 0 )
-//        [label setText:[resArray firstObject]];
-//    else
-//        DLog(@"Log : NO contents found in the array.. Seems to be a bug.. %@ ... keysSorted - %@ ... ", resArray, keysSorted);
-//    
-//    keysSorted = nil;
-//    resArray = nil;
-    
     [label setText:APPMANAGER.orderedKeys[section]];
+    [label setFont:[UIFont fontWithName:@"Avenir-Roman" size:14]];
+    
+    if( [label.text isEqualToString:@"1970"] )
+    {
+        label.text = @"No Date";
+    }
     
     /* Section header is in 0th index... */
     

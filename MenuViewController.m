@@ -151,6 +151,7 @@
 
 -(void)videoUploadDescretion
 {
+    //DLog(@"Log : ");
     if( APPMANAGER.signalStatus != 0 )
     {
         if( APPMANAGER.turnOffUploads )
@@ -160,6 +161,9 @@
             [self.vwSyncingFile setHidden:YES];
             [self.lblSyncNotInProgress setHidden:NO];
             
+            [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+            
+            DLog(@"Log : Coming here --- 2");
             if( APPMANAGER.errorCode == 1000 )
                 self.lblSyncNotInProgress.text = @"Battery less than 20%. Uploads have been stopped";
             else if( APPMANAGER.errorCode == 1001 )
@@ -173,12 +177,16 @@
             {
                 DLog(@"Log : Upload in progress....");
                 
+                [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
+                
                 [self.lblSyncNotInProgress setHidden:YES];
                 [self.vwSyncingFile setHidden:NO];
                 [self performSelectorOnMainThread:@selector(refreshProgressBar) withObject:nil waitUntilDone:YES];
             }
             else
             {
+                [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+                
                 [self.vwSyncingFile setHidden:YES];
                 [self.lblSyncNotInProgress setHidden:NO];
                 
@@ -207,6 +215,8 @@
         
         if( APPMANAGER.activeSession.wifiupload.integerValue && APPMANAGER.signalStatus != 2 )
         {
+            [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+            
             [self.vwSyncingFile setHidden:YES];
             [self.lblSyncNotInProgress setHidden:NO];
             
@@ -215,6 +225,9 @@
     }
     else
     {
+        [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+        
+        DLog(@"Log : Coming here --- 1");
         [self.vwSyncingFile setHidden:YES];
         [self.lblSyncNotInProgress setHidden:NO];
         self.lblSyncNotInProgress.text = @"Internet Connection appears to be offline.";
@@ -270,14 +283,20 @@
 
 -(void)logoutUser
 {
-    APPMANAGER.turnOffUploads = YES;
-    [APPCLIENT invalidateFileUploadTask];
-    [ViblioHelper clearSessionVariables];
-    LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
-    [self.presentingViewController dismissViewControllerAnimated:NO completion:^(void)
-     {
-         [lvc performSegueWithIdentifier: Viblio_wideNonWideSegue( @"signInNav" ) sender:self];
-     }];
+    [APPCLIENT logoutTheUser:^(NSString *msg)
+    {
+        APPMANAGER.turnOffUploads = YES;
+        [APPCLIENT invalidateUploadTaskWithoutPausing];
+        [ViblioHelper clearSessionVariables];
+        LandingViewController *lvc = (LandingViewController*)self.presentingViewController;
+        [self.presentingViewController dismissViewControllerAnimated:NO completion:^(void)
+         {
+             [lvc performSegueWithIdentifier: Viblio_wideNonWideSegue( @"signInNav" ) sender:self];
+         }];
+    }failure:^(NSError *error)
+    {
+        DLog(@"Log : Could not clear the session....");
+    }];
 }
 
 #pragma Table View Delegate Mehods

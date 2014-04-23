@@ -79,5 +79,6 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 
 +(void)MailSharingClicked : (id)sender;
 +(NSArray*)getReOrderedListOfKeys :(NSArray*)keys;
++(NSArray*)getSortedArrayFromArray : (NSMutableArray*)contacts;
 
 @end

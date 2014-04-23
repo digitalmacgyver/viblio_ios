@@ -486,6 +486,7 @@
      }failure:^(NSError *error)
      {
          DLog(@"Log : Error in updating DB");
+         
      }];
 }
 

@@ -187,6 +187,28 @@ void(^_failure)(NSError *error);
 
 #pragma User Management Services
 
+// To Logout the user
+
+-(void)logoutTheUser :(void (^)(NSString *msg))success
+             failure :(void(^)(NSError *error))failure
+{
+    
+    NSString *path = @"/services/na/logout";
+    NSURLRequest *req = [self requestWithMethod:@"GET" path:path parameters:nil];
+    
+    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:req success:
+                                  ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+                                  {
+                                      // Check whether we got a success response or a success response with error code
+                                      success(@"success");
+                                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+                                  {
+                                      failure(error);
+                                  }];
+    [op start];
+}
+
+
 // To login the user onto the server
 
 - (void)authenticateUserWithEmail : (NSString*)emailID
@@ -374,7 +396,7 @@ void(^_failure)(NSError *error);
                                           UserClient.userID = [JSON valueForKeyPath:@"user.uuid"];
                                           UserClient.emailId = nil;
                                           UserClient.isFbUser = @(YES);
-                                          UserClient.isNewUser = @(NO);
+                                          UserClient.isNewUser = @(YES);
                                           UserClient.fbAccessToken = accessToken;
                                           UserClient.sessionCookie = ((NSDictionary*)response.allHeaderFields)[@"Set-Cookie"];
                                       }

@@ -119,46 +119,48 @@
     [APPCLIENT getTheCloudUrlForVideoStreamingForFileWithUUID:self.video.uuid success:^(NSString *cloudURL)
      {
          DLog(@"Log : Cloud url obtained is - %@", cloudURL);
-         self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]];
-         self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
-         self.moviePlayer.view.frame = self.btnImage.frame;
-         [self addSubview:self.moviePlayer.view];
-         [self addSubview:self.spinningWheel];
-         
+         self.cloudURL = cloudURL;
          [[NSNotificationCenter defaultCenter] postNotificationName:playVideo object:self];
-         [self.spinningWheel startAnimating];
-         
-         self.moviePlayer.shouldAutoplay = YES;
-         
-         if( fullScreen )
-         {
-             [self playInFullScreen];
-         }
-         else
-         {
-             self.moviePlayer.controlStyle = MPMovieControlStyleDefault;
-             self.moviePlayer.scalingMode= MPMovieScalingModeFill;
-             self.moviePlayer.controlStyle =MPMovieControlStyleNone;
-         }
-         
-         // Registering tap gesture on Movie Player
-         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(playInFullScreen)];
-         tapGestureRecognizer.numberOfTapsRequired = 1;
-         [self.moviePlayer.view addGestureRecognizer:tapGestureRecognizer];
-         self.moviePlayer.view.userInteractionEnabled = YES;
-         tapGestureRecognizer.delegate = self;
-         
-         
-         // Register for the playback finished notification
-         [[NSNotificationCenter defaultCenter] addObserver:self // the object listening / "observing" to the notification
-                                                  selector:@selector(myMovieFinishedCallback:) // method to call when the notification was pushed
-                                                      name:MPMoviePlayerPlaybackDidFinishNotification // notification the observer should listen to
-                                                    object:self.moviePlayer];
-         
-         [self.moviePlayer play];
-         
-         [self.btnPlay setHidden:YES];
-         [self.btnStop setHidden:NO];
+//         self.moviePlayer = [[MPMoviePlayerController alloc] initWithContentURL: [NSURL URLWithString:cloudURL]];
+//         self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
+//         self.moviePlayer.view.frame = self.btnImage.frame;
+//         [self addSubview:self.moviePlayer.view];
+//         [self addSubview:self.spinningWheel];
+//         
+//         [[NSNotificationCenter defaultCenter] postNotificationName:playVideo object:self];
+//         [self.spinningWheel startAnimating];
+//         
+//         self.moviePlayer.shouldAutoplay = YES;
+//         
+//         if( fullScreen )
+//         {
+//             [self playInFullScreen];
+//         }
+//         else
+//         {
+//             self.moviePlayer.controlStyle = MPMovieControlStyleDefault;
+//             self.moviePlayer.scalingMode= MPMovieScalingModeFill;
+//             self.moviePlayer.controlStyle =MPMovieControlStyleNone;
+//         }
+//         
+//         // Registering tap gesture on Movie Player
+//         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(playInFullScreen)];
+//         tapGestureRecognizer.numberOfTapsRequired = 1;
+//         [self.moviePlayer.view addGestureRecognizer:tapGestureRecognizer];
+//         self.moviePlayer.view.userInteractionEnabled = YES;
+//         tapGestureRecognizer.delegate = self;
+//         
+//         
+//         // Register for the playback finished notification
+//         [[NSNotificationCenter defaultCenter] addObserver:self // the object listening / "observing" to the notification
+//                                                  selector:@selector(myMovieFinishedCallback:) // method to call when the notification was pushed
+//                                                      name:MPMoviePlayerPlaybackDidFinishNotification // notification the observer should listen to
+//                                                    object:self.moviePlayer];
+//         
+//         [self.moviePlayer play];
+//         
+//         [self.btnPlay setHidden:YES];
+//         [self.btnStop setHidden:NO];
          
      }failure:^(NSError *error)
      {

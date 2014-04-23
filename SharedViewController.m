@@ -61,7 +61,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 240;
+    return 280;
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -81,6 +81,12 @@
     
     /* Section header is in 0th index... */
     [label setText:APPMANAGER.sharedOrderedKeys[section]];
+    
+    if( [label.text isEqualToString:@"1970"] )
+    {
+        label.text = @"No Date";
+    }
+    
     [view addSubview:label];
     [view setBackgroundColor:[UIColor whiteColor]]; //your background color...
     return view;

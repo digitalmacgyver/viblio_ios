@@ -32,7 +32,7 @@
     
     //self.txtVwBody.editable = NO;
     self.txtFiledTitle.text = TitleText;
-    self.txtVwBody.text = @"Check out my new video on Viblio ! \n https://staging.viblio.com/";
+    self.txtVwBody.text = @"Check out my new video on Viblio ! \n https://viblio.com/";
     self.txtVwBody.dataDetectorTypes = UIDataDetectorTypeLink;
     
     [self.navigationItem setTitleView:[ViblioHelper vbl_navigationShareTitleView:@"Share with VIBLIO"]];
@@ -376,7 +376,7 @@
     // create the request object, using the fbid as the graph path
     // as an alternative the request* static methods of the FBRequest class could
     // be used to fetch common requests, such as /me and /me/friends
-    NSString *messageString=[NSString stringWithFormat:@"Check out my new video on Viblio ! \n https://staging.viblio.com/"];
+    NSString *messageString=[NSString stringWithFormat:@"Check out my new video on Viblio ! \n https://viblio.com/"];
     NSDictionary *dict = [NSDictionary dictionaryWithObjects:@[messageString] forKeys:@[@"message"]];
     
     FBRequest *request=[[FBRequest alloc] initWithSession:FBSession.activeSession graphPath:@"me/feed" parameters:dict HTTPMethod:@"POST"];
@@ -594,6 +594,11 @@
 {
         return 40;
 }
+
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//{
+//    return 70;
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {

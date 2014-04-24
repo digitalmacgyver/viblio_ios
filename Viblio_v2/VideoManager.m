@@ -168,7 +168,7 @@
     else
     {
         DLog(@"Log : File not found on the server to continue... Delete and start afresh...");
-        [self deleteFile];
+        [self startNewFileUpload];
     }
 }
 

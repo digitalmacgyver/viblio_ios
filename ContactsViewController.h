@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ContactsViewController : UIViewController<UIAlertViewDelegate>
+@interface ContactsViewController : UIViewController<UIAlertViewDelegate, UITextFieldDelegate>
 
 @property (nonatomic, retain)NSMutableArray *selectedIndices;
 @property (weak, nonatomic) IBOutlet UITableView *contactsList;

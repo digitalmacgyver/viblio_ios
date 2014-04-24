@@ -9,7 +9,8 @@
 #import "ContactsViewController.h"
 
 @interface ContactsViewController ()
-
+@property (weak, nonatomic) IBOutlet UITextField *txtEmail;
+@property (weak, nonatomic) IBOutlet UIView *vwNewEmail;
 @end
 
 @implementation ContactsViewController
@@ -53,6 +54,34 @@
     }
 
 }
+
+
+- (IBAction)addContactEmail:(id)sender {
+    
+    // Check whether the email address entered is valid
+    
+    if ([ViblioHelper vbl_isValidEmail:self.txtEmail.text])
+    {
+        DLog(@"Log : Valid email address....");
+        
+        NSDictionary *contact = @{ @"email" : @[self.txtEmail.text],
+                                   @"isSelected" : @(YES)
+                                 };
+        [APPMANAGER.selectedContacts addObject:contact];
+        [self.txtEmail resignFirstResponder];
+        [self.contactsList reloadData];
+        
+        [APPMANAGER.loadContacts removeAllObjects];
+        APPMANAGER.loadContacts = nil;
+        
+        APPMANAGER.loadContacts = [(NSMutableArray*)[APPMANAGER.selectedContacts arrayByAddingObjectsFromArray:APPMANAGER.tempContacts] mutableCopy];
+        self.txtEmail.text = nil;
+        [self.contactsList reloadData];
+    }
+    else
+        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"I don't recognize that email format. Wanna try agian ?" viewController:nil cancelBtnTitle:@"Ok"];
+}
+
 
 -(void)viewDidAppear:(BOOL)animated
 {
@@ -135,6 +164,16 @@
         return 40;
 }
 
+-(CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return self.vwNewEmail.frame.size.height;
+}
+
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    return self.vwNewEmail;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *cellIdentifier = @"ContactsCell";
@@ -152,7 +191,7 @@
     else
         cell.textLabel.text =  [contact[@"email"] firstObject];
 
-    cell.textLabel.font = [ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
+    cell.textLabel.font = [UIFont fontWithName:@"Avenir-Roman" size:14]; //[ViblioHelper viblio_Font_Regular_WithSize:14 isBold:NO];
     cell.textLabel.textColor = [UIColor grayColor];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
@@ -184,7 +223,6 @@
     [self.contactsList reloadData];
 }
 
-
 -(NSMutableArray*)getSortedArrayFromArray : (NSMutableArray*)contacts
 {
     NSArray *sortedArray;
@@ -196,6 +234,11 @@
     
     DLog(@"Log : Sote list is - %@", sortedArray);
     return [sortedArray mutableCopy];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
 }
 
 

@@ -2595,9 +2595,39 @@
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
                         <outlet property="contactsList" destination="l2f-3j-6Vo" id="6be-D0-Li6"/>
+                        <outlet property="txtEmail" destination="4W5-mc-Ldq" id="eZ8-xw-rTT"/>
+                        <outlet property="vwNewEmail" destination="QQh-xA-3fu" id="oZT-D6-ZfH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xP9-GX-B3Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <view contentMode="scaleToFill" id="QQh-xA-3fu">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" minimumFontSize="17" id="4W5-mc-Ldq">
+                            <rect key="frame" x="10" y="8" width="244" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            <fontDescription key="fontDescription" name="Avenir-Roman" family="Avenir" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="done"/>
+                            <connections>
+                                <outlet property="delegate" destination="xVR-Hb-wOl" id="h9X-PA-u1A"/>
+                            </connections>
+                        </textField>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="zR0-wF-put">
+                            <rect key="frame" x="257" y="7" width="55" height="35"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" name="Avenir-Roman" family="Avenir" pointSize="14"/>
+                            <state key="normal" title="Add">
+                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                            </state>
+                            <connections>
+                                <action selector="addContactEmail:" destination="xVR-Hb-wOl" eventType="touchUpInside" id="dR1-Wg-Hvo"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                </view>
             </objects>
             <point key="canvasLocation" x="3073" y="-232"/>
         </scene>

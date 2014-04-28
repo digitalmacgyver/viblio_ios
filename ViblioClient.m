@@ -479,7 +479,7 @@ void(^_failure)(NSError *error);
                              @"user-agent": @"Viblio iOS App : 0.0.1"
                              };
     
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://viblio.com/files"]]; //[self requestWithMethod:@"POST" path:path parameters:params];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:API_UPLOAD_FILE_SERVER_URL]]; //[self requestWithMethod:@"POST" path:path parameters:params];
     [request setHTTPMethod:@"POST"];
     
     NSString *file = [NSString stringWithFormat:@"{\n\"Path\" : \"Untitled.MOV\"}"];
@@ -540,7 +540,7 @@ void(^_failure)(NSError *error);
                              @"user-agent": @"Viblio iOS App : 0.0.1"
                              };
     
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://viblio.com/files"]];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:API_UPLOAD_FILE_SERVER_URL]];
     [request setHTTPMethod:@"POST"];
     NSString *file = [NSString stringWithFormat:@"{\n\"Path\" : \"Untitled.MOV\"}"];
     NSString *jsonString = [NSString stringWithFormat:@"{ \n \"uuid\" : \"%@\" , \n \"file\" : %@ , \n \"user-agent\" : \"Viblio iOS App : 0.0.1\"   }", APPMANAGER.user.userID, file];
@@ -592,7 +592,7 @@ void(^_failure)(NSError *error);
                               failure : (void(^)(NSError *error))failure
 {
 
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://viblio.com/files/%@",fileLocationID ]]]; //[self requestWithMethod:@"HEAD" path:path parameters:nil];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@",API_UPLOAD_FILE_SERVER_URL,fileLocationID ]]]; //[self requestWithMethod:@"HEAD" path:path parameters:nil];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [request setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
     [request setHTTPMethod:@"HEAD"];
@@ -624,7 +624,7 @@ void(^_failure)(NSError *error);
                   [[UIApplication sharedApplication] endBackgroundTask:bgTask];
               }];
     
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://viblio.com/files/%@",fileLocationID ]]]; //[self requestWithMethod:@"HEAD" path:path parameters:nil];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@",API_UPLOAD_FILE_SERVER_URL,fileLocationID ]]]; //[self requestWithMethod:@"HEAD" path:path parameters:nil];
     [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
     [request setValue: sessionCookie  forHTTPHeaderField:@"Cookie"];
     [request setHTTPMethod:@"HEAD"];
@@ -715,7 +715,7 @@ void(^_failure)(NSError *error);
   //  bckgrndTimer = [NSTimer scheduledTimerWithTimeInterval:175 target:self selector:@selector(cleanBackgrndTasks) userInfo:nil repeats:NO];
     
    // NSString *path = [NSString stringWithFormat:@"/files/%@",fileLocationID];
-    NSMutableURLRequest* afRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://viblio.com/files/%@",fileLocationID ]]]; //[self requestWithMethod:@"PATCH" path:path parameters:nil];
+    NSMutableURLRequest* afRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@",API_UPLOAD_FILE_SERVER_URL,fileLocationID ]]]; //[self requestWithMethod:@"PATCH" path:path parameters:nil];
     [afRequest setHTTPMethod:@"PATCH"];
     [afRequest setValue: chunkSize  forHTTPHeaderField:@"Content-Length"];
     [afRequest setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];

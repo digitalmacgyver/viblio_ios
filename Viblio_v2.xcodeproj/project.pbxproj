@@ -1421,6 +1421,7 @@
 					"\"${PODS_ROOT}/Headers/SOCKit\"",
 				);
 				INFOPLIST_FILE = "Viblio_v2/Viblio_v2-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -1479,6 +1480,7 @@
 					"\"${PODS_ROOT}/Headers/SOCKit\"",
 				);
 				INFOPLIST_FILE = "Viblio_v2/Viblio_v2-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",

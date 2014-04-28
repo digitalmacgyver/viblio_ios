@@ -31,6 +31,7 @@
     self.lblSignUpWith.font = [ViblioHelper viblio_Font_Italic_WithSize:14 isBold:NO];
     DLog(@"Log : Posting the device token to the server - ");
     
+    APPMANAGER.showUploaderPopUp = NO;
 }
 
 - (void)didReceiveMemoryWarning

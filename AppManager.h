@@ -25,7 +25,7 @@
 @property (nonatomic, strong) NSDictionary *resultCategorized, *sharedSortedList;
 @property (nonatomic, strong) UIImage *posterImageForVideoSharing;
 @property (nonatomic, strong) id VideoToBeShared;
-@property (assign) BOOL restoreMyViblio, internetNotAvailable;
+@property (assign) BOOL restoreMyViblio, internetNotAvailable, showUploaderPopUp;
 
 @property (nonatomic, strong) NSMutableArray *orderedKeys, *sharedOrderedKeys, *sharedOwnerOrderedKeys ;
 @property (nonatomic, assign) int errorCode ;

@@ -32,6 +32,14 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    //APPMANAGER.showUploaderPopUp = YES;
+    
+    if( APPMANAGER.showUploaderPopUp && (APPMANAGER.signalStatus != 2) )
+    {
+        [ViblioHelper displayAlertWithTitle:@"" messageBody:@"VIBLIO is currently set to upload your videos only when you are connected to WiFi.  Turn on WiFi to continue." viewController:nil cancelBtnTitle:@"Ok"];
+        APPMANAGER.showUploaderPopUp = NO;
+    }
+    
     APPMANAGER.indexOfSharedListSelected = nil;
     [ViblioHelper MailSharingClicked:self];
    // [[VblLocationManager sharedClient] setUp];

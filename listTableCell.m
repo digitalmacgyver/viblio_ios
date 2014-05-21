@@ -268,6 +268,7 @@
 //    [[NSNotificationCenter defaultCenter] postNotificationName:showListSharingVw object:self];
     
     APPMANAGER.posterImageForVideoSharing = self.imgVwThumbnail.image;
+    APPMANAGER.sharingUUID = self.video.uuid;
     [[NSNotificationCenter defaultCenter] postNotificationName:showingSharingView object:self];
 }
 

@@ -12,7 +12,9 @@
 
 @property (nonatomic, retain)NSMutableArray *selectedIndices;
 @property (weak, nonatomic) IBOutlet UITableView *contactsList;
+@property (weak, nonatomic) IBOutlet UITableView *detailsList;
 
+@property (weak, nonatomic) IBOutlet UIView *vwOverLay;
 @property (nonatomic, strong) NSMutableArray *contacts, *loadContacts;
 
 @end

@@ -33,6 +33,7 @@
 
 @property (nonatomic, assign) AFNetworkReachabilityStatus signalStatus;
 @property (nonatomic, strong) NSMutableArray *sharedVideoList;
+@property (retain) NSString *thumbUrl, *sharingUUID;
 
 + (AppManager *)sharedClient;
 -(NSArray*)getSettings;

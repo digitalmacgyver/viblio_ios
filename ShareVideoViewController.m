@@ -350,6 +350,7 @@
 
 - (void)postOnWall
 {
+    
     NSNumber *testMessageIndex=[[NSNumber alloc] init];
     if ([[NSUserDefaults standardUserDefaults] objectForKey:@"testMessageIndex"]==nil)
     {
@@ -373,27 +374,38 @@
         [self requestCompleted:connection forFbID:@"me" result:result error:error];
     };
     
-    // create the request object, using the fbid as the graph path
-    // as an alternative the request* static methods of the FBRequest class could
-    // be used to fetch common requests, such as /me and /me/friends
-    NSString *messageString=[NSString stringWithFormat:@"Check out my new video on Viblio ! \n https://viblio.com/"];
-    NSDictionary *dict = [NSDictionary dictionaryWithObjects:@[messageString] forKeys:@[@"message"]];
+    DLog(@"LOg : The thumb url is - %@", APPMANAGER.thumbUrl);
     
-    FBRequest *request=[[FBRequest alloc] initWithSession:FBSession.activeSession graphPath:@"me/feed" parameters:dict HTTPMethod:@"POST"];
+   // DLog(@"Log : The thumb url obtained for sharing is - %@", APPMANAGER.thumbUrl);
+   __block NSMutableDictionary *params;
     
-    // add the request to the connection object, if more than one request is added
-    // the connection object will compose the requests as a batch request; whether or
-    // not the request is a batch or a singleton, the handler behavior is the same,
-    // allowing the application to be dynamic in regards to whether a single or multiple
-    // requests are occuring
-    [newConnection addRequest:request completionHandler:handler];
+    //http://0.tqn.com/d/webdesign/1/G/N/0/2/86432851.jpg
+    //https://images.nga.gov/en/web_images/constable.jpg
     
-    // if there's an outstanding connection, just cancel
-    [self.requestConnection cancel];
-    
-    // keep track of our connection, and start it
-    self.requestConnection = newConnection;
-    [newConnection start];
+            params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                           self.txtFiledTitle.text, @"name",
+                                           self.txtVwBody.text, @"caption",
+                                           // self.txtVwBody.text, @"description",
+                                           [NSString stringWithFormat:@"%@/s/p/%@",API_LOGIN_SERVER_URL, APPMANAGER.sharingUUID], @"link",
+                                           //@"http://0.tqn.com/d/webdesign/1/G/N/0/2/86432851.jpg", @"picture",
+                                           nil];
+        
+        FBRequest *request=[[FBRequest alloc] initWithSession:FBSession.activeSession graphPath:@"me/feed" parameters:params HTTPMethod:@"POST"];
+        
+        // add the request to the connection object, if more than one request is added
+        // the connection object will compose the requests as a batch request; whether or
+        // not the request is a batch or a singleton, the handler behavior is the same,
+        // allowing the application to be dynamic in regards to whether a single or multiple
+        // requests are occuring
+        [newConnection addRequest:request completionHandler:handler];
+        
+        // if there's an outstanding connection, just cancel
+        [self.requestConnection cancel];
+        
+        // keep track of our connection, and start it
+        self.requestConnection = newConnection;
+        [newConnection start];
+//    }];
 }
 
 // FBSample logic
@@ -422,10 +434,10 @@
         NSString *message;
         if( error.userInfo != nil )
         {
-           message  = error.userInfo[@"com.facebook.sdk:ParsedJSONResponseKey"][@"body"][@"error"][@"message"];
+           message  = @"Could not complete sharing"; //error.userInfo[@"com.facebook.sdk:ParsedJSONResponseKey"][@"body"][@"error"][@"message"];
         }
         else
-            message = error.localizedDescription;
+            message = @"Could not complete sharing"; //error.localizedDescription;
         
         UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"error" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
         // error contains details about why the request failed
@@ -433,6 +445,14 @@
     }
     else
     {
+        [APPCLIENT sharedFromFBfileId:APPMANAGER.sharingUUID success:^(BOOL hasbeenShared)
+        {
+            
+        }failure:^(NSError *error)
+        {
+            
+        }];
+        
         [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
     };
 }
@@ -473,6 +493,7 @@
     [self.btnMail setImage:[UIImage imageNamed:@"bttn_mail"] forState:UIControlStateNormal];
     DLog(@" Log : Mail Clicked - 1");
     //[self MailSharingClicked:sender];
+
     [self naviagteToContacts:self];
     //[ViblioHelper MailSharingClicked:self];
     
@@ -635,7 +656,15 @@
 
 - (IBAction)naviagteToContacts:(id)sender {
     
-    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+//    if( APPMANAGER.contacts.count > 0 && APPMANAGER.contacts != nil )
+//    {
+            [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+//    }
+//    else
+//    {
+//        [ViblioHelper displayAlertWithTitle:@"Contacts" messageBody:@"No contacts were found" viewController:nil cancelBtnTitle:@"OK"];
+//    }
+
 }
 
 -(BOOL)isIndexSelected : (NSNumber*)currentIndex

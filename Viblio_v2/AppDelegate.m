@@ -126,6 +126,7 @@
 
     [[VblLocationManager sharedClient] stopFetchingLatitudeAndLongitude];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+   // [ViblioHelper MailSharingClicked:nil];
     
     VCLIENT.backgroundStartChunk = -1;
     NSArray *userResults = [DBCLIENT getUserDataFromDB];

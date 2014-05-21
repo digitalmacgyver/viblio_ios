@@ -201,6 +201,7 @@
 
     DLog(@"Log : Share video fired...");
     APPMANAGER.posterImageForVideoSharing = self.videoImage.image;
+    APPMANAGER.sharingUUID = self.video.uuid;
     [[NSNotificationCenter defaultCenter] postNotificationName:showingSharingView object:self];
 }
 

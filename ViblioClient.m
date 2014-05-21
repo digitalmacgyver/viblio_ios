@@ -1505,7 +1505,7 @@ void(^_failure)(NSError *error);
     __block AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
                                           ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
                                           {
-                                         //     DLog(@"Log : In success response callback - Feedback - %@", JSON);
+                                              DLog(@"Log : In success response callback - Feedback - %@", JSON);
                                               
                                               if( [[JSON valueForKey:@"code"] integerValue] > 299 )
                                                   failure([ViblioHelper getCustomErrorWithMessage:@"Session Epired. Please Login" withCode:401]);
@@ -1750,20 +1750,28 @@ void(^_failure)(NSError *error);
         
     
     NSMutableArray *email = [NSMutableArray new];
+    DLog(@"Log : Selected contact list is - %@", APPMANAGER.selectedContacts);
+    
     for( int i=0; i < APPMANAGER.selectedContacts.count; i++ )
     {
         NSDictionary *selectedContct = APPMANAGER.selectedContacts[i];
         
-        if( selectedContct[@"email"] != nil && ((NSArray*)selectedContct[@"email"]).count > 0 )
+        DLog(@"Log : The selected contact is - %@", selectedContct);
+        
+        NSArray *contactEmailList = selectedContct[@"email"];
+        NSArray *selectedIndices = selectedContct[@"selectedEmailIndexes"];
+        
+        DLog(@"Log : Selected indices are - %@", selectedIndices);
+        
+        for( int i=0; i < selectedIndices.count; i++ )
         {
-            for( int j=0; j< ((NSArray*)selectedContct[@"email"]).count; j++ )
-            {
-                [email addObject: ((NSArray*)selectedContct[@"email"])[j]];
-            }
+            [email addObject: [contactEmailList objectAtIndex: ((NSNumber*)selectedIndices[i]).intValue ]] ;
         }
     }
     
   //  [email addObject:@"dunty.vinay@gmail.com"];
+    
+    DLog(@"Log : Mail is being sent to the list - %@", email);
     
     __block AFJSONRequestOperation *op;
     if( email != nil && email.count > 0 )
@@ -1814,21 +1822,52 @@ void(^_failure)(NSError *error);
 }
 
 
+
+-(AFJSONRequestOperation*)sharedFromFBfileId : (NSString*)mid
+                                            success : (void(^)(BOOL hasBeenShared))success
+                                             failure:(void(^)(NSError *error))failure
+{
+    __block AFJSONRequestOperation *op;
+    
+        NSString *path = [NSString stringWithFormat:@"/services/mediafile/add_share?mid=%@", mid];
+        
+        NSMutableURLRequest* request = [self requestWithMethod:@"POST" path:path parameters:nil];
+        
+        [request setValue: @"application/offset+octet-stream"  forHTTPHeaderField:@"Content-Type"];
+        [request setValue: APPMANAGER.user.sessionCookie  forHTTPHeaderField:@"Cookie"];
+        
+        DLog(@"Log : The request being sent is - %@", request);
+        op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:
+              ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON)
+              {
+                  success(YES);
+              } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON)
+              {
+                  failure(error);
+              }];
+        [op start];
+
+    return op;
+}
+
+
+
+
 -(AFJSONRequestOperation*)tellAFriendAboutViblioWithMessage : (NSString*)msg
                                  success : (void(^)(BOOL hasBeenTold))success
                                  failure : (void(^)(NSError *error))failure
-{
+{    
+    
     NSMutableArray *email = [NSMutableArray new];
     for( int i=0; i < APPMANAGER.selectedContacts.count; i++ )
     {
         NSDictionary *selectedContct = APPMANAGER.selectedContacts[i];
+        NSArray *contactEmailList = selectedContct[@"email"];
+        NSArray *selectedIndices = selectedContct[@"selectedEmailIndexes"];
         
-        if( selectedContct[@"email"] != nil && ((NSArray*)selectedContct[@"email"]).count > 0 )
+        for( int i=0; i < selectedIndices.count; i++ )
         {
-            for( int j=0; j< ((NSArray*)selectedContct[@"email"]).count; j++ )
-            {
-                [email addObject: ((NSArray*)selectedContct[@"email"])[j]];
-            }
+            [email addObject: [contactEmailList objectAtIndex: ((NSNumber*)selectedIndices[i]).intValue ]] ;
         }
     }
     

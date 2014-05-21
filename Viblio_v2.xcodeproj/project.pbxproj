@@ -142,6 +142,7 @@
 		CBAAAF5E18C9DCD700DC4A21 /* tutorial_step_1.png in Resources */ = {isa = PBXBuildFile; fileRef = CBAAAF5B18C9DCD700DC4A21 /* tutorial_step_1.png */; };
 		CBAAAF5F18C9DCD700DC4A21 /* tutorial_step_2.png in Resources */ = {isa = PBXBuildFile; fileRef = CBAAAF5C18C9DCD700DC4A21 /* tutorial_step_2.png */; };
 		CBAAAF6018C9DCD700DC4A21 /* tutorial_step_3.png in Resources */ = {isa = PBXBuildFile; fileRef = CBAAAF5D18C9DCD700DC4A21 /* tutorial_step_3.png */; };
+		CBB30EE9191BB47F009C0840 /* contactsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CBB30EE8191BB47F009C0840 /* contactsCell.m */; };
 		CBC1E42118C5C00D00BD61EE /* viblio_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = CBC1E42018C5C00D00BD61EE /* viblio_logo.png */; };
 		CBD0496118BB87D400B9A962 /* icon_share_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD0495E18BB87D400B9A962 /* icon_share_selected@2x.png */; };
 		CBD0496218BB87D400B9A962 /* icon_views@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD0495F18BB87D400B9A962 /* icon_views@2x.png */; };
@@ -370,6 +371,8 @@
 		CBAAAF5B18C9DCD700DC4A21 /* tutorial_step_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_step_1.png; sourceTree = "<group>"; };
 		CBAAAF5C18C9DCD700DC4A21 /* tutorial_step_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_step_2.png; sourceTree = "<group>"; };
 		CBAAAF5D18C9DCD700DC4A21 /* tutorial_step_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_step_3.png; sourceTree = "<group>"; };
+		CBB30EE7191BB47F009C0840 /* contactsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = contactsCell.h; sourceTree = "<group>"; };
+		CBB30EE8191BB47F009C0840 /* contactsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = contactsCell.m; sourceTree = "<group>"; };
 		CBC1E42018C5C00D00BD61EE /* viblio_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = viblio_logo.png; sourceTree = "<group>"; };
 		CBD0495E18BB87D400B9A962 /* icon_share_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_share_selected@2x.png"; sourceTree = "<group>"; };
 		CBD0495F18BB87D400B9A962 /* icon_views@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_views@2x.png"; sourceTree = "<group>"; };
@@ -911,6 +914,8 @@
 				CB9F192218ACF3F2009398F6 /* SharedVideo.m */,
 				CB65D4BC18B9EB9800A69B95 /* AssetsCollectionReusableView.h */,
 				CB65D4BD18B9EB9800A69B95 /* AssetsCollectionReusableView.m */,
+				CBB30EE7191BB47F009C0840 /* contactsCell.h */,
+				CBB30EE8191BB47F009C0840 /* contactsCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -1251,6 +1256,7 @@
 				85ED804718917E6E00CEAE85 /* UIButton+Additions.m in Sources */,
 				CBA770F718AE56DD00240D49 /* SDImageCache.m in Sources */,
 				CBA770FC18AE56DD00240D49 /* SDWebImageManager.m in Sources */,
+				CBB30EE9191BB47F009C0840 /* contactsCell.m in Sources */,
 				CB24001118ED6017007D2E00 /* VblLocationManager.m in Sources */,
 				85F8B47D188A5E2200E92380 /* AppManager.m in Sources */,
 				CBA770FD18AE56DD00240D49 /* SDWebImagePrefetcher.m in Sources */,

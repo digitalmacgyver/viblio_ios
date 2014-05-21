@@ -178,4 +178,8 @@
                                  success : (void(^)(cloudVideos *mediaObj))success
                                  failure : (void(^)(NSError *error))failure;
 
+-(AFJSONRequestOperation*)sharedFromFBfileId : (NSString*)mid
+                                     success : (void(^)(BOOL hasBeenShared))success
+                                      failure:(void(^)(NSError *error))failure;
+
 @end

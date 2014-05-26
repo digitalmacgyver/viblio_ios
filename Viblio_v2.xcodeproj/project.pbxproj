@@ -505,8 +505,8 @@
 		2A22F40A187AAD8E002F71F8 /* Viblio_v2Tests */ = {
 			isa = PBXGroup;
 			children = (
-				2A22F410187AAD8E002F71F8 /* Viblio_v2Tests.m */,
 				2A22F40B187AAD8E002F71F8 /* Supporting Files */,
+				2A22F410187AAD8E002F71F8 /* Viblio_v2Tests.m */,
 			);
 			path = Viblio_v2Tests;
 			sourceTree = "<group>";

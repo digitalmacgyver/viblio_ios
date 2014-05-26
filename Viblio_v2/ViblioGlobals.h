@@ -33,6 +33,7 @@
 #define API_LOGIN_SERVER_URL @"https://viblio.com"
 #endif
 
+#define AppStoreId @"327630330"
 
 
 // Frameworks

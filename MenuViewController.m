@@ -375,7 +375,9 @@
     }
     else if ([_menuSections[indexPath.row] isEqualToString:@"Rate Us In App Store"])
     {
-        
+        NSString* url = [NSString stringWithFormat:  @"http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=%@&pageNumber=0&sortOrdering=1&type=Purple+Software&mt=8", @"327630330"];
+        [[UIApplication sharedApplication] openURL: [NSURL URLWithString: url ]];
+        url = nil;
     }
 }
 

@@ -26,6 +26,9 @@ NSString * const logoutUser = @"com.viblio.app : logoutUser";
 NSString * const reloadListView = @"com.viblio.app : reloadListView";
 NSString * const showSharingView = @"com.viblio.app : showSharingView";
 NSString * const removeOwnerSharingView = @"com.viblio.app : removeOwnerSharingView";
+NSString * const newVideoAvailable = @"com.viblio.app : newVideoAvailable";
+NSString * const wifiSignalLost = @"com.viblio.app : wifiSignalLost";
+NSString * const moviePlayerEnded = @"com.viblio.app : moviePlayerEnded";
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters
 {
@@ -345,7 +348,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 +(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList
 {
     
-    DLog(@"Log : The videolist is - %@", videoList);
+ //   DLog(@"Log : The videolist is - %@", videoList);
     
     
     //return  nil;
@@ -358,11 +361,11 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     [result setValue:@[] forKey:@"This Week"];
     [result setValue:@[] forKey:@"This Month"];
     
-    DLog(@"Log : The video list count is - %d", videoList.count);
+  //  DLog(@"Log : The video list count is - %d", videoList.count);
     
     for( int i=0; i < videoList.count; i++ )
     {
-        DLog(@"Log : Result dictionary is - %@", result);
+     //   DLog(@"Log : Result dictionary is - %@", result);
         
         id video = videoList[i];
         NSDate *videoDate;
@@ -371,7 +374,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         // 2014-02-07 14:21:00
         // 2014-01-30 18:20:34
         
-        DLog(@"Log : The class of object is - %@", NSStringFromClass([video class]));
+     //   DLog(@"Log : The class of object is - %@", NSStringFromClass([video class]));
         
         if( APPMANAGER.indexOfSharedListSelected != nil )
         {
@@ -396,7 +399,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         
         NSDateComponents *currentDateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitWeekOfMonth |NSCalendarUnitMonth | NSCalendarUnitYear fromDate:curDate];
         
-        DLog(@"Log : Video week - %d, current week - %d", videoDateComponents.weekOfMonth, currentDateComponents.weekOfMonth);
+    //    DLog(@"Log : Video week - %d, current week - %d", videoDateComponents.weekOfMonth, currentDateComponents.weekOfMonth);
         
         if( videoDateComponents.year == currentDateComponents.year )
         {
@@ -415,7 +418,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
             }
             else
             {
-                DLog(@"Log : video belongs to older month.. Create a section for that month...");
+     //           DLog(@"Log : video belongs to older month.. Create a section for that month...");
                 
                 // Check whether the section with that month already exists
                 
@@ -435,8 +438,8 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         }
         else
         {
-            DLog(@"Log : Video belongs to some older year... Create a header of that year");
-            
+   //         DLog(@"Log : Video belongs to some older year... Create a header of that year");
+   
             // Check whether the section with that year already exists
             
             if( result[[NSString stringWithFormat:@"%d",videoDateComponents.year]] == nil )
@@ -462,13 +465,13 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
            [array addObject:category]; 
     }
     
-    DLog(@"Log : The result before for loop is - %@", result);
+  //  DLog(@"Log : The result before for loop is - %@", result);
     for( int i=0; i<array.count; i++ )
     {
         [result removeObjectForKey:array[i]];
     }
     
-    DLog(@"Log : The result is - %@", result);
+   // DLog(@"Log : The result is - %@", result);
     
     return result;
 }
@@ -486,7 +489,6 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(void)MailSharingClicked : (id)sender
 {
-   // DLog(@" Log : Mail Clicked - 2");
     ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
     
     if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
@@ -502,63 +504,236 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
         CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
         CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
         
+        DLog(@"Log : *************************** CHECKPOINT - 1*****************************");
+        
         if( APPMANAGER.contacts != nil )
         {
             [APPMANAGER.contacts removeAllObjects];
             APPMANAGER.contacts = nil;
         }
         
-      //  DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
+        
+        DLog(@"Log : *************************** CHECKPOINT - 1.1 *****************************");
         APPMANAGER.contacts = [NSMutableArray new];
         
         for(int i = 0; i < numberOfPeople; i++) {
             
-           // DLog(@"Log : In processing contact - %d", i);
             ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
-            
             NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
             NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
             
             ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
             NSMutableArray *emailIds = [NSMutableArray new];
-            
-           // DLog(@" Log : Mail Clicked 6 - %@", email);
-            
+
             for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
                 NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
-              //  DLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
                 [emailIds addObject:phoneNumber];
             }
             
             if( emailIds.count > 0 )
             {
-               // DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
+                if( [firstName isValid] || [lastName isValid] )
+                {
+                    if( ![firstName isValid] )
+                    {
+                        firstName = @"";
+                        
+                        if( [lastName isValid] )
+                        {
+                            firstName = lastName;
+                            lastName = @"";
+                        }
+                    }
+                    if( ![lastName isValid] )
+                    {
+                        lastName = @"";
+                    }
+                    
+                    int index = -1;
+                    
+                    DLog(@"Log : *************************** CHECKPOINT - 1.2 *****************************");
+                    
+                    index = [self getIndexOfContactIfExistsWithFname:firstName andLname:lastName];
+                    
+                    DLog(@"Log : *************************** CHECKPOINT - 1.3 *****************************");
+                   // DLog(@"Log : The index at which the object is found is - %d", index);
+                    
+                    if( index == -1 )
+                    {
+                        [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
+                    }
+                    else
+                    {
+                        NSMutableDictionary *contact = [APPMANAGER.contacts[index] mutableCopy];
+                        NSMutableArray *ContactemailIds = contact[@"email"];
+                        
+                        //emailIds = [[emailIds arrayByAddingObjectsFromArray:emailIds] mutableCopy];
+                        
+                        for (int i=0; i<emailIds.count; i++) {
+                            
+                            if( ![self isEmailIdExisting:ContactemailIds andEmail:emailIds[i]] )
+                            {
+                                [ContactemailIds addObject:emailIds[i]];
+                            }
+                         
+                        }
+                        
+                        [contact setValue:ContactemailIds forKey:@"email"];
+                        
+                        [APPMANAGER.contacts removeObjectAtIndex:index];
+                        [APPMANAGER.contacts insertObject:contact atIndex:index];
+                    }
                 
-                if( [firstName isValid] && [lastName isValid] )
-                    [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
+                }
                 else
                     [APPMANAGER.contacts addObject:@{ @"email" : emailIds}];
-                
             }
-            
-            // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
         }
         
-      //  DLog(@" Log : Mail Clicked - 5");
-//        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
-        //APPMANAGER.video = self.video;
-        //[[NSNotificationCenter defaultCenter] postNotificationName:showContactsScreen object:nil];
+        DLog(@"Log : *************************** CHECKPOINT - 1.4 *****************************");
+        DLog(@"Log : The contacts are - %@", APPMANAGER.contacts);
+        APPMANAGER.contacts = [[self getSortedArrayFromArray:APPMANAGER.contacts] mutableCopy];
     }
     else {
-        // Send an alert telling user to change privacy setting in settings app
-        
+
         [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
     }
 }
 
++(BOOL)isEmailIdExisting : (NSMutableArray*)contatcts andEmail : (NSString*)emailId
+{
+    if( contatcts != nil && contatcts.count > 0 )
+    {
+        for( int i=0; i<contatcts.count; i++ )
+        {
+            if( [emailId isEqualToString:contatcts[i]] )
+            {
+                return YES;
+            }
+        }
+    }
+
+    return NO;
+}
+
+
++(int)getIndexOfContactIfExistsWithFname : (NSString*)fname andLname : (NSString*)lname
+{
+    if( APPMANAGER.contacts != nil && APPMANAGER.contacts.count > 0 )
+    {
+        for( int i=0; i < APPMANAGER.contacts.count; i++ )
+        {
+            NSDictionary *contact = APPMANAGER.contacts[i];
+            
+            if( [fname isEqualToString:contact[@"fname"]] && [lname isEqualToString:contact[@"lname"]] )
+            {
+                return i;
+            }
+        }
+    }
+    
+    return -1;
+}
+
+
++(NSMutableArray*)getSortedArrayFromArray : (NSMutableArray*)contacts
+{
+    DLog(@"Log : *************************** CHECKPOINT - 1.5 *****************************");
+    
+    if( contacts != nil && contacts.count > 0 )
+    {
+        NSMutableArray *emailArray = [[NSMutableArray alloc]init];
+        NSMutableArray *nameArray = [[NSMutableArray alloc]init];
+        
+        for( int i=0; i<contacts.count; i++ )
+        {
+            NSDictionary *obj = contacts[i];
+            if( obj[@"fname"] != nil && ( ((NSString*)obj[@"fname"]).length > 0 ) )
+            {
+                [nameArray addObject:contacts[i]];
+            }
+            else
+                [emailArray addObject:contacts[i]];
+        }
+        
+        if( nameArray != nil && nameArray.count > 0 )
+        {
+            nameArray = [self getSortedList : nameArray  usingKey : @"fname"];
+        }
+        
+        if ( emailArray != nil && emailArray.count > 0 )
+        {
+            emailArray = [self getSortedEmailList:emailArray usingKey:@"email"];
+            
+            int j = 0;
+            for ( int i =0 ; i < nameArray.count; i++ )
+            {
+                //  DLog(@"Log : The j value is - %d", j);
+                
+                NSString *email = [((NSMutableArray*)((NSDictionary*)emailArray[j])[@"email"]) firstObject];
+                NSString *name = ((NSDictionary*)nameArray[i])[@"fname"];
+                
+                DLog(@"Log : Name and email are - %@ ---- %@", name, email);
+                NSComparisonResult result;
+                result = [[name lowercaseString] compare:[email lowercaseString]];
+                
+                DLog(@"Log : The comparison result is - %d", result);
+                if( result == NSOrderedDescending )
+                {
+                    DLog(@"Log : Yes ordered in descending now....");
+                    [nameArray insertObject:emailArray[j] atIndex:i];
+                    j++;
+                    
+                    if( j >= emailArray.count )
+                    {
+                        break;
+                    }
+                }
+            }
+            
+            if( j < emailArray.count )
+            {
+                for( int i=j ; i < emailArray.count; i++ )
+                {
+                    [nameArray addObject:emailArray[i]];
+                }
+            }
+        }
+    
+        DLog(@"Log : The name array being returned is - %@", nameArray);
+        return [nameArray mutableCopy];
+    }
+    
+    return nil;
+}
+
++(NSMutableArray*)getSortedList : (NSArray*)contacts usingKey : (NSString*)key
+{
+    DLog(@"Log : *************************** CHECKPOINT - 1.6 *****************************");
+    NSArray *sortedList;
+    sortedList = [contacts sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        
+        return [[((NSDictionary*)a)[key] lowercaseString] compare:[((NSDictionary*)b)[key] lowercaseString]];
+    }];
+    DLog(@"Log : The sorted name list - %@", sortedList);
+    return [sortedList mutableCopy];
+}
+
++(NSMutableArray*)getSortedEmailList : (NSArray*)contacts usingKey : (NSString*)key
+{
+    NSArray *sortedList;
+    sortedList = [contacts sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        
+        return [ [((NSArray*) (((NSDictionary*)a)[key])) firstObject] compare:[((NSArray*) (((NSDictionary*)b)[key])) firstObject]];
+    }];
+    DLog(@"Log : The sorted name list - %@", sortedList);
+    return [sortedList mutableCopy];
+}
+
+
 +(NSArray*)getReOrderedListOfKeys :(NSArray*)keys
 {
-    DLog(@"Log : The keys obtained are - %@", keys);
+   // DLog(@"Log : The keys obtained are - %@", keys);
     NSMutableArray *priorityFirst = [[NSMutableArray alloc]init];
     NSMutableArray *prioritySecond = [[NSMutableArray alloc]init];
     NSMutableArray *priorityThird = [[NSMutableArray alloc]init];
@@ -569,7 +744,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
     
     for( NSString *str in keys )
     {
-        DLog(@"Log : Str obtained is - %@", str);
+    //    DLog(@"Log : Str obtained is - %@", str);
         
         if( [str isEqualToString:@"Today"] || [str isEqualToString:@"This Week"] || [str isEqualToString:@"This Month"] )
         {
@@ -598,7 +773,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
 
 +(NSArray*)getOrderedListForMonth : (NSMutableArray*)monthArray
 {
-    DLog(@"Log : The month array is - %@", monthArray);
+  //  DLog(@"Log : The month array is - %@", monthArray);
     
     NSMutableArray *sortedRes = [NSMutableArray new];
     for(int i =0 ; i < monthArray.count; i++ )
@@ -624,7 +799,7 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName)
             [sortedRes addObject:monthArray[i]];
     }
     
-    DLog(@"Log : The sorted res - %@", sortedRes);
+   // DLog(@"Log : The sorted res - %@", sortedRes);
     return sortedRes;
 }
 

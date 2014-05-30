@@ -15,6 +15,7 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tblInProgress;
 @property (nonatomic, strong)NSArray *videoList;
+@property (nonatomic, retain)NSArray *completedList;
 
 @property (nonatomic, assign) int celIndex;
 @end

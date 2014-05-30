@@ -29,6 +29,9 @@
 	// Do any additional setup after loading the view.
     
     self.lblSignUpWith.font = [ViblioHelper viblio_Font_Italic_WithSize:14 isBold:NO];
+    DLog(@"Log : Posting the device token to the server - ");
+    
+    APPMANAGER.showUploaderPopUp = NO;
 }
 
 - (void)didReceiveMemoryWarning
@@ -148,7 +151,7 @@
             [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"I don't recognize that email format. Wanna try agian ?" viewController:self cancelBtnTitle:@"OK"];
     }
     else
-        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"hmmm. Something's missing... email or password perhaps? Let's try it again." viewController:self cancelBtnTitle:@"OK"];
+        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"hmmm. Something's missing... email perhaps? Let's try it again." viewController:self cancelBtnTitle:@"OK"];
 }
 
 
@@ -190,16 +193,8 @@
                       LandingViewController *lvc = (LandingViewController*)self.navigationController.presentingViewController;
                       [self.navigationController dismissViewControllerAnimated:NO completion:^(void)
                        {
-//                           if( [APPMANAGER.user.isNewUser integerValue] )
-//                           {
-//                               DLog(@"LOG : New user tutorials have to be shown");
-//                               [lvc performSegueWithIdentifier:Viblio_wideNonWideSegue(@"tutorialNav") sender:self];
-//                           }
-//                           else
-//                           {
                                DLog(@"LOG : Not new user... Take him to dashboard");
                                [lvc performSegueWithIdentifier:(@"dashboardNav") sender:self];
-//                           }
                        }];
                   }failure:^(NSError *error)
                   {
@@ -231,16 +226,16 @@
                               LandingViewController *lvc = (LandingViewController*)self.navigationController.presentingViewController;
                               [self.navigationController dismissViewControllerAnimated:NO completion:^(void)
                                {
-//                                   if( [APPMANAGER.user.isNewUser integerValue] )
-//                                   {
-//                                       DLog(@"LOG : New user tutorials have to be shown");
-//                                       [lvc performSegueWithIdentifier:Viblio_wideNonWideSegue(@"tutorialNav") sender:self];
-//                                   }
-//                                   else
-//                                   {
+                                   if( [APPMANAGER.user.isNewUser integerValue] )
+                                   {
+                                       DLog(@"LOG : New user tutorials have to be shown");
+                                       [lvc performSegueWithIdentifier:Viblio_wideNonWideSegue(@"tutorialNav") sender:self];
+                                   }
+                                   else
+                                   {
                                        DLog(@"LOG : Not new user... Take him to dashboard");
                                        [lvc performSegueWithIdentifier:(@"dashboardNav") sender:self];
-//                                   }
+                                   }
                                }];
                           }failure:^(NSError *error)
                           {

@@ -19,10 +19,11 @@
 @dynamic sync_time;
 @dynamic uploadedBytes;
 @dynamic fileUUID;
+@dynamic isCompleted;
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"fileLocation: %@, fileURL: %@, hasFailed : %@, isPaused : %@, sync_status : %@, sync_time : %@, uploadedBytes : %@, fileUUID : %@", self.fileLocation, self.fileURL, self.hasFailed, self.isPaused, self.sync_status, self.sync_time, self.uploadedBytes, self.fileUUID];
+    return [NSString stringWithFormat:@"fileLocation: %@, fileURL: %@, hasFailed : %@, isPaused : %@, sync_status : %@, sync_time : %@, uploadedBytes : %@, fileUUID : %@, isCompleted : %@", self.fileLocation, self.fileURL, self.hasFailed, self.isPaused, self.sync_status, self.sync_time, self.uploadedBytes, self.fileUUID, self.isCompleted];
 }
 
 @end

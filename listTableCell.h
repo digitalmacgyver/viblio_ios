@@ -26,6 +26,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *imgVwThumbnail;
 @property (weak, nonatomic) IBOutlet UIView *vwShareBtns;
 
+@property (nonatomic, weak) NSString *cloudURL, *uuid;
 //@property(nonatomic, strong)ALAsset *asset;
 //@property(nonatomic, strong)Videos *video;
 @property (weak, nonatomic) IBOutlet UIImageView *face1;

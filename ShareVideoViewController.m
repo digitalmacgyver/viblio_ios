@@ -32,7 +32,7 @@
     
     //self.txtVwBody.editable = NO;
     self.txtFiledTitle.text = TitleText;
-    self.txtVwBody.text = @"Check out my new video on Viblio ! \n https://staging.viblio.com/";
+    self.txtVwBody.text = @"Check out my new video on Viblio ! \n https://viblio.com/";
     self.txtVwBody.dataDetectorTypes = UIDataDetectorTypeLink;
     
     [self.navigationItem setTitleView:[ViblioHelper vbl_navigationShareTitleView:@"Share with VIBLIO"]];
@@ -73,19 +73,29 @@
         self.btnMail.tag = 1;
         
         NSMutableDictionary *contact = [APPMANAGER.selectedContacts firstObject];
+        NSString *name = [[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]];
+        
+        if( name == nil || name.length <= 0 )
+        {
+            name = [contact[@"email"] firstObject];
+        }
         
         if( APPMANAGER.selectedContacts.count > 1 )
         {
             if( APPMANAGER.selectedContacts.count > 2 )
-                    self.lblToList.text = [NSString stringWithFormat:@"%@ and %d others",[[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]], APPMANAGER.selectedContacts.count-1 ];
+            {
+                self.lblToList.text = [NSString stringWithFormat:@"%@ and %d others",name, APPMANAGER.selectedContacts.count-1 ];
+            }
             else
-                    self.lblToList.text = [NSString stringWithFormat:@"%@ and %d other",[[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]], APPMANAGER.selectedContacts.count-1 ];
+            {
+                self.lblToList.text = [NSString stringWithFormat:@"%@ and %d other",name, APPMANAGER.selectedContacts.count-1 ];
+            }
         }
         else
-            self.lblToList.text = [[contact[@"fname"] stringByAppendingString:@" "] stringByAppendingString:contact[@"lname"]];
-
+        {
+            self.lblToList.text = name;
+        }
         contact = nil;
-        
     }
     else
     {
@@ -126,8 +136,6 @@
 
 -(void)send
 {
-    
-
     NSString *fileId ;
     
     if( self.btnFB.tag )
@@ -157,8 +165,7 @@
             [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
         }
     }
-
-        }
+}
 
 
 
@@ -171,6 +178,12 @@
     
     [APPMANAGER.selectedContacts removeAllObjects];
     APPMANAGER.selectedContacts = nil;
+    
+    [APPMANAGER.tempContacts removeAllObjects];
+    APPMANAGER.tempContacts = nil;
+    
+    [APPMANAGER.loadContacts removeAllObjects];
+    APPMANAGER.loadContacts = nil;
     
     [self.op cancel];
     [self.navigationController popViewControllerAnimated:YES];
@@ -276,11 +289,15 @@
     // Check to see whether we have already opened a session.
     if (FBSession.activeSession.isOpen)
     {
+        DLog(@"Log : A valid BSession exists ----");
+        
         // login is integrated with the send button -- so if open, we send
         [self postOnWall];
     }
     else
     {
+        DLog(@"Log : FBSession doesnt exist....");
+        
         [FBSession openActiveSessionWithPublishPermissions:[NSArray arrayWithObjects:@"publish_stream", nil] defaultAudience:FBSessionDefaultAudienceEveryone allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
                                       
                                           // if login fails for any reason, we alert
@@ -315,8 +332,17 @@
     APPMANAGER.posterImageForVideoSharing = nil;
     APPMANAGER.videoToBeShared = nil;
     
+    APPMANAGER.posterImageForVideoSharing = nil;
+    APPMANAGER.videoToBeShared = nil;
+    
     [APPMANAGER.selectedContacts removeAllObjects];
     APPMANAGER.selectedContacts = nil;
+    
+    [APPMANAGER.tempContacts removeAllObjects];
+    APPMANAGER.tempContacts = nil;
+    
+    [APPMANAGER.loadContacts removeAllObjects];
+    APPMANAGER.loadContacts = nil;
 
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -324,6 +350,7 @@
 
 - (void)postOnWall
 {
+    
     NSNumber *testMessageIndex=[[NSNumber alloc] init];
     if ([[NSUserDefaults standardUserDefaults] objectForKey:@"testMessageIndex"]==nil)
     {
@@ -347,27 +374,38 @@
         [self requestCompleted:connection forFbID:@"me" result:result error:error];
     };
     
-    // create the request object, using the fbid as the graph path
-    // as an alternative the request* static methods of the FBRequest class could
-    // be used to fetch common requests, such as /me and /me/friends
-    NSString *messageString=[NSString stringWithFormat:@"Check out my new video on Viblio ! \n https://staging.viblio.com/"];
-    NSDictionary *dict = [NSDictionary dictionaryWithObjects:@[messageString] forKeys:@[@"message"]];
+    DLog(@"LOg : The thumb url is - %@", APPMANAGER.thumbUrl);
     
-    FBRequest *request=[[FBRequest alloc] initWithSession:FBSession.activeSession graphPath:@"me/feed" parameters:dict HTTPMethod:@"POST"];
+   // DLog(@"Log : The thumb url obtained for sharing is - %@", APPMANAGER.thumbUrl);
+   __block NSMutableDictionary *params;
     
-    // add the request to the connection object, if more than one request is added
-    // the connection object will compose the requests as a batch request; whether or
-    // not the request is a batch or a singleton, the handler behavior is the same,
-    // allowing the application to be dynamic in regards to whether a single or multiple
-    // requests are occuring
-    [newConnection addRequest:request completionHandler:handler];
+    //http://0.tqn.com/d/webdesign/1/G/N/0/2/86432851.jpg
+    //https://images.nga.gov/en/web_images/constable.jpg
     
-    // if there's an outstanding connection, just cancel
-    [self.requestConnection cancel];
-    
-    // keep track of our connection, and start it
-    self.requestConnection = newConnection;
-    [newConnection start];
+            params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                           self.txtFiledTitle.text, @"name",
+                                           self.txtVwBody.text, @"caption",
+                                           // self.txtVwBody.text, @"description",
+                                           [NSString stringWithFormat:@"%@/s/p/%@",API_LOGIN_SERVER_URL, APPMANAGER.sharingUUID], @"link",
+                                           //@"http://0.tqn.com/d/webdesign/1/G/N/0/2/86432851.jpg", @"picture",
+                                           nil];
+        
+        FBRequest *request=[[FBRequest alloc] initWithSession:FBSession.activeSession graphPath:@"me/feed" parameters:params HTTPMethod:@"POST"];
+        
+        // add the request to the connection object, if more than one request is added
+        // the connection object will compose the requests as a batch request; whether or
+        // not the request is a batch or a singleton, the handler behavior is the same,
+        // allowing the application to be dynamic in regards to whether a single or multiple
+        // requests are occuring
+        [newConnection addRequest:request completionHandler:handler];
+        
+        // if there's an outstanding connection, just cancel
+        [self.requestConnection cancel];
+        
+        // keep track of our connection, and start it
+        self.requestConnection = newConnection;
+        [newConnection start];
+//    }];
 }
 
 // FBSample logic
@@ -396,10 +434,10 @@
         NSString *message;
         if( error.userInfo != nil )
         {
-           message  = error.userInfo[@"com.facebook.sdk:ParsedJSONResponseKey"][@"body"][@"error"][@"message"];
+           message  = @"Could not complete sharing"; //error.userInfo[@"com.facebook.sdk:ParsedJSONResponseKey"][@"body"][@"error"][@"message"];
         }
         else
-            message = error.localizedDescription;
+            message = @"Could not complete sharing"; //error.localizedDescription;
         
         UIAlertView *alert=[[UIAlertView alloc] initWithTitle:@"error" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
         // error contains details about why the request failed
@@ -407,7 +445,14 @@
     }
     else
     {
-        NSLog(@"   ok");
+        [APPCLIENT sharedFromFBfileId:APPMANAGER.sharingUUID success:^(BOOL hasbeenShared)
+        {
+            
+        }failure:^(NSError *error)
+        {
+            
+        }];
+        
         [ViblioHelper displayAlertWithTitle:@"Success" messageBody:@"Video has been successfully shared!" viewController:self cancelBtnTitle:@"OK"];
     };
 }
@@ -447,8 +492,9 @@
     DLog(@" Log : Mail Clicked ");
     [self.btnMail setImage:[UIImage imageNamed:@"bttn_mail"] forState:UIControlStateNormal];
     DLog(@" Log : Mail Clicked - 1");
-    [self MailSharingClicked:sender];
-    
+    //[self MailSharingClicked:sender];
+
+    [self naviagteToContacts:self];
     //[ViblioHelper MailSharingClicked:self];
     
 }
@@ -483,75 +529,76 @@
     return YES;
 }
 
--(void)MailSharingClicked : (id)sender
-{
-    //DLog(@" Log : Mail Clicked - 2");
-    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-    
-    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-            ABAddressBookRef addressBook = ABAddressBookCreate( );
-        });
-    }
-    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-        
-        // DLog(@" Log : Mail Clicked - 3");
-        CFErrorRef *error = NULL;
-        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
-        CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-        CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
-        
-        if( APPMANAGER.contacts != nil )
-        {
-            [APPMANAGER.contacts removeAllObjects];
-            APPMANAGER.contacts = nil;
-        }
-        
-        //DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
-        APPMANAGER.contacts = [NSMutableArray new];
-        
-        for(int i = 0; i < numberOfPeople; i++) {
-            
-            //DLog(@"Log : In processing contact - %d", i);
-            ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
-            
-            NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
-            NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
-            
-            ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
-            NSMutableArray *emailIds = [NSMutableArray new];
-            
-            //DLog(@" Log : Mail Clicked 6 - %@", email);
-            
-            for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
-                NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
-                //sDLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
-                [emailIds addObject:phoneNumber];
-            }
-
-            if( emailIds.count > 0 )
-            {
-                //DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
-                
-                if( [firstName isValid] && [lastName isValid] )
-                    [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
-                else
-                    [APPMANAGER.contacts addObject:@{ @"email" : emailIds}];
-                
-            }
-            
-           // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
-        }
-        
-        //DLog(@" Log : Mail Clicked - 5");
-        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
-    }
-    else {
-        // Send an alert telling user to change privacy setting in settings app
-        
-        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
-    }
-}
+//-(void)MailSharingClicked : (id)sender
+//{
+//    //DLog(@" Log : Mail Clicked - 2");
+//    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+//    
+//    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+//        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+//            ABAddressBookRef addressBook = ABAddressBookCreate( );
+//        });
+//    }
+//    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+//        
+//        // DLog(@" Log : Mail Clicked - 3");
+//        CFErrorRef *error = NULL;
+//        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
+//        CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+//        CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
+//        
+//        if( APPMANAGER.contacts != nil )
+//        {
+//            [APPMANAGER.contacts removeAllObjects];
+//            APPMANAGER.contacts = nil;
+//        }
+//        
+//        //DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
+//        APPMANAGER.contacts = [NSMutableArray new];
+//        
+//        for(int i = 0; i < numberOfPeople; i++) {
+//            
+//            //DLog(@"Log : In processing contact - %d", i);
+//            ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
+//            
+//            NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+//            NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
+//            
+//            ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
+//            NSMutableArray *emailIds = [NSMutableArray new];
+//            
+//            //DLog(@" Log : Mail Clicked 6 - %@", email);
+//            
+//            for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
+//                NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
+//                //sDLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
+//                [emailIds addObject:phoneNumber];
+//            }
+//
+//            if( emailIds.count > 0 )
+//            {
+//                //DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
+//                
+//                if( [firstName isValid] && [lastName isValid] )
+//                    [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
+//                else
+//                    [APPMANAGER.contacts addObject:@{ @"email" : emailIds}];
+//                
+//            }
+//            
+//           // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
+//        }
+//        
+//        APPMANAGER.contacts = (NSMutableArray*)[ViblioHelper getSortedArrayFromArray:APPMANAGER.contacts];
+//        //DLog(@" Log : Mail Clicked - 5");
+//        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+//    }
+//    else {
+//        // Send an alert telling user to change privacy setting in settings app
+//        
+//        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
+//    }
+//}
 
 
 #pragma table view methods
@@ -568,6 +615,11 @@
 {
         return 40;
 }
+
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//{
+//    return 70;
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -604,7 +656,15 @@
 
 - (IBAction)naviagteToContacts:(id)sender {
     
-    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+//    if( APPMANAGER.contacts.count > 0 && APPMANAGER.contacts != nil )
+//    {
+            [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+//    }
+//    else
+//    {
+//        [ViblioHelper displayAlertWithTitle:@"Contacts" messageBody:@"No contacts were found" viewController:nil cancelBtnTitle:@"OK"];
+//    }
+
 }
 
 -(BOOL)isIndexSelected : (NSNumber*)currentIndex

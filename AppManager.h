@@ -20,18 +20,20 @@
 @property (nonatomic, strong) Session *activeSession;
 @property (nonatomic, strong) NSArray *listVideos;
 @property (nonatomic) BOOL turnOffUploads;
-@property (nonatomic, strong) NSMutableArray *contacts, *selectedContacts;
+@property (nonatomic, strong) NSMutableArray *contacts, *selectedContacts, *loadContacts, *tempContacts;
 //@property (nonatomic, strong) cloudVideos *video;
 @property (nonatomic, strong) NSDictionary *resultCategorized, *sharedSortedList;
 @property (nonatomic, strong) UIImage *posterImageForVideoSharing;
 @property (nonatomic, strong) id VideoToBeShared;
-@property (assign) BOOL restoreMyViblio;
+@property (assign) BOOL restoreMyViblio, internetNotAvailable, showUploaderPopUp;
 
 @property (nonatomic, strong) NSMutableArray *orderedKeys, *sharedOrderedKeys, *sharedOwnerOrderedKeys ;
 @property (nonatomic, assign) int errorCode ;
 @property (nonatomic, assign) NSIndexPath *indexOfSharedListSelected;
 
+@property (nonatomic, assign) AFNetworkReachabilityStatus signalStatus;
 @property (nonatomic, strong) NSMutableArray *sharedVideoList;
+@property (retain) NSString *thumbUrl, *sharingUUID;
 
 + (AppManager *)sharedClient;
 -(NSArray*)getSettings;

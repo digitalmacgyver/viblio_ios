@@ -9,7 +9,7 @@
 #import "VideoManager.h"
 #import "NSString+Additions.h"
 
-#define BUFFER_LEN 1024*256*1
+#define BUFFER_LEN 1024*1024*1
 
 @interface VideoManager ()
 @property (nonatomic, strong) ALAssetsLibrary *assetsLibrary;
@@ -31,28 +31,60 @@
     __block NSData *chunkData = nil;
     if (self.asset){
         
-        self.totalChunksSent++;
-        DLog(@"Log : Total chunks sent - %d", self.totalChunksSent);
-        
-        static const NSUInteger BufferSize = BUFFER_LEN; // 256Kb chunk
-        ALAssetRepresentation *rep = [self.asset defaultRepresentation];
-        uint8_t *buffer = calloc(BufferSize, sizeof(*buffer));
-        NSUInteger bytesRead = 0;
-        NSError *error = nil;
-        
-        @try
+        if( self.asset.defaultRepresentation.size > 0 )
         {
-            bytesRead = [rep getBytes:buffer fromOffset:offsetOfUpload length:BufferSize error:&error];
-            chunkData = [NSData dataWithData:[NSData dataWithBytesNoCopy:buffer length:bytesRead freeWhenDone:NO]];
-        }
-        @catch (NSException *exception)
-        {
+            self.totalChunksSent++;
+            DLog(@"Log : Total chunks sent - %d", self.totalChunksSent);
+            
+            static const NSUInteger BufferSize = BUFFER_LEN; // 256Kb chunk
+            ALAssetRepresentation *rep = [self.asset defaultRepresentation];
+            uint8_t *buffer = calloc(BufferSize, sizeof(*buffer));
+            NSUInteger bytesRead = 0;
+            NSError *error = nil;
+            
+            @try
+            {
+                bytesRead = [rep getBytes:buffer fromOffset:offsetOfUpload length:BufferSize error:&error];
+                chunkData = [NSData dataWithData:[NSData dataWithBytesNoCopy:buffer length:bytesRead freeWhenDone:NO]];
+            }
+            @catch (NSException *exception)
+            {
+                free(buffer);
+                chunkData = nil;
+                // Handle the exception here...
+            }
+            
             free(buffer);
-            chunkData = nil;
-            // Handle the exception here...
+        }
+        else
+        {
+            DLog(@"Log : The entries in asset and uploading are - %@,,,,,,,,,,,,,,%@", VCLIENT.asset, VCLIENT.videoUploading);
+            DLog(@"Log : File has been deleted...");
+            self.fileIdToBeDeleted = VCLIENT.videoUploading.fileLocation;
+            DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
+            [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound:^(NSString *msg)
+             {
+                 
+             }failure:^(NSError *error)
+             {
+                 DLog(@"Log : Deleting record did fail with error - %@", error);
+             }];
+            
+            if( VCLIENT.asset != nil )
+            {
+                DLog(@"Log : Second list - The entries in asset and uploading are - %@,,,,,,,,,,,,,,%@", VCLIENT.asset, VCLIENT.videoUploading);
+                DLog(@"Log : Deleting the files from App DB that have been deleted..... %@", VCLIENT.videoUploading.fileLocation);
+                [APPCLIENT deleteTheFileWithID:self.fileIdToBeDeleted success:^(BOOL hasFileBeenDeleted)
+                 {
+                    // [self startNewFileUpload];
+                 }failure:^(NSError *error)
+                 {
+                    // [self deleteFile];
+                 }];
+            }
+            [APPCLIENT invalidateUploadTaskWithoutPausing];
         }
         
-        free(buffer);
     } else {
         DLog(@"failed to retrive Asset");
     }
@@ -118,7 +150,7 @@
 {
     DLog(@"Log : The offset obtained is - %@", offsetObtained);
     offset = offsetObtained.intValue;
-    self.totalChunksSent = (offset)/(1024*256*1);
+    self.totalChunksSent = (offset)/(1024*1024*1);
     DLog(@"Log : total chunks sent count is - %d", self.totalChunksSent);
     APPCLIENT.uploadedSize = offset;
     [self videoFromNSData];
@@ -136,7 +168,7 @@
     else
     {
         DLog(@"Log : File not found on the server to continue... Delete and start afresh...");
-        [self deleteFile];
+        [self startNewFileUpload];
     }
 }
 
@@ -230,7 +262,8 @@
                 {
                     DLog(@"LOG : File transmission done");
                     DLog(@"Log : Remove the file record from DB ----");
-                    [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
+                   // [DBCLIENT deleteOperationOnDB:self.videoUploading.fileURL];
+                    [DBCLIENT updateIsCompletedStatusOfFile:self.asset.defaultRepresentation.url forCompletedState:YES];
                     
                     // Clean the video uploaded size
                     APPCLIENT.uploadedSize = 0;
@@ -239,7 +272,7 @@
                     self.videoUploading = nil;
                     
                     DLog(@"Log : Trying to fetch more files for uploading");
-
+                    
                     [self videoUploadIntelligence];
                     
                     if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive )
@@ -279,6 +312,17 @@
                 
                 // Ensure that offset doesnt jump in multiples of chunkdata length
                 
+//                if( [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground )
+//                {
+//                    DLog(@"Log : App is in background and the chunks transferred in backgrounds are - %d", self.backgroundStartChunk);
+//                    if( self.backgroundStartChunk > 4 && !self.backgroundAlertShown )
+//                    {
+//                        self.backgroundAlertShown = YES;
+//                        [((AppDelegate*)([UIApplication sharedApplication].delegate)) presentNotification];
+//                    }
+//                    self.backgroundStartChunk++;
+//                }
+                
                 DLog(@"LOG : ------------- OFFSET and ChunkData cross reference ------------");
                 DLog(@"Log : Offset is --- %f, chunkdata uploaded is ----- %d", offset, (self.totalChunksSent-1)*BUFFER_LEN);
                 if( offset > (self.totalChunksSent-1) * BUFFER_LEN )
@@ -293,18 +337,18 @@
                          DLog(@"LOG : Uploading next chunk---- completed upload till offset - %f",offset);
                          DLog(@"LOG : 1 / %f th part uploading..... ", offset/self.asset.defaultRepresentation.size);
                          
-                         if( VCLIENT.isToBePaused )
-                         {
-                             [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
-                             [self uploadFailureFallBack:nil];
-                             VCLIENT.isToBePaused = NO;
-                         }
-                         else
-                         {
+//                         if( VCLIENT.isToBePaused )
+//                         {
+//                             [DBCLIENT updateIsPausedStatusOfFile:VCLIENT.asset.defaultRepresentation.url forPausedState:1];
+//                             [self uploadFailureFallBack:nil];
+//                             VCLIENT.isToBePaused = NO;
+//                         }
+//                         else
+//                         {
                              offset += chunkData.length;
                              APPCLIENT.uploadedSize = offset;
                              [self videoFromNSData];
-                         }
+//                         }
                          
                      }failure:^(NSError *error)
                      {
@@ -334,7 +378,7 @@
         [DBCLIENT updateFailStatusOfFile:self.asset.defaultRepresentation.url toStatus:@(1)];
         
         // Commit the uploaded bytes to the DB
-        [DBCLIENT updateUploadedBytesForFile:self.asset.defaultRepresentation.url toBytes:@(APPCLIENT.uploadedSize)];
+        [DBCLIENT updateUploadedBytesForFile:self.asset.defaultRepresentation.url toBytes:@( ((self.totalChunksSent-1)*1024*1024) + APPCLIENT.uploadedSize)];
         
         self.asset = nil; self.videoUploading = nil; APPCLIENT.uploadedSize = 0;
         
@@ -355,39 +399,97 @@
 
 -(void)videoUploadIntelligence
 {
-    if( self.asset == nil && !APPMANAGER.turnOffUploads)
+    if( APPMANAGER.signalStatus != 0 )
     {
-        NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
-        
-        if( videoList != nil && videoList.count > 0 )
+        if( APPMANAGER.activeSession.wifiupload.integerValue && APPMANAGER.signalStatus == 2 )
         {
-            DLog(@"Log : The autoSyncStatus is - %@", APPMANAGER.activeSession.autoSyncEnabled);
-            DLog(@"Log : The list of videos to be uploaded are - %@", videoList);
-            self.videoUploading = (Videos*)[videoList firstObject];
-            self.asset = [self getAssetFromFilteredVideosForUrl: self.videoUploading.fileURL];
-            
-            if([self.videoUploading.sync_status  isEqual: @(0)] || ![self.videoUploading.fileLocation isValid])
-            {
-                DLog(@"Log : New file.. File location will not be existing...");
-                [self startNewFileUpload];
-            }
-            else
-            {
-                DLog(@"Log : File already syncing and has been stopped at certain offset....");
-                DLog(@"Log : The video and asset details are as follows - %@ --------- %@", self.videoUploading, self.asset);
-                [self getOffsetFromTheHeadService];
-            }
+            DLog(@"Log : Connected over Wifi... Upload only on Wifi enabled too...");
+            [self fetchVideosForUploadingAndStartUpload];
         }
         else
         {
-            DLog(@"Log : All videos are synced.. No videos to be uploaded");
-            self.asset = nil;
-            self.videoUploading = nil;
+            DLog(@"Log : ");
+            if( ( APPMANAGER.activeSession.wifiupload.integerValue == 0 ) )
+            {
+                DLog(@"Log : Connected via cellular data and wifi only upload is disabled too.... ");
+                APPMANAGER.turnOffUploads = NO;
+                [self fetchVideosForUploadingAndStartUpload];
+            }
+            else
+            {
+                if( VCLIENT.asset != nil )
+                {
+                    if( [UIApplication sharedApplication].applicationState == UIApplicationStateActive )
+                    {
+                        [ViblioHelper displayAlertWithTitle:@"Not on WiFi" messageBody:@"Uploading paused until WiFi connection established" viewController:nil cancelBtnTitle:@"OK"];
+                    }
+                    [APPCLIENT invalidateUploadTaskWithoutPausing];
+                    APPMANAGER.turnOffUploads = YES;
+                }
+
+                DLog(@"Log : Settings for upload and uploader connectivity status does not match....");
+            }
         }
     }
-    else
-        DLog(@"Log : An upload in progress..... or uploads are turned off");
 }
+
+-(void)fetchVideosForUploadingAndStartUpload
+{
+    [DBCLIENT updateDB:^(NSString *msg)
+     {
+         DLog(@"Log : The DB has been successfully updated");
+         
+         VCLIENT.isBkgrndTaskEnded = YES;
+         //    if (VCLIENT.bgTask != UIBackgroundTaskInvalid)
+         //    {
+         //        [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
+         //        VCLIENT.bgTask = UIBackgroundTaskInvalid;
+         //    }
+         if( self.asset == nil && !APPMANAGER.turnOffUploads)
+         {
+             NSMutableArray *videoList = [[DBCLIENT fetchVideoListToBeUploaded] mutableCopy];
+             DLog(@"Log : The list of videos to be uploaded are - %@", videoList);
+             if( videoList != nil && videoList.count > 0 )
+             {
+                 DLog(@"Log : The autoSyncStatus is - %@", APPMANAGER.activeSession.autoSyncEnabled);
+                 
+                 self.videoUploading = (Videos*)[videoList firstObject];
+                 self.asset = [self getAssetFromFilteredVideosForUrl: self.videoUploading.fileURL];
+                 
+                 if([self.videoUploading.sync_status  isEqual: @(0)] || ![self.videoUploading.fileLocation isValid])
+                 {
+                     DLog(@"Log : New file.. File location will not be existing...");
+                     [self startNewFileUpload];
+                     //VCLIENT.isBkgrndTaskEnded = YES;
+                 }
+                 else
+                 {
+                     DLog(@"Log : File already syncing and has been stopped at certain offset....");
+                     DLog(@"Log : The video and asset details are as follows - %@ --------- %@", self.videoUploading, self.asset);
+                     [self getOffsetFromTheHeadService];
+                     //VCLIENT.isBkgrndTaskEnded = YES;
+                 }
+             }
+             else
+             {
+                 DLog(@"Log : All videos are synced.. No videos to be uploaded");
+                 self.asset = nil;
+                 self.videoUploading = nil;
+                 
+                 // Enable auto lock as there are no uploads in progress
+                 [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
+             }
+         }
+         else
+             DLog(@"Log : An upload in progress..... or uploads are turned off");
+         
+     }failure:^(NSError *error)
+     {
+         DLog(@"Log : Error in updating DB");
+         
+     }];
+}
+
 
 /*------------------------------------------------------- Function to get the ALAsset by passing asset URL -----------------------------------------*/
 

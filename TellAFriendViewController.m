@@ -163,6 +163,15 @@
 
 -(void)cancel
 {
+    [APPMANAGER.selectedContacts removeAllObjects];
+    APPMANAGER.selectedContacts = nil;
+    
+    [APPMANAGER.tempContacts removeAllObjects];
+    APPMANAGER.tempContacts = nil;
+    
+    [APPMANAGER.loadContacts removeAllObjects];
+    APPMANAGER.loadContacts = nil;
+    
     [self.navigationController popToRootViewControllerAnimated:YES];
     [self.op cancel];
     //[self.slidingViewController anchorTopViewTo:ECRight];
@@ -176,75 +185,78 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
--(void)MailSharingClicked : (id)sender
-{
-    DLog(@" Log : Mail Clicked - 2");
-    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-    
-    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-            ABAddressBookRef addressBook = ABAddressBookCreate( );
-        });
-    }
-    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-        
-        DLog(@" Log : Mail Clicked - 3");
-        CFErrorRef *error = NULL;
-        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
-        CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-        CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
-        
-        if( APPMANAGER.contacts != nil )
-        {
-            [APPMANAGER.contacts removeAllObjects];
-            APPMANAGER.contacts = nil;
-        }
-        
-        DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
-        APPMANAGER.contacts = [NSMutableArray new];
-        
-        for(int i = 0; i < numberOfPeople; i++) {
-            
-            //DLog(@"Log : In processing contact - %d", i);
-            ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
-            
-            NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
-            NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
-            
-            ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
-            NSMutableArray *emailIds = [NSMutableArray new];
-            
-            DLog(@" Log : Mail Clicked 6 - %@", email);
-            
-            for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
-                NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
-                DLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
-                [emailIds addObject:phoneNumber];
-            }
-            
-            if( emailIds.count > 0 )
-            {
-                DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
-                
-                if( [firstName isValid] && [lastName isValid] )
-                    [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
-                else
-                    [APPMANAGER.contacts addObject:@{ @"email" : emailIds}];
-                
-            }
-            
-            // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
-        }
-        
-        DLog(@" Log : Mail Clicked - 5");
-        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
-    }
-    else {
-        // Send an alert telling user to change privacy setting in settings app
-        
-        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
-    }
-}
+//-(void)MailSharingClicked : (id)sender
+//{
+//    //DLog(@" Log : Mail Clicked - 2");
+//    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+//    
+//    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+//        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+//            ABAddressBookRef addressBook = ABAddressBookCreate( );
+//        });
+//    }
+//    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+//        
+//        // DLog(@" Log : Mail Clicked - 3");
+//        CFErrorRef *error = NULL;
+//        ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, error);
+//        CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+//        CFIndex numberOfPeople = ABAddressBookGetPersonCount(addressBook);
+//        
+//        if( APPMANAGER.contacts != nil )
+//        {
+//            DLog(@"Log : Might be crashing here...");
+//            [APPMANAGER.contacts removeAllObjects];
+//            APPMANAGER.contacts = nil;
+//        }
+//        
+//        DLog(@" Log : Mail Clicked - 4 - count - %ld", numberOfPeople);
+//        APPMANAGER.contacts = [NSMutableArray new];
+//        
+//        for(int i = 0; i < numberOfPeople; i++) {
+//            
+//            //DLog(@"Log : In processing contact - %d", i);
+//            ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
+//            
+//            NSString *firstName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonFirstNameProperty));
+//            NSString *lastName = (__bridge NSString *)(ABRecordCopyValue(person, kABPersonLastNameProperty));
+//            
+//            ABMultiValueRef email = ABRecordCopyValue(person, kABPersonEmailProperty);
+//            NSMutableArray *emailIds = [NSMutableArray new];
+//            
+//            //DLog(@" Log : Mail Clicked 6 - %@", email);
+//            
+//            for (CFIndex i = 0; i < ABMultiValueGetCount(email); i++) {
+//                NSString *phoneNumber = (__bridge_transfer NSString *) ABMultiValueCopyValueAtIndex(email, i);
+//                //sDLog(@" Log : Mail Clicked 7 - %@", phoneNumber);
+//                [emailIds addObject:phoneNumber];
+//            }
+//            
+//            if( emailIds.count > 0 )
+//            {
+//                //DLog(@" Log : Mail Clicked 8 - %@ - %@ - %@", emailIds, firstName, lastName);
+//                
+//                if( [firstName isValid] && [lastName isValid] )
+//                    [APPMANAGER.contacts addObject:@{ @"fname" : firstName, @"lname" : lastName, @"email" : emailIds}];
+//                else
+//                    [APPMANAGER.contacts addObject:@{ @"email" : emailIds}];
+//                
+//            }
+//            
+//            // DLog(@" Log : Mail Clicked 9 - %@", APPMANAGER.contacts);
+//        }
+//        
+//        DLog(@"Log : Might be crashing here... - 1");
+//        APPMANAGER.contacts = (NSMutableArray*)[ViblioHelper getSortedArrayFromArray:APPMANAGER.contacts];
+//        //DLog(@" Log : Mail Clicked - 5");
+//        [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
+//    }
+//    else {
+//        // Send an alert telling user to change privacy setting in settings app
+//        
+//        [ViblioHelper displayAlertWithTitle:@"Error" messageBody:@"Viblio could not access your contacts. Please enable access in settings" viewController:nil cancelBtnTitle:@"OK"];
+//    }
+//}
 
 
 - (void)didReceiveMemoryWarning
@@ -279,8 +291,8 @@
 - (IBAction)mailClicked:(id)sender {
     
     [self.btnMail setImage:[UIImage imageNamed:@"bttn_mail"] forState:UIControlStateNormal];
-    [self MailSharingClicked:self];
-    
+    //[self MailSharingClicked:self];
+    [self.navigationController pushViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"contacts")] animated:YES];
 }
 
 

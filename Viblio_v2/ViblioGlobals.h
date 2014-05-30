@@ -26,13 +26,14 @@
 
 // Server URL
 #ifdef DEBUG
-#define API_UPLOAD_FILE_SERVER_URL @"https://staging.viblio.com/files"
-#define API_LOGIN_SERVER_URL @"https://staging.viblio.com"
+#define API_UPLOAD_FILE_SERVER_URL @"https://viblio.com/files"
+#define API_LOGIN_SERVER_URL @"https://viblio.com"
 #else
 #define API_UPLOAD_FILE_SERVER_URL @"https://viblio.com/files"
-#define API_LOGIN_SERVER_URL @"https://staging.viblio.com"
+#define API_LOGIN_SERVER_URL @"https://viblio.com"
 #endif
 
+#define AppStoreId @"883377114"
 
 
 // Frameworks
@@ -62,6 +63,8 @@
 #import "VideoManager.h"
 #import "AppManager.h"
 #import "UserManager.h"
+#import "VblLocationManager.h"
+#import "DataModel.h"
 
 //Modals
 #import "User.h"

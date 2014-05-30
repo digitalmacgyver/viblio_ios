@@ -34,7 +34,7 @@
 	// Do any additional setup after loading the view.
     
     self.celIndex = -1;
-    APPMANAGER.listVideos = [DBCLIENT listAllEntitiesinTheDB];
+   // APPMANAGER.listVideos = [DBCLIENT listAllEntitiesinTheDB];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:
                                            [UIButton navigationItemWithTarget:self action:@selector(revealMenu) withImage:@"icon_options"]];
@@ -53,13 +53,48 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+    self.completedList = [DBCLIENT listAllEntitiesinTheDBWithCompletedStatus:0];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBar) name:refreshProgress object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadList) name:uploadComplete object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
+
 }
+
+-(void)didReceiveNotification
+{
+    DLog(@"Log : Application has become active");
+    
+//    self.completedList = [DBCLIENT listAllEntitiesinTheDBWithCompletedStatus:0];
+//    DLog(@"Log : Teh entries in the array after application becoming active are--------------------------");
+//    DLog(@"Array  : %@", self.completedList);
+//    [self.tblInProgress reloadData];
+    
+    [self performSelector:@selector(updateUI) withObject:nil afterDelay:2];
+
+}
+
+-(void)updateUI
+{
+//    [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound:^(NSString *msg)
+//     {
+         self.completedList = [DBCLIENT listAllEntitiesinTheDBWithCompletedStatus:0];
+         DLog(@"Log : Teh entries in the array after application becoming active are--------------------------");
+         DLog(@"Array  : %@", self.completedList);
+         [self.tblInProgress reloadData];
+//     }failure:^(NSError *error)
+//     {
+//         DLog(@"Log : Error while deleting the record - %@", error);
+//     }];
+}
+
+//-(void)
 
 -(void)viewWillDisappear:(BOOL)animated
 {
+    NSLog(@"LOg : View will disappear in list progress being called......");
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.completedList = nil;
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadList) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -73,7 +108,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
 {
-    return APPMANAGER.listVideos.count;
+    return self.completedList.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -82,7 +117,7 @@
     
     uploadProgress *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
-    cell.video = APPMANAGER.listVideos[indexPath.row];
+    cell.video = self.completedList[indexPath.row];
     cell.asset = [VCLIENT getAssetFromFilteredVideosForUrl:cell.video.fileURL];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
@@ -139,7 +174,7 @@
         uploadProgress *cell = (uploadProgress*)[self.tblInProgress cellForRowAtIndexPath:[NSIndexPath indexPathForRow:self.celIndex inSection:0]];
         
         if( [cell.video.fileURL isEqualToString:VCLIENT.videoUploading.fileURL] )
-            cell.progressBar.progress = APPCLIENT.uploadedSize/VCLIENT.asset.defaultRepresentation.size;
+            cell.progressBar.progress = (((VCLIENT.totalChunksSent - 1)*1024*1024) + APPCLIENT.uploadedSize)/VCLIENT.asset.defaultRepresentation.size;
     }
 }
 
@@ -151,7 +186,9 @@
 -(void)reloadListProgress
 {
     DLog(@"Log : ReloadList progress called....");
-    APPMANAGER.listVideos = [DBCLIENT listAllEntitiesinTheDB];
+    //APPMANAGER.listVideos = [DBCLIENT listAllEntitiesinTheDBWithCompletedStatus:0];
+    self.completedList = [DBCLIENT listAllEntitiesinTheDBWithCompletedStatus:0];
+    DLog(@"Log : Videos obtained for completed status 0 is - %@", APPMANAGER.listVideos);
     [self.tblInProgress reloadData];
 }
 

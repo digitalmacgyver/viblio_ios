@@ -137,19 +137,13 @@
     [label setFont:[ViblioHelper viblio_Font_Regular_WithSize:13 isBold:NO]];
     label.textColor = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1];
     
-//    NSArray *keysSorted = [[VCLIENT.resCategorized allKeys] sortedArrayUsingSelector:@selector(localizedStandardCompare:)];
-//    DLog(@"Log : KeySorted are - %@", keysSorted);
-//    NSArray *resArray = VCLIENT.resCategorized[keysSorted[section]];
-//    
-//    if( resArray != nil && resArray.count > 0 )
-//        [label setText:[resArray firstObject]];
-//    else
-//        DLog(@"Log : NO contents found in the array.. Seems to be a bug.. %@ ... keysSorted - %@ ... ", resArray, keysSorted);
-//    
-//    keysSorted = nil;
-//    resArray = nil;
-    
     [label setText:APPMANAGER.orderedKeys[section]];
+    [label setFont:[UIFont fontWithName:@"Avenir-Roman" size:14]];
+    
+    if( [label.text isEqualToString:@"1970"] )
+    {
+        label.text = @"No Date";
+    }
     
     /* Section header is in 0th index... */
     
@@ -222,17 +216,22 @@
         
         // Logic to decide whether share tag is to be shown or not
         
-        [APPCLIENT hasAMediaFileBeenSharedByTheUSerWithUUID:cell.video.uuid success:^(BOOL isShared)
-         {
-             if( !isShared )
-                [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_selected"] forState:UIControlStateNormal];
-             else
-                [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_list"] forState:UIControlStateNormal];
-             
-         }failure:^(NSError *error)
-         {
-             
-         }];
+        if( cell.video.shareCount > 0 )
+            [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_list"] forState:UIControlStateNormal];
+        else
+            [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_selected"] forState:UIControlStateNormal];
+        
+//        [APPCLIENT hasAMediaFileBeenSharedByTheUSerWithUUID:cell.video.uuid success:^(BOOL isShared)
+//         {
+//             if( !isShared )
+//                [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_selected"] forState:UIControlStateNormal];
+//             else
+//                [cell.btnShare setImage:[UIImage imageNamed:@"icon_share_list"] forState:UIControlStateNormal];
+//             
+//         }failure:^(NSError *error)
+//         {
+//             
+//         }];
         
         // Logic for filling the information data in list view here
         NSArray *faceImgList = @[cell.face1, cell.face2, cell.face3, cell.face4];
@@ -276,69 +275,97 @@
         
         // Non cached direct working mode
         
-        [APPCLIENT getFacesInAMediaFileWithUUID:cell.video.uuid success:^(NSArray *facesList)
-         {
-             DLog(@"Log : The faces list obtained is - %@ and face list count is - %d", facesList, facesList.count);
-             
-             // If faces list is empty then make a call to reverse geo coding of address
-             
-             if( facesList != nil && facesList.count > 0 )
-             {
-                 [cell.lblInfo setHidden:YES];
-                 [cell.scrlFaces setHidden:NO];
-                 
-                 [self.faceIndexes setValue:facesList forKey:[NSString stringWithFormat:@"%d", indexPath.row]];
-                 
-                 for( int i = 0; i < facesList.count; i++ )
+        if( cell.video.faces != nil && cell.video.faces.count > 0 )
+        {
+            // Faces detected. Show them
+            DLog(@"Log : Faces do exist in the video.. Show them..");
+            
+            [cell.lblInfo setHidden:YES];
+            [cell.scrlFaces setHidden:NO];
+            
+            [self.faceIndexes setValue:cell.video.faces forKey:[NSString stringWithFormat:@"%d", indexPath.row]];
+            
+            for( int i = 0; i < cell.video.faces.count; i++ )
+            {
+                if( i < faceImgList.count )
+                {
+                    [((UIImageView*)faceImgList[i]).layer setCornerRadius:((UIImageView*)faceImgList[i]).frame.size.width/2];
+                    ((UIImageView*)faceImgList[i]).clipsToBounds = YES;
+                    [((UIImageView*)faceImgList[i]) setImageWithURL:[NSURL URLWithString: ((NSDictionary*)cell.video.faces[i])[@"url"]]];
+                    [((UIImageView*)faceImgList[i]) setHidden:NO];
+                }
+                else
+                    break;
+            }
+        }
+        else
+        {
+            // Check wheteher latitude and longitude info available or not
+            
+            [cell.lblInfo setHidden:NO];
+            [cell.scrlFaces setHidden:YES];
+            
+            if( [cell.video.lat isValid] && [cell.video.longitude isValid] )
+            {
+                DLog(@"Log : Faces returned an empty set.. Fetching the lat and longitude now");
+                
+                // We do not have cached address. Make a web service call to get the address
+                [APPCLIENT getAddressWithLat:cell.video.lat andLong:cell.video.longitude success:^(NSString *address)
                  {
-                     if( i < faceImgList.count )
-                     {
-                         [((UIImageView*)faceImgList[i]).layer setCornerRadius:((UIImageView*)faceImgList[i]).frame.size.width/2];
-                         ((UIImageView*)faceImgList[i]).clipsToBounds = YES;
-                         [((UIImageView*)faceImgList[i]) setImageWithURL:[NSURL URLWithString:facesList[i]]];
-                         [((UIImageView*)faceImgList[i]) setHidden:NO];
-                     }
-                     else
-                         break;
-                 }
-             }
-             else
-             {
-                 // Check wheteher latitude and longitude info available or not
-                 
-                 [cell.lblInfo setHidden:NO];
-                 [cell.scrlFaces setHidden:YES];
-                 
-                 if( [cell.video.lat isValid] && [cell.video.longitude isValid] )
+                     cell.lblInfo.text = address;
+                     [self.address setValue:address forKey:[NSString stringWithFormat:@"%d", indexPath.row]];
+                     cell.lblInfo.font = [ViblioHelper viblio_Font_Regular_WithSize:12 isBold:NO];
+                 }failure:^(NSError *error)
                  {
-                     DLog(@"Log : Faces returned an empty set.. Fetching the lat and longitude now");
                      
-                     // We do not have cached address. Make a web service call to get the address
-                     [APPCLIENT getAddressWithLat:cell.video.lat andLong:cell.video.longitude success:^(NSString *address)
-                      {
-                          cell.lblInfo.text = address;
-                          [self.address setValue:address forKey:[NSString stringWithFormat:@"%d", indexPath.row]];
-                          cell.lblInfo.font = [ViblioHelper viblio_Font_Regular_WithSize:12 isBold:NO];
-                      }failure:^(NSError *error)
-                      {
-                          
-                      }];
-                 }
-                 else
-                 {
-                     DLog(@"Log : No Faces and No lat and Long found.. Displaying the created date field now...");
-                     [cell.lblUploadNow setHidden:NO];
-                     cell.lblInfo.font = [ViblioHelper viblio_Font_Regular_WithSize:16 isBold:NO];
-                     NSArray *displayResultForDateTime = [ViblioHelper getDateTimeStampToReadableFormat:cell.video.createdDate];
-                     cell.lblInfo.text = [displayResultForDateTime firstObject];
-                     displayResultForDateTime = nil;
-                     [self.dateStamp setValue:cell.video.createdDate forKey:[NSString stringWithFormat:@"%d", indexPath.row]];
-                 }
-             }
-         }failure:^(NSError *error)
-         {
-             
-         }];
+                 }];
+            }
+            else
+            {
+                DLog(@"Log : No Faces and No lat and Long found.. Displaying the created date field now...");
+                [cell.lblUploadNow setHidden:NO];
+                cell.lblInfo.font = [ViblioHelper viblio_Font_Regular_WithSize:16 isBold:NO];
+                NSArray *displayResultForDateTime = [ViblioHelper getDateTimeStampToReadableFormat:cell.video.createdDate];
+                cell.lblInfo.text = [displayResultForDateTime firstObject];
+                displayResultForDateTime = nil;
+                [self.dateStamp setValue:cell.video.createdDate forKey:[NSString stringWithFormat:@"%d", indexPath.row]];
+            }
+        }
+        
+//        [APPCLIENT getFacesInAMediaFileWithUUID:cell.video.uuid success:^(NSArray *facesList)
+//         {
+//             DLog(@"Log : The faces list obtained is - %@ and face list count is - %d", facesList, facesList.count);
+//             
+//             // If faces list is empty then make a call to reverse geo coding of address
+//             
+//             if( facesList != nil && facesList.count > 0 )
+//             {
+//                 [cell.lblInfo setHidden:YES];
+//                 [cell.scrlFaces setHidden:NO];
+//                 
+//                 [self.faceIndexes setValue:facesList forKey:[NSString stringWithFormat:@"%d", indexPath.row]];
+//                 
+//                 for( int i = 0; i < facesList.count; i++ )
+//                 {
+//                     if( i < faceImgList.count )
+//                     {
+//                         [((UIImageView*)faceImgList[i]).layer setCornerRadius:((UIImageView*)faceImgList[i]).frame.size.width/2];
+//                         ((UIImageView*)faceImgList[i]).clipsToBounds = YES;
+//                         [((UIImageView*)faceImgList[i]) setImageWithURL:[NSURL URLWithString:facesList[i]]];
+//                         [((UIImageView*)faceImgList[i]) setHidden:NO];
+//                     }
+//                     else
+//                         break;
+//                 }
+//             }
+//             else
+//             {
+//
+//             }
+//         }failure:^(NSError *error)
+//         {
+//             
+//         }];
         
         faceImgList = nil;
     }

@@ -36,18 +36,16 @@
     
     switch (settingSwitch.tag) {
         case 0:
-            APPMANAGER.activeSession.autoSyncEnabled = @(settingSwitch.on);
-            break;
-        case 1:
+            DLog(@"Log : The value of wifiupload now is - %d", APPMANAGER.activeSession.wifiupload.boolValue);
             APPMANAGER.activeSession.wifiupload = @(settingSwitch.on);
             break;
-        case 2:
+        case 1:
             APPMANAGER.activeSession.backgroundSyncEnabled = @(settingSwitch.on);
             break;
-        case 3:
+        case 2:
             APPMANAGER.activeSession.batterSaving = @(settingSwitch.on);
             break;
-        case 4:
+        case 3:
             APPMANAGER.activeSession.autolockdisable = @(settingSwitch.on);
             break;
         default:

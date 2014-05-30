@@ -38,10 +38,13 @@
 -(void)updateFileLocationFile:(NSURL*)assetUrl toLocation:(NSString*)locationID;
 -(void)updateFailStatusOfFile:(NSURL*)assetUrl toStatus:(NSNumber*)status;
 -(void)updateUploadedBytesForFile:(NSURL*)assetUrl toBytes:(NSNumber*)bytes;
+-(void)updateIsCompletedStatusOfFile:(NSURL*)assetUrl forCompletedState:(BOOL)isCompleted;
+-(NSArray*)listAllEntitiesinTheDBWithCompletedStatus : (NSInteger)isCompleted;
 -(NSArray*)getTheListOfPausedVideos;
 -(Videos*)getWhetherAFileWithUUIDExistsInDB : (NSString*)uuid;
 -(void)updateFileUUIDForFile:(NSURL*)assetUrl withUUID : (NSString*)uuid;
--(void)deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound;
+-(void)deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound : (void(^)(NSString *msg))success
+                                                              failure : (void(^)(NSError *error)) failure;
 
 // Session setting functions
 -(Session*)getSessionSettings;

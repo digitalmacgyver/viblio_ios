@@ -15,6 +15,7 @@
 @property(nonatomic, retain)NSString *url;
 @property(nonatomic, retain)NSString *lat;
 @property(nonatomic, retain)NSString *longitude;
-@property(nonatomic, retain)NSString *isShared;
+@property(nonatomic, assign)int shareCount;
+@property(nonatomic, retain)NSMutableArray *faces;
 
 @end

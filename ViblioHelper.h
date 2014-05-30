@@ -30,6 +30,9 @@ extern NSString * const logoutUser;
 extern NSString * const reloadListView;
 extern NSString * const showSharingView;
 extern NSString * const removeOwnerSharingView;
+extern NSString * const newVideoAvailable;
+extern NSString * const wifiSignalLost;
+extern NSString * const moviePlayerEnded;
 
 + (NSString *)stringBySerializingQueryParameters:(NSDictionary *)queryParameters;
 
@@ -76,5 +79,6 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 
 +(void)MailSharingClicked : (id)sender;
 +(NSArray*)getReOrderedListOfKeys :(NSArray*)keys;
++(NSArray*)getSortedArrayFromArray : (NSMutableArray*)contacts;
 
 @end

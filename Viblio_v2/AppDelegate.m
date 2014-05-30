@@ -24,19 +24,19 @@
 -(void)presentNotification{
     UILocalNotification* localNotification = [[UILocalNotification alloc] init];
     
-    int chunk = (int)(VCLIENT.asset.defaultRepresentation.size / 1048576);
-    int rem = VCLIENT.asset.defaultRepresentation.size % 1048576;
-    if(rem > 0)
-        chunk++;
+//    int chunk = (int)(VCLIENT.asset.defaultRepresentation.size / 1048576);
+//    int rem = VCLIENT.asset.defaultRepresentation.size % 1048576;
+//    if(rem > 0)
+//        chunk++;
     
-    localNotification.alertBody = @"Video Upload Complete !!";
-    localNotification.alertAction = @"Background Transfer Upload!";
+    localNotification.alertBody = @"Viblio Uploads Paused !!";
+    localNotification.alertAction = @"Launch Viblio to resume uploads if not uploads will continue in optimal conditions";
     
     //On sound
     localNotification.soundName = UILocalNotificationDefaultSoundName;
     
     //increase the badge number of application plus 1
-    localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+ //   localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
     
     
     
@@ -48,11 +48,20 @@
 {
     // Override point for customization after application launch.
     
+    DLog(@"Log : The launch options of the application is - %@", launchOptions);
+    
+    if ([launchOptions objectForKey:UIApplicationLaunchOptionsLocationKey]) {
+     
+        //[[VblLocationManager sharedClient] setUp];
+        [[VblLocationManager sharedClient] fetchLatitudeAndLongitude];
+    }
+    
     self.isMoviePlayer = NO;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:MPMoviePlayerWillEnterFullscreenNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disableOrientation) name:MPMoviePlayerWillExitFullscreenNotification object:nil];
-    
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:playVideo object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disableOrientation) name:MPMoviePlayerPlaybackDidFinishNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disableOrientation) name:MPMoviePlayerDidExitFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:MPMoviePlayerDidEnterFullscreenNotification object:nil];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
     
     UIDevice *device = [UIDevice currentDevice];
@@ -60,6 +69,7 @@
     
     Session *session = [DBCLIENT getSessionSettings];
     APPMANAGER.turnOffUploads = NO;
+    APPMANAGER.activeSession = (Session*)[DBCLIENT getSessionSettings];
     
     if( session == nil )
     {
@@ -89,6 +99,9 @@
 {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    VCLIENT.backgroundAlertShown = NO;
+    [[VblLocationManager sharedClient] fetchLatitudeAndLongitude];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -100,6 +113,22 @@
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     
+    //[NSNotificationCenter defaultCenter] postNotificationName:<#(NSString *)#> object:<#(id)#>
+    
+    VCLIENT.notifcationShown = NO;
+//    VCLIENT.isBkgrndTaskEnded = YES;
+    
+//    if( VCLIENT.bgTask != UIBackgroundTaskInvalid )
+//    {
+//        [[UIApplication sharedApplication] endBackgroundTask:VCLIENT.bgTask];
+//        VCLIENT.bgTask = UIBackgroundTaskInvalid;
+//    }
+
+    [[VblLocationManager sharedClient] stopFetchingLatitudeAndLongitude];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+   // [ViblioHelper MailSharingClicked:nil];
+    
+    VCLIENT.backgroundStartChunk = -1;
     NSArray *userResults = [DBCLIENT getUserDataFromDB];
     if( userResults != nil && userResults.count > 0 )
     {
@@ -107,8 +136,14 @@
         [DBCLIENT updateDB:^(NSString *msg)
         {
             // Clean up all the entries in the DB for those not found in the camera roll
-           // DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
-           //  [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound];
+             DLog(@"Log : Cleaning up the entries in the DB for those not found in the camera roll....");
+             [DBCLIENT deleteEntriesInDBForWhichNoAssociatedCameraRollRecordsAreFound:^(NSString *msg)
+              {
+                  
+              }failure:^(NSError *error)
+              {
+                  DLog(@"Log : Error while deleting the record - %@", error);
+              }];
             
             DLog(@"Log : Calling Video Manager to check if an upload was interrupted...");
             if([APPMANAGER.user.userID isValid])
@@ -125,6 +160,10 @@
     }
     
     APPMANAGER.activeSession = (Session*)[DBCLIENT getSessionSettings];
+    if( APPMANAGER.activeSession.autolockdisable.integerValue )
+        [[UIApplication sharedApplication] setIdleTimerDisabled: YES];
+    else
+        [[UIApplication sharedApplication] setIdleTimerDisabled: NO];
     userResults = nil;
     [FBSession.activeSession handleDidBecomeActive];
 }
@@ -143,7 +182,7 @@
     DLog(@"Log : App is terminating");
     
     APPMANAGER.turnOffUploads = YES;
-    [APPCLIENT invalidateFileUploadTask];
+    [APPCLIENT invalidateUploadTaskWithoutPausing];
     APPCLIENT.uploadTask = nil;
     [FBSession.activeSession close];
 }
@@ -155,19 +194,45 @@
 
 -(void)disableOrientation
 {
+    DLog(@"Log : ************************************* Portrait orientation only enabled ************************************");
     self.isMoviePlayer = NO;
 }
 
 - (NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
 {
+    DLog(@"Log : Orientation change being fired++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     if( self.isMoviePlayer )
     return UIInterfaceOrientationMaskAll
     ;
     
     else
         return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
+{
+    DataModel *dataModel = APPCLIENT.dataModel;
+	NSString *newToken = [deviceToken description];
+	newToken = [newToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+	newToken = [newToken stringByReplacingOccurrencesOfString:@" " withString:@""];
+	[dataModel setDeviceToken:newToken];
+    NSLog(@"Log : Device token is - %@", newToken);
+}
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+{}
+
+- (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo
+{
+	NSLog(@"Received notification: %@", userInfo);
     
-    
+    if( [[userInfo[@"custom"][@"type"] lowercaseString] isEqualToString: [@"NEWVIDEO" lowercaseString]] )
+    {
+        DLog(@"Log : Refresh the UI");
+        
+        VCLIENT.Videouuid = userInfo[@"custom"][@"uuid"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:newVideoAvailable object:nil];
+    }
 }
 
 @end

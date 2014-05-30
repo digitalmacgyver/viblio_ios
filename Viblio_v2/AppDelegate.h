@@ -21,4 +21,5 @@
 @property(assign) BOOL isMoviePlayer;
 @property (copy) void (^backgroundSessionCompletionHandler)();
 
+-(void)presentNotification;
 @end

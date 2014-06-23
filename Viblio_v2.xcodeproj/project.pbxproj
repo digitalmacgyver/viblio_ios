@@ -121,8 +121,8 @@
 		CB6957B118F4BB0F00D2F028 /* 40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = CB6957B018F4BB0F00D2F028 /* 40x40.png */; };
 		CB89939C1907906800EEC0FD /* tutorial_step_3_v1.png in Resources */ = {isa = PBXBuildFile; fileRef = CB89939B1907906800EEC0FD /* tutorial_step_3_v1.png */; };
 		CB9AABED1958B15A00B4C5F1 /* SignUpTermsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CB9AABEC1958B15A00B4C5F1 /* SignUpTermsViewController.m */; };
-		CB9AABF01958BB9A00B4C5F1 /* Defaultttt-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9AABEE1958BB9A00B4C5F1 /* Defaultttt-568h@2x.png */; };
-		CB9AABF11958BB9A00B4C5F1 /* Defaulttttt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9AABEF1958BB9A00B4C5F1 /* Defaulttttt@2x.png */; };
+		CB9AABF01958BB9A00B4C5F1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9AABEE1958BB9A00B4C5F1 /* Default-568h@2x.png */; };
+		CB9AABF11958BB9A00B4C5F1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9AABEF1958BB9A00B4C5F1 /* Default@2x.png */; };
 		CB9AF88F18AA442900E83A7F /* cloudVideos.m in Sources */ = {isa = PBXBuildFile; fileRef = CB9AF88E18AA442900E83A7F /* cloudVideos.m */; };
 		CB9F191918ACD516009398F6 /* SharedVideos.m in Sources */ = {isa = PBXBuildFile; fileRef = CB9F191818ACD516009398F6 /* SharedVideos.m */; };
 		CB9F191B18ACF037009398F6 /* icon_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9F191A18ACF037009398F6 /* icon_arrow@2x.png */; };
@@ -324,8 +324,8 @@
 		CB89939B1907906800EEC0FD /* tutorial_step_3_v1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_step_3_v1.png; sourceTree = "<group>"; };
 		CB9AABEB1958B15A00B4C5F1 /* SignUpTermsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignUpTermsViewController.h; sourceTree = "<group>"; };
 		CB9AABEC1958B15A00B4C5F1 /* SignUpTermsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignUpTermsViewController.m; sourceTree = "<group>"; };
-		CB9AABEE1958BB9A00B4C5F1 /* Defaultttt-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Defaultttt-568h@2x.png"; sourceTree = "<group>"; };
-		CB9AABEF1958BB9A00B4C5F1 /* Defaulttttt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Defaulttttt@2x.png"; sourceTree = "<group>"; };
+		CB9AABEE1958BB9A00B4C5F1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		CB9AABEF1958BB9A00B4C5F1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		CB9AF88D18AA442900E83A7F /* cloudVideos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cloudVideos.h; sourceTree = "<group>"; };
 		CB9AF88E18AA442900E83A7F /* cloudVideos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cloudVideos.m; sourceTree = "<group>"; };
 		CB9F191718ACD516009398F6 /* SharedVideos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedVideos.h; sourceTree = "<group>"; };
@@ -585,8 +585,8 @@
 		2AD637F41886CAB400012A86 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				CB9AABEE1958BB9A00B4C5F1 /* Defaultttt-568h@2x.png */,
-				CB9AABEF1958BB9A00B4C5F1 /* Defaulttttt@2x.png */,
+				CB9AABEE1958BB9A00B4C5F1 /* Default-568h@2x.png */,
+				CB9AABEF1958BB9A00B4C5F1 /* Default@2x.png */,
 				CB89939B1907906800EEC0FD /* tutorial_step_3_v1.png */,
 				CB6957AF18F4BA8D00D2F028 /* AppIcons */,
 				CBAAAF5A18C9DCC400DC4A21 /* Tutorial */,
@@ -1019,7 +1019,7 @@
 				CB6957B118F4BB0F00D2F028 /* 40x40.png in Resources */,
 				CBEC7DDA18D9BDDF00B15C8B /* icon_arrow_left@2x.png in Resources */,
 				CBD0496118BB87D400B9A962 /* icon_share_selected@2x.png in Resources */,
-				CB9AABF11958BB9A00B4C5F1 /* Defaulttttt@2x.png in Resources */,
+				CB9AABF11958BB9A00B4C5F1 /* Default@2x.png in Resources */,
 				85ED7FFF188EBB8C00CEAE85 /* Aleo-Bold.otf in Resources */,
 				CBD049C418BE306B00B9A962 /* Rate Us In App Store@2x.png in Resources */,
 				85F70AC2189A56F700696E1E /* icon_share_grid@2x.png in Resources */,
@@ -1041,7 +1041,7 @@
 				85F70AB118992C3E00696E1E /* bttn_facebook_tap@2x.png in Resources */,
 				85ED8004188EBB8C00CEAE85 /* Aleo-Regular.otf in Resources */,
 				85ED801B18901EE600CEAE85 /* empty@2x.png in Resources */,
-				CB9AABF01958BB9A00B4C5F1 /* Defaultttt-568h@2x.png in Resources */,
+				CB9AABF01958BB9A00B4C5F1 /* Default-568h@2x.png in Resources */,
 				CBD049C318BE306B00B9A962 /* Home@2x.png in Resources */,
 				85ED80161890003700CEAE85 /* nav_bar_ios6@2x.png in Resources */,
 				85ED802F189120F500CEAE85 /* icon_options@2x.png in Resources */,

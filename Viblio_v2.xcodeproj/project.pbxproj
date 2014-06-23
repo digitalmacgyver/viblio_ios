@@ -119,9 +119,10 @@
 		CB6957AD18F4BA7000D2F028 /* 57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = CB6957AA18F4BA7000D2F028 /* 57x57.png */; };
 		CB6957AE18F4BA7000D2F028 /* 60x60.png in Resources */ = {isa = PBXBuildFile; fileRef = CB6957AB18F4BA7000D2F028 /* 60x60.png */; };
 		CB6957B118F4BB0F00D2F028 /* 40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = CB6957B018F4BB0F00D2F028 /* 40x40.png */; };
-		CB6957B418F4BB6800D2F028 /* Defaultttt-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB6957B218F4BB6800D2F028 /* Defaultttt-568h@2x.png */; };
-		CB6957B518F4BB6800D2F028 /* Defaulttttt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB6957B318F4BB6800D2F028 /* Defaulttttt@2x.png */; };
 		CB89939C1907906800EEC0FD /* tutorial_step_3_v1.png in Resources */ = {isa = PBXBuildFile; fileRef = CB89939B1907906800EEC0FD /* tutorial_step_3_v1.png */; };
+		CB9AABED1958B15A00B4C5F1 /* SignUpTermsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CB9AABEC1958B15A00B4C5F1 /* SignUpTermsViewController.m */; };
+		CB9AABF01958BB9A00B4C5F1 /* Defaultttt-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9AABEE1958BB9A00B4C5F1 /* Defaultttt-568h@2x.png */; };
+		CB9AABF11958BB9A00B4C5F1 /* Defaulttttt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9AABEF1958BB9A00B4C5F1 /* Defaulttttt@2x.png */; };
 		CB9AF88F18AA442900E83A7F /* cloudVideos.m in Sources */ = {isa = PBXBuildFile; fileRef = CB9AF88E18AA442900E83A7F /* cloudVideos.m */; };
 		CB9F191918ACD516009398F6 /* SharedVideos.m in Sources */ = {isa = PBXBuildFile; fileRef = CB9F191818ACD516009398F6 /* SharedVideos.m */; };
 		CB9F191B18ACF037009398F6 /* icon_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CB9F191A18ACF037009398F6 /* icon_arrow@2x.png */; };
@@ -141,7 +142,6 @@
 		CBD049C518BE306B00B9A962 /* Settings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD049BF18BE306B00B9A962 /* Settings@2x.png */; };
 		CBD049C618BE306B00B9A962 /* Tell A Friend@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD049C018BE306B00B9A962 /* Tell A Friend@2x.png */; };
 		CBD049C718BE306B00B9A962 /* Terms Of Use@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBD049C118BE306B00B9A962 /* Terms Of Use@2x.png */; };
-		CBD5F2DF1951EF0B00C7D3A3 /* SignUpTermsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CBD5F2DE1951EF0B00C7D3A3 /* SignUpTermsViewController.m */; };
 		CBEC7DD818D9BA1B00B15C8B /* SharedVideoListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CBEC7DD718D9BA1B00B15C8B /* SharedVideoListViewController.m */; };
 		CBEC7DDA18D9BDDF00B15C8B /* icon_arrow_left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CBEC7DD918D9BDDF00B15C8B /* icon_arrow_left@2x.png */; };
 /* End PBXBuildFile section */
@@ -321,9 +321,11 @@
 		CB6957AA18F4BA7000D2F028 /* 57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 57x57.png; path = ../57x57.png; sourceTree = "<group>"; };
 		CB6957AB18F4BA7000D2F028 /* 60x60.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 60x60.png; path = ../60x60.png; sourceTree = "<group>"; };
 		CB6957B018F4BB0F00D2F028 /* 40x40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 40x40.png; sourceTree = "<group>"; };
-		CB6957B218F4BB6800D2F028 /* Defaultttt-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Defaultttt-568h@2x.png"; sourceTree = "<group>"; };
-		CB6957B318F4BB6800D2F028 /* Defaulttttt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Defaulttttt@2x.png"; sourceTree = "<group>"; };
 		CB89939B1907906800EEC0FD /* tutorial_step_3_v1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tutorial_step_3_v1.png; sourceTree = "<group>"; };
+		CB9AABEB1958B15A00B4C5F1 /* SignUpTermsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignUpTermsViewController.h; sourceTree = "<group>"; };
+		CB9AABEC1958B15A00B4C5F1 /* SignUpTermsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignUpTermsViewController.m; sourceTree = "<group>"; };
+		CB9AABEE1958BB9A00B4C5F1 /* Defaultttt-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Defaultttt-568h@2x.png"; sourceTree = "<group>"; };
+		CB9AABEF1958BB9A00B4C5F1 /* Defaulttttt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Defaulttttt@2x.png"; sourceTree = "<group>"; };
 		CB9AF88D18AA442900E83A7F /* cloudVideos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cloudVideos.h; sourceTree = "<group>"; };
 		CB9AF88E18AA442900E83A7F /* cloudVideos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cloudVideos.m; sourceTree = "<group>"; };
 		CB9F191718ACD516009398F6 /* SharedVideos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedVideos.h; sourceTree = "<group>"; };
@@ -349,8 +351,6 @@
 		CBD049BF18BE306B00B9A962 /* Settings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Settings@2x.png"; sourceTree = "<group>"; };
 		CBD049C018BE306B00B9A962 /* Tell A Friend@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Tell A Friend@2x.png"; sourceTree = "<group>"; };
 		CBD049C118BE306B00B9A962 /* Terms Of Use@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Terms Of Use@2x.png"; sourceTree = "<group>"; };
-		CBD5F2DD1951EF0B00C7D3A3 /* SignUpTermsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignUpTermsViewController.h; sourceTree = "<group>"; };
-		CBD5F2DE1951EF0B00C7D3A3 /* SignUpTermsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignUpTermsViewController.m; sourceTree = "<group>"; };
 		CBEC7DD618D9BA1B00B15C8B /* SharedVideoListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedVideoListViewController.h; sourceTree = "<group>"; };
 		CBEC7DD718D9BA1B00B15C8B /* SharedVideoListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SharedVideoListViewController.m; sourceTree = "<group>"; };
 		CBEC7DD918D9BDDF00B15C8B /* icon_arrow_left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_arrow_left@2x.png"; sourceTree = "<group>"; };
@@ -585,9 +585,9 @@
 		2AD637F41886CAB400012A86 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				CB9AABEE1958BB9A00B4C5F1 /* Defaultttt-568h@2x.png */,
+				CB9AABEF1958BB9A00B4C5F1 /* Defaulttttt@2x.png */,
 				CB89939B1907906800EEC0FD /* tutorial_step_3_v1.png */,
-				CB6957B218F4BB6800D2F028 /* Defaultttt-568h@2x.png */,
-				CB6957B318F4BB6800D2F028 /* Defaulttttt@2x.png */,
 				CB6957AF18F4BA8D00D2F028 /* AppIcons */,
 				CBAAAF5A18C9DCC400DC4A21 /* Tutorial */,
 				CBD049BB18BE306B00B9A962 /* icons */,
@@ -658,6 +658,8 @@
 		85DCB4F71888287D0068E738 /* SignInSignUpControllers */ = {
 			isa = PBXGroup;
 			children = (
+				CB9AABEB1958B15A00B4C5F1 /* SignUpTermsViewController.h */,
+				CB9AABEC1958B15A00B4C5F1 /* SignUpTermsViewController.m */,
 				2AD637ED1886B81B00012A86 /* LoginViewController.h */,
 				2AD637EE1886B81B00012A86 /* LoginViewController.m */,
 				2AD637F01886BC5400012A86 /* SignUpViewController.h */,
@@ -668,8 +670,6 @@
 				85ED802718907AE600CEAE85 /* CameraRollDenialControler.m */,
 				85ED80291890E3D300CEAE85 /* LoginNavigationController.h */,
 				85ED802A1890E3D300CEAE85 /* LoginNavigationController.m */,
-				CBD5F2DD1951EF0B00C7D3A3 /* SignUpTermsViewController.h */,
-				CBD5F2DE1951EF0B00C7D3A3 /* SignUpTermsViewController.m */,
 			);
 			name = SignInSignUpControllers;
 			sourceTree = "<group>";
@@ -1019,6 +1019,7 @@
 				CB6957B118F4BB0F00D2F028 /* 40x40.png in Resources */,
 				CBEC7DDA18D9BDDF00B15C8B /* icon_arrow_left@2x.png in Resources */,
 				CBD0496118BB87D400B9A962 /* icon_share_selected@2x.png in Resources */,
+				CB9AABF11958BB9A00B4C5F1 /* Defaulttttt@2x.png in Resources */,
 				85ED7FFF188EBB8C00CEAE85 /* Aleo-Bold.otf in Resources */,
 				CBD049C418BE306B00B9A962 /* Rate Us In App Store@2x.png in Resources */,
 				85F70AC2189A56F700696E1E /* icon_share_grid@2x.png in Resources */,
@@ -1040,7 +1041,7 @@
 				85F70AB118992C3E00696E1E /* bttn_facebook_tap@2x.png in Resources */,
 				85ED8004188EBB8C00CEAE85 /* Aleo-Regular.otf in Resources */,
 				85ED801B18901EE600CEAE85 /* empty@2x.png in Resources */,
-				CB6957B418F4BB6800D2F028 /* Defaultttt-568h@2x.png in Resources */,
+				CB9AABF01958BB9A00B4C5F1 /* Defaultttt-568h@2x.png in Resources */,
 				CBD049C318BE306B00B9A962 /* Home@2x.png in Resources */,
 				85ED80161890003700CEAE85 /* nav_bar_ios6@2x.png in Resources */,
 				85ED802F189120F500CEAE85 /* icon_options@2x.png in Resources */,
@@ -1068,7 +1069,6 @@
 				85ED8036189130E300CEAE85 /* icon_play@2x.png in Resources */,
 				CB6957AD18F4BA7000D2F028 /* 57x57.png in Resources */,
 				85ED80501891B44300CEAE85 /* bttn_grid_view_selected@2x.png in Resources */,
-				CB6957B518F4BB6800D2F028 /* Defaulttttt@2x.png in Resources */,
 				85ED80521891B44300CEAE85 /* bttn_list_view_selected@2x.png in Resources */,
 				85F70AC1189A56F700696E1E /* icon_play_grid@2x.png in Resources */,
 				85F70AAC18992C3E00696E1E /* bttn_facebook@2x.png in Resources */,
@@ -1168,7 +1168,7 @@
 				85ED804718917E6E00CEAE85 /* UIButton+Additions.m in Sources */,
 				CBB30EE9191BB47F009C0840 /* contactsCell.m in Sources */,
 				CB24001118ED6017007D2E00 /* VblLocationManager.m in Sources */,
-				CBD5F2DF1951EF0B00C7D3A3 /* SignUpTermsViewController.m in Sources */,
+				CB9AABED1958B15A00B4C5F1 /* SignUpTermsViewController.m in Sources */,
 				85F8B47D188A5E2200E92380 /* AppManager.m in Sources */,
 				85D81D4A18897F0200F4BC44 /* InitialSlidingViewController.m in Sources */,
 				85F8B488188AAC9D00E92380 /* VideoCell.m in Sources */,

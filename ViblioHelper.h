@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "UIButton+Additions.h"
-#import "SDWebImageManager.h"
 #import <AddressBook/AddressBook.h>
 
 @interface ViblioHelper : NSObject
@@ -72,7 +71,6 @@ NSString* Viblio_wideNonWideSegue(NSString *segueName);
 +(UIColor*)getVblBlueColor;
 +(UIColor*)getVblGreenishBlueColor;
 
-+ (void)downloadImageWithURLString:(NSString *)urlString completion:(void (^)(UIImage *image, NSError *error))completion;
 +(NSArray*)getDateTimeStampToReadableFormat : (NSString*)dateStamp;
 + (int)daysBetween:(NSDate *)dt1 and:(NSDate *)dt2;
 +(NSDictionary*)getDateTimeCategorizedArrayFrom : (NSArray*)videoList;

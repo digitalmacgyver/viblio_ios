@@ -118,7 +118,7 @@
 
 
 - (IBAction)openPrivacyPolicy:(id)sender {
-    [self presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"terms")] animated:YES completion:nil];
+    [self presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:Viblio_wideNonWideSegue(@"signUpTerms")] animated:YES completion:nil];
 }
 
 - (IBAction)BackClick:(id)sender {

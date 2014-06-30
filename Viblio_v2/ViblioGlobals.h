@@ -15,7 +15,7 @@
 
 #ifdef DEBUG
 #ifdef VERBOSE_LOGS
-#	define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+#	define DLog(fmt, ...) // NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
 #else
 # define DLog(...) NSLog(__VA_ARGS__)
 #endif
